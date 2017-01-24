@@ -17,22 +17,22 @@ public class GrantActivity extends AppCompatActivity {
         super.onNewIntent(intent);
 
         if (intent.getCategories().contains(Intent.CATEGORY_BROWSABLE) && intent.getDataString() != null) {
-                WakaTime.getInstance().newAccessToken(this, intent.getDataString(), new WakaTime.INewAccessToken() {
-                    @Override
-                    public void onTokenAccepted() {
-                        System.out.println("TOKEN ACCEPTED!");
-                    }
+            WakaTime.getInstance().newAccessToken(this, intent.getDataString(), new WakaTime.INewAccessToken() {
+                @Override
+                public void onTokenAccepted() {
+                    System.out.println("TOKEN ACCEPTED!");
+                }
 
-                    @Override
-                    public void onTokenRejected(InvalidTokenException ex) {
-                        System.out.println("TOKEN REJECTED: " + ex.getMessage());
-                    }
+                @Override
+                public void onTokenRejected(InvalidTokenException ex) {
+                    System.out.println("TOKEN REJECTED: " + ex.getMessage());
+                }
 
-                    @Override
-                    public void onException(Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                @Override
+                public void onException(Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
         }
     }
 

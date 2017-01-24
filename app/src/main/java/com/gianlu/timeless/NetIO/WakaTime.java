@@ -27,10 +27,24 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public class WakaTime {
+    private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
+    private static final String APP_SECRET = "sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs";
+    private static final String CALLBACK = "timeless://grantActivity/";
     private static WakaTime instance;
     private final OAuth20Service service;
     private OAuth2AccessToken token;
     private String lastState;
+
+    private WakaTime() {
+        lastState = new BigInteger(130, new SecureRandom()).toString(32);
+        service = new ServiceBuilder()
+                .apiKey(APP_ID)
+                .apiSecret(APP_SECRET)
+                .callback(CALLBACK)
+                .scope("email,read_stats")
+                .state(lastState)
+                .build(new WakaTimeApi());
+    }
 
     public static WakaTime getInstance() {
         if (instance == null)
@@ -52,7 +66,8 @@ public class WakaTime {
             out.write(token.getBytes());
             out.flush();
             out.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
     private void refreshTokenSync(Context context) throws InvalidTokenException, InterruptedException, ExecutionException, IOException {
@@ -115,31 +130,18 @@ public class WakaTime {
             }
         }).start();
     }
-
     public interface IUser {
         void onUser(User user);
+
         void onException(Exception ex);
     }
 
     public interface INewAccessToken {
         void onTokenAccepted();
+
         void onTokenRejected(InvalidTokenException ex);
+
         void onException(Exception ex);
-    }
-
-    private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
-    private static final String APP_SECRET = "sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs";
-    private static final String CALLBACK = "timeless://grantActivity/";
-
-    private WakaTime() {
-        lastState = new BigInteger(130, new SecureRandom()).toString(32);
-        service = new ServiceBuilder()
-                .apiKey(APP_ID)
-                .apiSecret(APP_SECRET)
-                .callback(CALLBACK)
-                .scope("email,read_stats")
-                .state(lastState)
-                .build(new WakaTimeApi());
     }
 
     private class WakaTimeApi implements BaseApi<OAuth20Service> {
