@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Timeless</string>
-    <string name="grant_hello">Welcome! <!-- TODO --></string>
+    <string name="grant_hello">Welcome to Timeless!</string>
+    <string name="grant_help">All you have to do to connect Timeless to your WakaTime account is click the button below! I want to assure you I will not have access to your credentials.</string>
+    <string name="grantAccess">Grant access</string>
+    <string name="checkingPermissions">Checking permissions. Please wait…</string>
 </resources>
