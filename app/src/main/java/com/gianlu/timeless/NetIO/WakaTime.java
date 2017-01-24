@@ -105,6 +105,26 @@ public class WakaTime {
         }).start();
     }
 
+    public void getStats(final Context context, final Stats.Range range, final IStats handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    refreshTokenSync(context);
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/stats/" + range.toValidFormat());
+
+                    if (response.getCode() == 200) {
+                        handler.onStats(new Stats(new JSONObject(response.getBody()).getJSONObject("data")));
+                    } else {
+                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                    }
+                } catch (InvalidTokenException | InterruptedException | ExecutionException | IOException | JSONException ex) {
+                    handler.onException(ex);
+                }
+            }
+        }).start();
+    }
+
     private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException {
         final OAuthRequest request = new OAuthRequest(verb, url);
         service.signRequest(token, request);
@@ -129,6 +149,12 @@ public class WakaTime {
                 }
             }
         }).start();
+    }
+
+    public interface IStats {
+        void onStats(Stats stats);
+
+        void onException(Exception ex);
     }
     public interface IUser {
         void onUser(User user);

@@ -4,4 +4,8 @@
     <string name="grant_help">All you have to do to connect Timeless to your WakaTime account is click the button below! I want to assure you I will not have access to your credentials.</string>
     <string name="grantAccess">Grant access</string>
     <string name="checkingPermissions">Checking permissions. Please wait…</string>
+    <string name="last_7_days">Last 7 days</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="last_6_months">Last 6 months</string>
+    <string name="last_year">Last year</string>
 </resources>

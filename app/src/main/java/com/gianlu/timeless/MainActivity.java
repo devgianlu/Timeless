@@ -3,11 +3,14 @@ package com.gianlu.timeless;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
-import com.gianlu.timeless.NetIO.InvalidTokenException;
-import com.gianlu.timeless.NetIO.User;
-import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.Main.PagerAdapter;
+import com.gianlu.timeless.Main.StatsFragment;
+import com.gianlu.timeless.NetIO.Stats;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,19 +24,30 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        WakaTime.getInstance().getCurrentUser(this, new WakaTime.IUser() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        final ViewPager pager = (ViewPager) findViewById(R.id.main_pager);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tabs);
+
+        pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
+                StatsFragment.getInstance(this, Stats.Range.LAST_7_DAYS),
+                StatsFragment.getInstance(this, Stats.Range.LAST_30_DAYS)));
+
+        tabLayout.setupWithViewPager(pager);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onUser(User user) {
-                System.out.println(user);
+            public void onTabSelected(TabLayout.Tab tab) {
+                pager.setCurrentItem(tab.getPosition(), true);
             }
 
             @Override
-            public void onException(Exception ex) {
-                if (ex instanceof InvalidTokenException) {
-                    startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                }
+            public void onTabUnselected(TabLayout.Tab tab) {
 
-                ex.printStackTrace();
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
     }
