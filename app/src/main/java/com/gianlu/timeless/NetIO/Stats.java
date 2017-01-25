@@ -1,12 +1,16 @@
 package com.gianlu.timeless.NetIO;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.PieChart;
@@ -16,8 +20,6 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.json.JSONArray;
@@ -29,10 +31,11 @@ import java.util.List;
 import java.util.Locale;
 
 public class Stats {
+    public final List<LoggedEntity> projects;
+    public final List<LoggedEntity> languages;
+    public final List<LoggedEntity> editors;
     final long total_seconds;
     final long daily_average;
-    final List<LoggedEntity> projects;
-    final List<LoggedEntity> languages;
 
     public Stats(JSONObject obj) throws JSONException {
         total_seconds = obj.getLong("total_seconds");
@@ -47,61 +50,29 @@ public class Stats {
         JSONArray languagesArray = obj.getJSONArray("languages");
         for (int i = 0; i < languagesArray.length(); i++)
             languages.add(new LoggedEntity(languagesArray.getJSONObject(i)));
+
+        editors = new ArrayList<>();
+        JSONArray editorsArray = obj.getJSONArray("editors");
+        for (int i = 0; i < editorsArray.length(); i++)
+            editors.add(new LoggedEntity(editorsArray.getJSONObject(i)));
     }
 
-    public static CardView createRangeProjectsSummary(Context context, LayoutInflater inflater, ViewGroup container, Stats stats) {
-        CardView card = (CardView) inflater.inflate(R.layout.stat_card, container, false);
-        final TextView title = (TextView) card.findViewById(R.id.statsCard_title);
-        title.setText(context.getString(R.string.projectsSummary));
-        final PieChart chart = (PieChart) card.findViewById(R.id.statsCard_chart);
-
-        chart.setDescription(null);
-        chart.setDrawEntryLabels(false);
-        chart.setRotationEnabled(false);
-        final Legend legend = chart.getLegend();
-        legend.setWordWrapEnabled(true);
-
-        List<PieEntry> entries = new ArrayList<>();
-        for (LoggedEntity project : stats.projects) {
-            entries.add(new PieEntry(project.percent, project.name + " (" + String.format(Locale.getDefault(), "%.2f", project.percent) + "%)"));
-        }
-
-        PieDataSet set = new PieDataSet(entries, null);
-        set.setValueTextSize(15);
-        set.setSliceSpace(2);
-        set.setValueTextColor(ContextCompat.getColor(context, android.R.color.white));
-        set.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                if (value < 10)
-                    return "";
-                else
-                    return String.format(Locale.getDefault(), "%.2f", value) + "%";
-            }
-        });
-        Utils.shuffleArray(Utils.COLORS);
-        set.setColors(Utils.COLORS, context);
-        PieData data = new PieData(set);
-        chart.setData(data);
-        chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                System.out.println("e = [" + e + "], h = [" + h + "]");
-            }
-
-            @Override
-            public void onNothingSelected() {
-                System.out.println("Stats.onNothingSelected");
-            }
-        });
+    @SuppressWarnings("deprecation")
+    public static CardView createSummaryCard(Context context, LayoutInflater inflater, ViewGroup parent, Stats stats) {
+        CardView card = (CardView) inflater.inflate(R.layout.summary_card, parent, false);
+        LinearLayout container = (LinearLayout) card.findViewById(R.id.summaryCard_container);
+        container.addView(CommonUtils.fastTextView(context, Html.fromHtml(
+                context.getString(R.string.totalTimeSpent, CommonUtils.timeFormatter(stats.total_seconds)))));
+        container.addView(CommonUtils.fastTextView(context, Html.fromHtml(
+                context.getString(R.string.dailyAverageTimeSpent, CommonUtils.timeFormatter(stats.daily_average)))));
 
         return card;
     }
 
-    public static CardView createRangeLanguagesSummary(Context context, LayoutInflater inflater, ViewGroup container, Stats stats) {
-        CardView card = (CardView) inflater.inflate(R.layout.stat_card, container, false);
+    public static CardView createPieChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
+        CardView card = (CardView) inflater.inflate(R.layout.stat_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.statsCard_title);
-        title.setText(context.getString(R.string.languagesSummary));
+        title.setText(titleRes);
         final PieChart chart = (PieChart) card.findViewById(R.id.statsCard_chart);
 
         chart.setDescription(null);
@@ -110,10 +81,9 @@ public class Stats {
         final Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
 
-        List<PieEntry> entries = new ArrayList<>();
-        for (LoggedEntity language : stats.languages) {
-            entries.add(new PieEntry(language.percent, language.name + " (" + String.format(Locale.getDefault(), "%.2f", language.percent) + "%)"));
-        }
+        final List<PieEntry> entries = new ArrayList<>();
+        for (LoggedEntity entity : entities)
+            entries.add(new PieEntry(entity.percent, entity.name + " (" + String.format(Locale.getDefault(), "%.2f", entity.percent) + "%)"));
 
         PieDataSet set = new PieDataSet(entries, null);
         set.setValueTextSize(15);
@@ -130,19 +100,7 @@ public class Stats {
         });
         Utils.shuffleArray(Utils.COLORS);
         set.setColors(Utils.COLORS, context);
-        PieData data = new PieData(set);
-        chart.setData(data);
-        chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                System.out.println("e = [" + e + "], h = [" + h + "]");
-            }
-
-            @Override
-            public void onNothingSelected() {
-                System.out.println("Stats.onNothingSelected");
-            }
-        });
+        chart.setData(new PieData(set));
 
         return card;
     }
@@ -164,20 +122,6 @@ public class Stats {
                     return "last_6_months";
                 case LAST_YEAR:
                     return "last_year";
-            }
-        }
-
-        public int getDaysNumber() {
-            switch (this) {
-                default:
-                case LAST_7_DAYS:
-                    return 7;
-                case LAST_30_DAYS:
-                    return 30;
-                case LAST_6_MONTHS:
-                    return 180;
-                case LAST_YEAR:
-                    return 365;
             }
         }
 

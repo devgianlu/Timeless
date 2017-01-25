@@ -10,8 +10,8 @@
     <string name="last_year">Last year</string>
     <string name="projectsSummary">Percentage of time spent in each project</string>
     <string name="languagesSummary">Percentage of time spent on each language</string>
-
-    <string name="title_activity_loading">LoadingActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="editorsSummary">Percentage of time spent on each editor</string>
+    <string name="totalTimeSpent"><![CDATA[<b>Total time spent:</b>]]> %s</string>
+    <string name="dailyAverageTimeSpent"><![CDATA[<b>Time spent daily on average:</b>]]> %s</string>
+    <string name="statsErrorMessage">Failed loading data. Pull to refresh or restart the application!</string>
 </resources>
