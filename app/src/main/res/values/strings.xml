@@ -15,4 +15,10 @@
     <string name="dailyAverageTimeSpent"><![CDATA[<b>Time spent daily on average:</b>]]> %s</string>
     <string name="statsErrorMessage">Failed loading data. Pull to refresh or restart the application!</string>
     <string name="bestDay"><![CDATA[<b>Best day of this period:</b>]]> %1$s (%2$s)</string>
+    <string name="openDrawer">Open drawer</string>
+    <string name="closeDrawer">Close drawer</string>
+    <string name="preferences">Preferences</string>
+    <string name="support">Support</string>
+    <string name="home">Home</string>
+    <string name="noUsername">Anonymous user</string>
 </resources>

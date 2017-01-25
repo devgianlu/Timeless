@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#4f5b69</color>
+    <color name="colorPrimary_ripple">#a44f5b69</color>
+    <color name="colorPrimary_shadow">#4d4f5b69</color>
+    <color name="colorPrimary_drawerSelected">#1a4f5b69</color>
     <color name="colorPrimaryDark">#29333a</color>
     <color name="colorAccent">#00acac</color>
 
@@ -23,4 +26,5 @@
     <color name="brown">#795548</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="text_default_material_dark">#b3ffffff</color>
 </resources>

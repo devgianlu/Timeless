@@ -3,11 +3,13 @@ package com.gianlu.timeless;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.NetIO.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.Timer;
@@ -55,19 +57,32 @@ public class LoadingActivity extends AppCompatActivity {
         WakaTime.getInstance().refreshToken(this, new WakaTime.IRefreshToken() {
             @Override
             public void onRefreshed() {
-                goTo(MainActivity.class);
+                WakaTime.getInstance().getCurrentUser(new WakaTime.IUser() {
+                    @Override
+                    public void onUser(User user) {
+                        goTo(MainActivity.class, user);
+                    }
+
+                    @Override
+                    public void onException(Exception ex) {
+                        CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                        finish();
+                    }
+                });
             }
 
             @Override
             public void onException(Exception ex) {
                 CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.CANT_REFRESH_TOKEN, ex);
-                goTo(GrantActivity.class);
+                goTo(GrantActivity.class, null);
             }
         });
     }
 
-    private void goTo(Class goTo) {
+    private void goTo(Class goTo, @Nullable User user) {
         Intent intent = new Intent(LoadingActivity.this, goTo).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (user != null)
+            intent.putExtra("user", user);
 
         if (finished) {
             timer.purge();

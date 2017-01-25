@@ -23,7 +23,6 @@
             android:src="@mipmap/ic_launcher" />
 
         <ProgressBar
-            android:id="@+id/loading_progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
