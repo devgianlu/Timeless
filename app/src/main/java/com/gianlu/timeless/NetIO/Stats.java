@@ -42,7 +42,7 @@ public class Stats {
     final long best_day;
     final long best_day_total;
 
-    public Stats(JSONObject obj) throws JSONException, ParseException {
+    Stats(JSONObject obj) throws JSONException, ParseException {
         total_seconds = obj.getLong("total_seconds");
         daily_average = obj.getLong("daily_average");
 
@@ -95,7 +95,8 @@ public class Stats {
 
         final List<PieEntry> entries = new ArrayList<>();
         for (LoggedEntity entity : entities)
-            entries.add(new PieEntry(entity.percent, entity.name + " (" + String.format(Locale.getDefault(), "%.2f", entity.percent) + "%)"));
+            if (entity.percent > .01f)
+                entries.add(new PieEntry(entity.percent, entity.name + " (" + String.format(Locale.getDefault(), "%.2f", entity.percent) + "%)"));
 
         PieDataSet set = new PieDataSet(entries, null);
         set.setValueTextSize(15);

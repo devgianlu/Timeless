@@ -34,6 +34,7 @@ public class Utils {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static class ToastMessages {
         public static final CommonUtils.ToastMessage CANT_CHECK_GRANT = new CommonUtils.ToastMessage("Failed checking permissions!", true);
         public static final CommonUtils.ToastMessage FAILED_REFRESHING = new CommonUtils.ToastMessage("Failed refreshing data.", true);
