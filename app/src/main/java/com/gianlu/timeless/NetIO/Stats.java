@@ -26,7 +26,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,8 +39,10 @@ public class Stats {
     public final List<LoggedEntity> editors;
     final long total_seconds;
     final long daily_average;
+    final long best_day;
+    final long best_day_total;
 
-    public Stats(JSONObject obj) throws JSONException {
+    public Stats(JSONObject obj) throws JSONException, ParseException {
         total_seconds = obj.getLong("total_seconds");
         daily_average = obj.getLong("daily_average");
 
@@ -55,6 +60,11 @@ public class Stats {
         JSONArray editorsArray = obj.getJSONArray("editors");
         for (int i = 0; i < editorsArray.length(); i++)
             editors.add(new LoggedEntity(editorsArray.getJSONObject(i)));
+
+        JSONObject bestDayObject = obj.getJSONObject("best_day");
+        SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        best_day = parser.parse(bestDayObject.getString("date")).getTime();
+        best_day_total = bestDayObject.getLong("total_seconds");
     }
 
     @SuppressWarnings("deprecation")
@@ -65,6 +75,8 @@ public class Stats {
                 context.getString(R.string.totalTimeSpent, CommonUtils.timeFormatter(stats.total_seconds)))));
         container.addView(CommonUtils.fastTextView(context, Html.fromHtml(
                 context.getString(R.string.dailyAverageTimeSpent, CommonUtils.timeFormatter(stats.daily_average)))));
+        container.addView(CommonUtils.fastTextView(context, Html.fromHtml(
+                context.getString(R.string.bestDay, Utils.dateFormatter.format(new Date(stats.best_day)), CommonUtils.timeFormatter(stats.best_day_total)))));
 
         return card;
     }

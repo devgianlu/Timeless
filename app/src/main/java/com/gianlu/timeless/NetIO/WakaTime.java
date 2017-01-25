@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.text.ParseException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -118,7 +119,7 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
                     handler.onException(ex);
                 }
             }

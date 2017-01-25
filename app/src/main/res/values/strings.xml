@@ -14,4 +14,5 @@
     <string name="totalTimeSpent"><![CDATA[<b>Total time spent:</b>]]> %s</string>
     <string name="dailyAverageTimeSpent"><![CDATA[<b>Time spent daily on average:</b>]]> %s</string>
     <string name="statsErrorMessage">Failed loading data. Pull to refresh or restart the application!</string>
+    <string name="bestDay"><![CDATA[<b>Best day of this period:</b>]]> %1$s (%2$s)</string>
 </resources>
