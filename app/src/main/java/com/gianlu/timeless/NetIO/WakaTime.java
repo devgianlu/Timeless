@@ -41,7 +41,7 @@ public class WakaTime {
                 .apiKey(APP_ID)
                 .apiSecret(APP_SECRET)
                 .callback(CALLBACK)
-                .scope("email,read_stats")
+                .scope("email,read_stats,read_logged_time,read_teams")
                 .state(lastState)
                 .build(new WakaTimeApi());
     }
@@ -53,44 +53,45 @@ public class WakaTime {
     }
 
     @Nullable
-    private static String loadAccessToken(Context context) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(context.openFileInput("token")))) {
-            return reader.readLine();
-        } catch (IOException ex) {
-            return null;
-        }
+    private static String loadRefreshToken(Context context) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(context.openFileInput("token")));
+        return reader.readLine();
     }
 
-    private static void saveAccessToken(Context context, String token) {
-        try (OutputStream out = context.openFileOutput("token", Context.MODE_PRIVATE)) {
-            out.write(token.getBytes());
-            out.flush();
-            out.close();
-        } catch (IOException ignored) {
-        }
+    private static void storeRefreshToken(Context context, OAuth2AccessToken token) throws IOException {
+        OutputStream out = context.openFileOutput("token", Context.MODE_PRIVATE);
+        out.write(token.getRefreshToken().getBytes());
+        out.flush();
     }
 
-    private void refreshTokenSync(Context context) throws InvalidTokenException, InterruptedException, ExecutionException, IOException {
-        if (token == null) {
-            String oldToken = loadAccessToken(context);
-            if (oldToken == null)
-                throw new InvalidTokenException();
+    public void refreshToken(final Context context, final IRefreshToken handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String refreshToken = loadRefreshToken(context);
+                    if (refreshToken == null)
+                        throw new InvalidTokenException();
 
-            token = service.refreshAccessToken(oldToken);
-            saveAccessToken(context, token.getRefreshToken());
-        }
+                    token = service.refreshAccessToken(refreshToken);
+                    storeRefreshToken(context, token);
+                    handler.onRefreshed();
+                } catch (IOException | InvalidTokenException | InterruptedException | ExecutionException ex) {
+                    handler.onException(ex);
+                }
+            }
+        }).start();
     }
 
     public String getAuthorizationUrl() {
         return service.getAuthorizationUrl();
     }
 
-    public void getCurrentUser(final Context context, final IUser handler) {
+    public void getCurrentUser(final IUser handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    refreshTokenSync(context);
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current");
 
                     if (response.getCode() == 200) {
@@ -98,19 +99,18 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
-                } catch (InvalidTokenException | InterruptedException | ExecutionException | IOException | JSONException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.onException(ex);
                 }
             }
         }).start();
     }
 
-    public void getStats(final Context context, final Stats.Range range, final IStats handler) {
+    public void getStats(final Stats.Range range, final IStats handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    refreshTokenSync(context);
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/stats/" + range.toValidFormat());
 
                     if (response.getCode() == 200) {
@@ -118,7 +118,7 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
-                } catch (InvalidTokenException | InterruptedException | ExecutionException | IOException | JSONException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.onException(ex);
                 }
             }
@@ -139,7 +139,7 @@ public class WakaTime {
                 if (Objects.equals(auth.getState(), lastState)) {
                     try {
                         token = service.getAccessToken(auth.getCode());
-                        saveAccessToken(context, token.getRefreshToken());
+                        storeRefreshToken(context, token);
                         handler.onTokenAccepted();
                     } catch (InterruptedException | ExecutionException | IOException ex) {
                         handler.onException(ex);
@@ -149,6 +149,12 @@ public class WakaTime {
                 }
             }
         }).start();
+    }
+
+    public interface IRefreshToken {
+        void onRefreshed();
+
+        void onException(Exception ex);
     }
 
     public interface IStats {

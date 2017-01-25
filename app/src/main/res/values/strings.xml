@@ -8,4 +8,10 @@
     <string name="last_30_days">Last 30 days</string>
     <string name="last_6_months">Last 6 months</string>
     <string name="last_year">Last year</string>
+    <string name="projectsSummary">Percentage of time spent in each project</string>
+    <string name="languagesSummary">Percentage of time spent on each language</string>
+
+    <string name="title_activity_loading">LoadingActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
