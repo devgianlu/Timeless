@@ -53,12 +53,11 @@
             android:layout_width="match_parent"
             android:layout_height="156dp">
 
-            <!-- TODO: Drawer background -->
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@drawable/drawer_background" />
 
             <com.gianlu.timeless.LetterIcon
                 android:id="@+id/mainDrawerHeader_currentAccount"
