@@ -1,7 +1,9 @@
 package com.gianlu.timeless;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -52,7 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onLogOut() {
-                        // TODO: Logout
+                        deleteFile("token");
+                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("firstRun", true).apply();
+                        startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        finish();
                     }
                 });
 

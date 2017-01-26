@@ -21,4 +21,9 @@
     <string name="support">Support</string>
     <string name="home">Home</string>
     <string name="noUsername">Anonymous user</string>
+    <string name="commits">Commits</string>
+    <string name="durations">Durations</string>
+    <string name="projects">Projects</string>
+    <string name="leaderboards">Leaderboards</string>
+    <string name="summaries">Summaries</string>
 </resources>

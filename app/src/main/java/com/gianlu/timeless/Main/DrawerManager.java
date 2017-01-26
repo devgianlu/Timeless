@@ -106,6 +106,7 @@ public class DrawerManager {
         return view;
     }
 
+    // TODO: Change icons
     public DrawerManager buildMenu() {
         drawerList.removeAllViews();
 
@@ -118,6 +119,56 @@ public class DrawerManager {
             }
         });
         drawerList.addView(home, 0);
+
+        View commits = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.commits), false);
+        commits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.COMMITS));
+            }
+        });
+        drawerList.addView(commits, 1);
+
+        View durations = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.durations), false);
+        durations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.DURATIONS));
+            }
+        });
+        drawerList.addView(durations, 2);
+
+        View projects = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.projects), false);
+        projects.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.PROJECTS));
+            }
+        });
+        drawerList.addView(projects, 3);
+
+        View summaries = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.summaries), false);
+        projects.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.SUMMARIES));
+            }
+        });
+        drawerList.addView(summaries, 4);
+
+        View leaders = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.leaderboards), false);
+        leaders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.LEADERS));
+            }
+        });
+        drawerList.addView(leaders, 5);
 
         // Footer group
         drawerFooterList.removeAllViews();
@@ -153,7 +204,7 @@ public class DrawerManager {
     public enum DrawerListItems {
         HOME,
         PREFERENCES,
-        SUPPORT
+        COMMITS, DURATIONS, PROJECTS, SUMMARIES, LEADERS, SUPPORT
     }
 
     public interface IDrawerListener {
