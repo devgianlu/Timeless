@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Main.DrawerManager;
 import com.gianlu.timeless.Main.PagerAdapter;
 import com.gianlu.timeless.Main.StatsFragment;
@@ -19,6 +20,7 @@ import com.gianlu.timeless.NetIO.Stats;
 import com.gianlu.timeless.NetIO.User;
 
 public class MainActivity extends AppCompatActivity {
+    private static User user;
     private DrawerManager drawerManager;
 
     @Override
@@ -31,9 +33,12 @@ public class MainActivity extends AppCompatActivity {
         final ViewPager pager = (ViewPager) findViewById(R.id.main_pager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tabs);
 
+        if (user == null)
+            user = (User) getIntent().getSerializableExtra("user");
+
         drawerManager = new DrawerManager(this, (DrawerLayout) findViewById(R.id.main_drawer))
                 .setToolbar(toolbar)
-                .setUser((User) getIntent().getSerializableExtra("user"))
+                .setUser(user)
                 .buildMenu()
                 .setDrawerListener(new DrawerManager.IDrawerListener() {
                     @Override
@@ -41,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
                         switch (which) {
                             case HOME:
                                 return true;
+                            case COMMITS:
+                                startActivity(new Intent(MainActivity.this, CommitsActivity.class));
+                                return false;
                             case PREFERENCES:
                                 // TODO: Preferences
                                 return false;

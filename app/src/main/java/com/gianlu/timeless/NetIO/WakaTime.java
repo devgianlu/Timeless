@@ -14,6 +14,7 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,6 +25,8 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -107,6 +110,58 @@ public class WakaTime {
         }).start();
     }
 
+    public void getProjects(final IProjects handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects");
+
+                    if (response.getCode() == 200) {
+                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
+                        List<Project> projects = new ArrayList<>();
+                        for (int i = 0; i < projectsArray.length(); i++)
+                            projects.add(new Project(projectsArray.getJSONObject(i)));
+
+                        handler.onProjects(projects);
+                    } else {
+                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                    }
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                    handler.onException(ex);
+                }
+            }
+        }).start();
+    }
+
+    public void getCommits(final Project project, final ICommits handler) {
+        getCommits(project, 1, handler);
+    }
+
+    public void getCommits(final Project project, final int page, final ICommits handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects/" + project.id + "/commits?page=" + page);
+
+                    if (response.getCode() == 200) {
+                        JSONArray commitsArray = new JSONObject(response.getBody()).getJSONArray("commits");
+                        List<Commit> commits = new ArrayList<>();
+                        for (int i = 0; i < commitsArray.length(); i++)
+                            commits.add(new Commit(commitsArray.getJSONObject(i)));
+
+                        handler.onCommits(commits);
+                    } else {
+                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                    }
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                    handler.onException(ex);
+                }
+            }
+        }).start();
+    }
+
     public void getStats(final Stats.Range range, final IStats handler) {
         new Thread(new Runnable() {
             @Override
@@ -150,6 +205,18 @@ public class WakaTime {
                 }
             }
         }).start();
+    }
+
+    public interface IProjects {
+        void onProjects(List<Project> projects);
+
+        void onException(Exception ex);
+    }
+
+    public interface ICommits {
+        void onCommits(List<Commit> commits);
+
+        void onException(Exception ex);
     }
 
     public interface IRefreshToken {

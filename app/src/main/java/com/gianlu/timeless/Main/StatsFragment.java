@@ -88,6 +88,7 @@ public class StatsFragment extends Fragment {
                 CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                     @Override
                     public void run() {
+                        loading.setVisibility(View.GONE);
                         error.setVisibility(View.VISIBLE);
                     }
                 });
