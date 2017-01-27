@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gianlu.timeless.LetterIcon;
-import com.gianlu.timeless.NetIO.User;
+import com.gianlu.timeless.Objects.User;
 import com.gianlu.timeless.R;
 
 public class DrawerManager {

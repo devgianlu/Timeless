@@ -11,7 +11,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.gianlu.timeless.NetIO.User;
+import com.gianlu.timeless.Objects.User;
 
 public class LetterIcon extends View {
     private final Rect lettersBounds = new Rect();

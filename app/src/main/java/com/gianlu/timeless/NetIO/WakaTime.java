@@ -2,7 +2,12 @@ package com.gianlu.timeless.NetIO;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
+import com.gianlu.timeless.Objects.Commits;
+import com.gianlu.timeless.Objects.Project;
+import com.gianlu.timeless.Objects.Summary;
+import com.gianlu.timeless.Objects.User;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
@@ -25,8 +30,11 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -157,15 +165,26 @@ public class WakaTime {
         }).start();
     }
 
-    public void getStats(final Stats.Range range, final IStats handler) {
+    public void getRangeSummary(Pair<Date, Date> startAndEnd, final ISummary handler) {
+        getRangeSummary(startAndEnd.first, startAndEnd.second, handler);
+    }
+
+    public void getRangeSummary(final Date start, final Date end, final ISummary handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/stats/" + range.toValidFormat());
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/summaries?start="
+                            + formatter.format(start)
+                            + "&end="
+                            + formatter.format(end));
 
                     if (response.getCode() == 200) {
-                        handler.onStats(new Stats(new JSONObject(response.getBody()).getJSONObject("data")));
+                        List<Summary> summaries = Summary.fromJSON(response.getBody());
+                        handler.onSummary(Summary.createRangeSummary(summaries), summaries);
+                    } else if (response.getCode() == 400) {
+                        handler.onException(new StatusCodeException(response.getBody()));
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
@@ -202,6 +221,12 @@ public class WakaTime {
         }).start();
     }
 
+    public interface ISummary {
+        void onSummary(Summary summary, List<Summary> summaries);
+
+        void onException(Exception ex);
+    }
+
     public interface IProjects {
         void onProjects(List<Project> projects);
 
@@ -220,11 +245,6 @@ public class WakaTime {
         void onException(Exception ex);
     }
 
-    public interface IStats {
-        void onStats(Stats stats);
-
-        void onException(Exception ex);
-    }
     public interface IUser {
         void onUser(User user);
 

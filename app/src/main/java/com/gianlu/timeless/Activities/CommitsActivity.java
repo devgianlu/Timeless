@@ -8,8 +8,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.gianlu.timeless.NetIO.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
 
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public class CommitsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commits);
+        setTitle(R.string.commits);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.commits_toolbar);
         setSupportActionBar(toolbar);

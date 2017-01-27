@@ -14,10 +14,9 @@ import android.support.v7.widget.Toolbar;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Main.DrawerManager;
+import com.gianlu.timeless.Main.MainFragment;
 import com.gianlu.timeless.Main.PagerAdapter;
-import com.gianlu.timeless.Main.StatsFragment;
-import com.gianlu.timeless.NetIO.Stats;
-import com.gianlu.timeless.NetIO.User;
+import com.gianlu.timeless.Objects.User;
 
 public class MainActivity extends AppCompatActivity {
     private static User user;
@@ -70,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
-                StatsFragment.getInstance(this, Stats.Range.LAST_7_DAYS),
-                StatsFragment.getInstance(this, Stats.Range.LAST_30_DAYS)));
+                MainFragment.getInstance(this, MainFragment.Range.LAST_7_DAYS),
+                MainFragment.getInstance(this, MainFragment.Range.LAST_30_DAYS)));
 
         tabLayout.setupWithViewPager(pager);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

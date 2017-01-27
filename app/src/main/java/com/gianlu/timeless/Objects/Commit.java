@@ -1,4 +1,4 @@
-package com.gianlu.timeless.NetIO;
+package com.gianlu.timeless.Objects;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,5 +9,9 @@ public class Commit {
 
     public Commit(JSONObject obj) throws JSONException {
         message = obj.getString("message");
+    }
+
+    public String getAuthor() {
+        return "Someone";
     }
 }

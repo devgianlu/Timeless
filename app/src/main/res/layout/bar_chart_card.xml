@@ -19,15 +19,15 @@
         android:paddingTop="24dp">
 
         <TextView
-            android:id="@+id/statsCard_title"
+            android:id="@+id/barChartCard_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="16dp"
             android:textColor="@android:color/black"
             android:textSize="24sp" />
 
-        <com.gianlu.timeless.SquarePieChart
-            android:id="@+id/statsCard_chart"
+        <com.gianlu.timeless.SquareBarChart
+            android:id="@+id/barChartCard_chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

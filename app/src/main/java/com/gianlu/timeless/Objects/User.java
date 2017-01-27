@@ -1,4 +1,4 @@
-package com.gianlu.timeless.NetIO;
+package com.gianlu.timeless.Objects;
 
 import android.support.annotation.Nullable;
 
@@ -27,7 +27,7 @@ public class User implements Serializable {
     final long created_at;
     final long modified_at;
 
-    User(JSONObject obj) throws JSONException {
+    public User(JSONObject obj) throws JSONException {
         id = obj.getString("id");
         email = obj.getString("email");
         timezone = obj.getString("timezone");

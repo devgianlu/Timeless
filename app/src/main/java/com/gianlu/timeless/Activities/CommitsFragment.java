@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gianlu.timeless.NetIO.Commits;
-import com.gianlu.timeless.NetIO.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.Objects.Commits;
+import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 

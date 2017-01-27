@@ -26,4 +26,6 @@
     <string name="projects">Projects</string>
     <string name="leaderboards">Leaderboards</string>
     <string name="summaries">Summaries</string>
+    <string name="operatingSystemsSummary">Percentage of time spent on each operating system</string>
+    <string name="periodActivity">Activity in this period</string>
 </resources>

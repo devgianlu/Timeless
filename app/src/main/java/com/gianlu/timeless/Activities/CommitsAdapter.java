@@ -9,9 +9,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.NetIO.Commit;
-import com.gianlu.timeless.NetIO.Commits;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.Objects.Commit;
+import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
@@ -60,7 +60,6 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 }
                             });
                             updating = false;
-
                         }
                     });
                 }
@@ -87,6 +86,7 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Commit commit = commits.commits.get(position);
             ItemViewHolder castHolder = (ItemViewHolder) holder;
             castHolder.message.setText(commit.message);
+            castHolder.author.setText(commit.getAuthor());
         }
     }
 

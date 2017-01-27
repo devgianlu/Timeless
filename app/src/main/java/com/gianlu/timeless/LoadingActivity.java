@@ -9,8 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.NetIO.User;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.Objects.User;
 
 import java.util.Timer;
 import java.util.TimerTask;
