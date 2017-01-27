@@ -146,12 +146,7 @@ public class WakaTime {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects/" + project.id + "/commits?page=" + page);
 
                     if (response.getCode() == 200) {
-                        JSONArray commitsArray = new JSONObject(response.getBody()).getJSONArray("commits");
-                        List<Commit> commits = new ArrayList<>();
-                        for (int i = 0; i < commitsArray.length(); i++)
-                            commits.add(new Commit(commitsArray.getJSONObject(i)));
-
-                        handler.onCommits(commits);
+                        handler.onCommits(new Commits(new JSONObject(response.getBody())));
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
@@ -214,7 +209,7 @@ public class WakaTime {
     }
 
     public interface ICommits {
-        void onCommits(List<Commit> commits);
+        void onCommits(Commits commits);
 
         void onException(Exception ex);
     }

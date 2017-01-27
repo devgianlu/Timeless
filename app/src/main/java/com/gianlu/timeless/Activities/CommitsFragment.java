@@ -10,15 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gianlu.timeless.NetIO.Commit;
+import com.gianlu.timeless.NetIO.Commits;
 import com.gianlu.timeless.NetIO.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
-import java.util.List;
-
-// TODO: Load more on bottom of list reached
 public class CommitsFragment extends Fragment {
     public static CommitsFragment getInstance(Project project) {
         CommitsFragment fragment = new CommitsFragment();
@@ -43,8 +40,13 @@ public class CommitsFragment extends Fragment {
             public void onRefresh() {
                 WakaTime.getInstance().getCommits((Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
                     @Override
-                    public void onCommits(List<Commit> commits) {
-                        list.setAdapter(new CommitsAdapter(getContext(), commits));
+                    public void onCommits(final Commits commits) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.setAdapter(new CommitsAdapter(getActivity(), list, commits));
+                            }
+                        });
                     }
 
                     @Override
@@ -57,11 +59,11 @@ public class CommitsFragment extends Fragment {
 
         WakaTime.getInstance().getCommits((Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
             @Override
-            public void onCommits(final List<Commit> commits) {
+            public void onCommits(final Commits commits) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        list.setAdapter(new CommitsAdapter(getContext(), commits));
+                        list.setAdapter(new CommitsAdapter(getActivity(), list, commits));
                     }
                 });
             }
