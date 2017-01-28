@@ -44,8 +44,8 @@ public class WakaTime {
     private static final String CALLBACK = "timeless://grantActivity/";
     private static WakaTime instance;
     private final OAuth20Service service;
+    private final String lastState;
     private OAuth2AccessToken token;
-    private String lastState;
 
     private WakaTime() {
         lastState = new BigInteger(130, new SecureRandom()).toString(32);
@@ -169,7 +169,7 @@ public class WakaTime {
         getRangeSummary(startAndEnd.first, startAndEnd.second, handler);
     }
 
-    public void getRangeSummary(final Date start, final Date end, final ISummary handler) {
+    private void getRangeSummary(final Date start, final Date end, final ISummary handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {

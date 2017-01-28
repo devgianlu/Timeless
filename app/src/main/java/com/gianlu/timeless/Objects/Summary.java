@@ -99,7 +99,7 @@ public class Summary {
         return summaries;
     }
 
-    public static Summary createRangeSummary(List<Summary> summaries) throws JSONException {
+    public static Summary createRangeSummary(List<Summary> summaries) {
         Summary rangeSummary = new Summary();
 
         for (Summary summary : summaries) {

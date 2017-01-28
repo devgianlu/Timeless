@@ -18,7 +18,7 @@ import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
-public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_LOADING = 0;
     private static final int TYPE_ITEM = 1;
     private final Commits commits;
@@ -26,7 +26,7 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final Context context;
     private boolean updating;
 
-    public CommitsAdapter(final Activity context, RecyclerView list, final Commits commits) {
+    CommitsAdapter(final Activity context, RecyclerView list, final Commits commits) {
         this.commits = commits;
         this.context = context;
 
@@ -106,11 +106,11 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return commits.commits.size();
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
-        public final TextView author;
-        public final TextView message;
+    private class ItemViewHolder extends RecyclerView.ViewHolder {
+        final TextView author;
+        final TextView message;
 
-        public ItemViewHolder(View itemView) {
+        ItemViewHolder(View itemView) {
             super(itemView);
 
             author = (TextView) itemView.findViewById(R.id.commit_author);
@@ -118,10 +118,10 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public class LoadingViewHolder extends RecyclerView.ViewHolder {
-        public final ProgressBar loading;
+    private class LoadingViewHolder extends RecyclerView.ViewHolder {
+        final ProgressBar loading;
 
-        public LoadingViewHolder(View itemView) {
+        LoadingViewHolder(View itemView) {
             super(itemView);
 
             loading = (ProgressBar) ((ViewGroup) itemView).getChildAt(0);
