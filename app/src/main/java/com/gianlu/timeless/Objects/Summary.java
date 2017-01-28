@@ -17,7 +17,7 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -37,9 +37,10 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class Summary {
     private static final SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -117,7 +118,7 @@ public class Summary {
         return card;
     }
 
-    // TODO: Not working
+    // FIXME: Sum is a bit high
     public static CardView createProjectsBarChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<Summary> summaries) {
         CardView card = (CardView) inflater.inflate(R.layout.bar_chart_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.barChartCard_title);
@@ -126,18 +127,12 @@ public class Summary {
         final BarChart chart = (BarChart) card.findViewById(R.id.barChartCard_chart);
         chart.setDescription(null);
         chart.setTouchEnabled(false);
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setLabelCount(4);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return Utils.dateFormatter.format(new Date((long) value));
-            }
-        });
 
+        chart.getXAxis().setEnabled(false);
         chart.getAxisRight().setEnabled(false);
         YAxis yAxis = chart.getAxisLeft();
         yAxis.setAxisMinimum(0f);
+        yAxis.setLabelCount(4);
         yAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -149,14 +144,44 @@ public class Summary {
         legend.setWordWrapEnabled(true);
 
         final List<BarEntry> entries = new ArrayList<>();
-        for (Summary summary : summaries)
-            entries.add(new BarEntry(summary.date, LoggedEntity.secondsToFloatArray(summary.projects)));
+        final Map<String, Integer> colorsMap = new HashMap<>();
+        final List<Integer> colors = new ArrayList<>();
+        Utils.shuffleArray(Utils.COLORS);
+        int colorCount = 0;
+        for (int i = 0; i < summaries.size(); i++) {
+            Summary summary = summaries.get(i);
+            float[] array = new float[summary.projects.size()];
+
+            for (int j = 0; j < summary.projects.size(); j++) {
+                LoggedEntity entity = summary.projects.get(j);
+                if (colorsMap.containsKey(entity.name)) {
+                    colors.add(colorsMap.get(entity.name));
+                } else {
+                    int color = ContextCompat.getColor(context, Utils.COLORS[colorCount]);
+                    colors.add(color);
+                    colorsMap.put(entity.name, color);
+
+                    colorCount++;
+                }
+
+                array[j] = summary.projects.get(j).total_seconds;
+            }
+
+            entries.add(new BarEntry(i, array));
+        }
+
+        List<LegendEntry> legendEntries = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : colorsMap.entrySet()) {
+            LegendEntry legendEntry = new LegendEntry();
+            legendEntry.label = entry.getKey();
+            legendEntry.formColor = entry.getValue();
+            legendEntries.add(legendEntry);
+        }
+        legend.setCustom(legendEntries);
 
         BarDataSet set = new BarDataSet(entries, null);
-        set.setStackLabels(new String[]{"Births", "Divorces", "Marriages"});
         set.setDrawValues(false);
-        Utils.shuffleArray(Utils.COLORS);
-        set.setColors(Utils.COLORS, context);
+        set.setColors(colors);
 
         chart.setData(new BarData(set));
         chart.setFitBars(true);

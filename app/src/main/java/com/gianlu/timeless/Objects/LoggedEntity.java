@@ -23,15 +23,6 @@ public class LoggedEntity {
                 parents.add(child);
     }
 
-    public static float[] secondsToFloatArray(List<LoggedEntity> entities) {
-        float[] array = new float[entities.size()];
-
-        for (int i = 0; i < entities.size(); i++)
-            array[i] = entities.get(i).total_seconds;
-
-        return array;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof LoggedEntity) {
