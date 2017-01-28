@@ -15,8 +15,11 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -24,6 +27,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -38,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class Summary {
     private static final SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -112,10 +117,11 @@ public class Summary {
         CardView card = (CardView) inflater.inflate(R.layout.summary_card, parent, false);
         LinearLayout container = (LinearLayout) card.findViewById(R.id.summaryCard_container);
         container.addView(CommonUtils.fastTextView(context, Html.fromHtml(context.getString(R.string.totalTimeSpent, CommonUtils.timeFormatter(summary.total_seconds)))));
+
         return card;
     }
 
-    public static CardView createProjectsBarChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<Summary> summaries) {
+    public static CardView createProjectsBarChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, final List<Summary> summaries) {
         CardView card = (CardView) inflater.inflate(R.layout.bar_chart_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.barChartCard_title);
         title.setText(titleRes);
@@ -124,9 +130,25 @@ public class Summary {
         chart.setDescription(null);
         chart.setTouchEnabled(false);
 
-        chart.getXAxis().setEnabled(false);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.valueOf((int) (value - summaries.size() + 1));
+            }
+        });
+
         chart.getAxisRight().setEnabled(false);
-        chart.getAxisLeft().setEnabled(false);
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setEnabled(true);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.format(Locale.getDefault(), "%dh", TimeUnit.SECONDS.toHours((long) value));
+            }
+        });
 
         final Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
@@ -134,6 +156,7 @@ public class Summary {
         final List<BarEntry> entries = new ArrayList<>();
         final Map<String, Integer> colorsMap = new HashMap<>();
         final List<Integer> colors = new ArrayList<>();
+        List<LegendEntry> legendEntries = new ArrayList<>();
         int colorCount = 0;
         for (int i = 0; i < summaries.size(); i++) {
             Summary summary = summaries.get(i);
@@ -148,6 +171,11 @@ public class Summary {
                     colors.add(color);
                     colorsMap.put(entity.name, color);
 
+                    LegendEntry legendEntry = new LegendEntry();
+                    legendEntry.label = entity.name;
+                    legendEntry.formColor = color;
+                    legendEntries.add(legendEntry);
+
                     colorCount++;
                 }
 
@@ -155,14 +183,6 @@ public class Summary {
             }
 
             entries.add(new BarEntry(i, array));
-        }
-
-        List<LegendEntry> legendEntries = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : colorsMap.entrySet()) {
-            LegendEntry legendEntry = new LegendEntry();
-            legendEntry.label = entry.getKey();
-            legendEntry.formColor = entry.getValue();
-            legendEntries.add(legendEntry);
         }
         legend.setCustom(legendEntries);
 
