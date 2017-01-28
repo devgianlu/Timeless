@@ -53,7 +53,7 @@ public class MainFragment extends Fragment {
             public void onRefresh() {
                 WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
                     @Override
-                    public void onSummary(final Summary summary, final List<Summary> summaries) {
+                    public void onSummary(final List<Summary> summaries, final Summary summary) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -86,7 +86,7 @@ public class MainFragment extends Fragment {
 
         WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
             @Override
-            public void onSummary(final Summary summary, final List<Summary> summaries) {
+            public void onSummary(final List<Summary> summaries, final Summary summary) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

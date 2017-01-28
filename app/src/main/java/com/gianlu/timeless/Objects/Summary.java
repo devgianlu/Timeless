@@ -96,7 +96,8 @@ public class Summary {
         return summaries;
     }
 
-    public static Summary createRangeSummary(List<Summary> summaries) throws JSONException {
+    public static Summary createRangeSummary(List<Summary> summariesIn) throws JSONException {
+        List<Summary> summaries = new ArrayList<>(summariesIn);
         Summary rangeSummary = new Summary();
 
         for (Summary summary : summaries) {
@@ -161,7 +162,7 @@ public class Summary {
                     colors.add(color);
                     colorsMap.put(entity.name, color);
 
-                    colorCount++;
+                    colorCount++; // TODO: What if reaches the end of the array?
                 }
 
                 array[j] = summary.projects.get(j).total_seconds;

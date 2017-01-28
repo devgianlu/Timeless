@@ -182,7 +182,7 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         List<Summary> summaries = Summary.fromJSON(response.getBody());
-                        handler.onSummary(Summary.createRangeSummary(summaries), summaries);
+                        handler.onSummary(summaries, Summary.createRangeSummary(summaries));
                     } else if (response.getCode() == 400) {
                         handler.onException(new StatusCodeException(response.getBody()));
                     } else {
@@ -222,7 +222,7 @@ public class WakaTime {
     }
 
     public interface ISummary {
-        void onSummary(Summary summary, List<Summary> summaries);
+        void onSummary(List<Summary> summary, Summary summaries);
 
         void onException(Exception ex);
     }
