@@ -30,7 +30,7 @@ public class CommitsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.commits_fragment, container, false);
-        layout.setColorSchemeResources(Utils.COLORS);
+        layout.setColorSchemeResources(Utils.getColors());
 
         final RecyclerView list = (RecyclerView) layout.findViewById(R.id.commitsFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));

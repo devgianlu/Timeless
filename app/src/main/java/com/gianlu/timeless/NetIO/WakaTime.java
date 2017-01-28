@@ -181,8 +181,8 @@ public class WakaTime {
                             + formatter.format(end));
 
                     if (response.getCode() == 200) {
-                        List<Summary> summaries = Summary.fromJSON(response.getBody());
-                        handler.onSummary(summaries, Summary.createRangeSummary(summaries));
+                        handler.onSummary(Summary.fromJSON(response.getBody()),
+                                Summary.createRangeSummary(Summary.fromJSON(response.getBody())));
                     } else if (response.getCode() == 400) {
                         handler.onException(new StatusCodeException(response.getBody()));
                     } else {

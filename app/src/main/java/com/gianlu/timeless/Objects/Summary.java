@@ -15,10 +15,8 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -26,7 +24,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -96,8 +93,7 @@ public class Summary {
         return summaries;
     }
 
-    public static Summary createRangeSummary(List<Summary> summariesIn) throws JSONException {
-        List<Summary> summaries = new ArrayList<>(summariesIn);
+    public static Summary createRangeSummary(List<Summary> summaries) throws JSONException {
         Summary rangeSummary = new Summary();
 
         for (Summary summary : summaries) {
@@ -119,7 +115,6 @@ public class Summary {
         return card;
     }
 
-    // FIXME: Sum is a bit high
     public static CardView createProjectsBarChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<Summary> summaries) {
         CardView card = (CardView) inflater.inflate(R.layout.bar_chart_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.barChartCard_title);
@@ -131,15 +126,7 @@ public class Summary {
 
         chart.getXAxis().setEnabled(false);
         chart.getAxisRight().setEnabled(false);
-        YAxis yAxis = chart.getAxisLeft();
-        yAxis.setAxisMinimum(0f);
-        yAxis.setLabelCount(4);
-        yAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return CommonUtils.timeFormatter((long) value);
-            }
-        });
+        chart.getAxisLeft().setEnabled(false);
 
         final Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
@@ -147,7 +134,6 @@ public class Summary {
         final List<BarEntry> entries = new ArrayList<>();
         final Map<String, Integer> colorsMap = new HashMap<>();
         final List<Integer> colors = new ArrayList<>();
-        Utils.shuffleArray(Utils.COLORS);
         int colorCount = 0;
         for (int i = 0; i < summaries.size(); i++) {
             Summary summary = summaries.get(i);
@@ -158,11 +144,11 @@ public class Summary {
                 if (colorsMap.containsKey(entity.name)) {
                     colors.add(colorsMap.get(entity.name));
                 } else {
-                    int color = ContextCompat.getColor(context, Utils.COLORS[colorCount]);
+                    int color = ContextCompat.getColor(context, Utils.getColor(colorCount));
                     colors.add(color);
                     colorsMap.put(entity.name, color);
 
-                    colorCount++; // TODO: What if reaches the end of the array?
+                    colorCount++;
                 }
 
                 array[j] = summary.projects.get(j).total_seconds;
@@ -221,8 +207,7 @@ public class Summary {
                     return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
-        Utils.shuffleArray(Utils.COLORS);
-        set.setColors(Utils.COLORS, context);
+        set.setColors(Utils.getColors(), context);
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
         return card;

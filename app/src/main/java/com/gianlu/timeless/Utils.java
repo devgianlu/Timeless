@@ -4,13 +4,25 @@ import com.gianlu.commonutils.CommonUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
-    public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-    public static final int[] COLORS = new int[]{R.color.red, R.color.pink, R.color.purple, R.color.deepPurple, R.color.indigo, R.color.blue, R.color.lightBlue, R.color.cyan, R.color.teal, R.color.green, R.color.lightGreen, R.color.lime, R.color.yellow, R.color.amber, R.color.orange, R.color.deepOrange, R.color.brown};
+    private static final int[] COLORS = new int[]{R.color.red, R.color.pink, R.color.purple, R.color.deepPurple, R.color.indigo, R.color.blue, R.color.lightBlue, R.color.cyan, R.color.teal, R.color.green, R.color.lightGreen, R.color.lime, R.color.yellow, R.color.amber, R.color.orange, R.color.deepOrange, R.color.brown};
+
+    public static int getColor(int pos) {
+        int i = pos;
+        while (i > COLORS.length)
+            i = i - COLORS.length;
+
+        return COLORS[i];
+    }
+
+    public static int[] getColors() {
+        shuffleArray(COLORS);
+        return COLORS;
+    }
+
 
     public static long parseWithCallback(SimpleDateFormat parser, String string, long callback) {
         if (string != null) {
