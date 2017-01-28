@@ -1,6 +1,9 @@
 package com.gianlu.timeless.Activities;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +23,12 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_ITEM = 1;
     private final Commits commits;
     private final LayoutInflater inflater;
+    private final Context context;
     private boolean updating;
 
     public CommitsAdapter(final Activity context, RecyclerView list, final Commits commits) {
         this.commits = commits;
+        this.context = context;
 
         inflater = LayoutInflater.from(context);
 
@@ -83,10 +88,16 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHolder) {
-            Commit commit = commits.commits.get(position);
+            final Commit commit = commits.commits.get(position);
             ItemViewHolder castHolder = (ItemViewHolder) holder;
             castHolder.message.setText(commit.message);
             castHolder.author.setText(commit.getAuthor());
+            castHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url)));
+                }
+            });
         }
     }
 

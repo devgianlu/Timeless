@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -184,6 +185,7 @@ public class Summary {
 
             entries.add(new BarEntry(i, array));
         }
+        Collections.reverse(legendEntries);
         legend.setCustom(legendEntries);
 
         BarDataSet set = new BarDataSet(entries, null);
@@ -196,7 +198,7 @@ public class Summary {
         return card;
     }
 
-    // TODO: Small LoggedEntity issue
+    // FIXME: Small LoggedEntity issue
     public static CardView createPieChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
         CardView card = (CardView) inflater.inflate(R.layout.pie_chart_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.pieChartCard_title);

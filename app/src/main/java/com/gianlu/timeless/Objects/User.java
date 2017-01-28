@@ -1,7 +1,5 @@
 package com.gianlu.timeless.Objects;
 
-import android.support.annotation.Nullable;
-
 import com.gianlu.timeless.Utils;
 
 import org.json.JSONException;
@@ -10,7 +8,6 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.Objects;
 
 public class User implements Serializable {
     public final String email;
@@ -34,8 +31,8 @@ public class User implements Serializable {
         last_plugin = obj.getString("last_plugin");
         last_project = obj.getString("last_project");
         plan = obj.getString("plan");
-        username = parseStupidNullJSON(obj, "username");
-        full_name = parseStupidNullJSON(obj, "full_name");
+        username = Utils.parseStupidNullJSON(obj, "username");
+        full_name = Utils.parseStupidNullJSON(obj, "full_name");
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
         last_heartbeat = Utils.parseWithCallback(formatter, obj.getString("last_heartbeat"), -1);
@@ -46,15 +43,7 @@ public class User implements Serializable {
         photo_public = obj.getBoolean("photo_public");
     }
 
-    @Nullable
-    private static String parseStupidNullJSON(JSONObject obj, String name) throws JSONException {
-        String value = obj.getString(name);
 
-        if (Objects.equals(value, "null"))
-            return null;
-        else
-            return value;
-    }
 
     public String getInitials() {
         if (username == null && email == null && full_name == null)

@@ -44,7 +44,8 @@ public class MainFragment extends Fragment {
         final Range range = (Range) getArguments().getSerializable("range");
 
         if (range == null) {
-            // TODO
+            loading.setEnabled(false);
+            error.setVisibility(View.VISIBLE);
             return layout;
         }
 

@@ -54,12 +54,14 @@ public class CommitsActivity extends AppCompatActivity {
             @Override
             public void onProjects(List<Project> projects) {
                 for (Project project : projects)
-                    fragments.add(CommitsFragment.getInstance(project));
+                    if (project.hasRepository)
+                        fragments.add(CommitsFragment.getInstance(project));
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
+                        pager.setOffscreenPageLimit(fragments.size());
                     }
                 });
             }

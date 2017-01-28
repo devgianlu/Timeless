@@ -1,9 +1,15 @@
 package com.gianlu.timeless;
 
+import android.support.annotation.Nullable;
+
 import com.gianlu.commonutils.CommonUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -16,6 +22,16 @@ public class Utils {
             i = i - COLORS.length;
 
         return COLORS[i];
+    }
+
+    @Nullable
+    public static String parseStupidNullJSON(JSONObject obj, String name) throws JSONException {
+        String value = obj.getString(name);
+
+        if (Objects.equals(value, "null"))
+            return null;
+        else
+            return value;
     }
 
     public static int[] getColors() {
