@@ -106,7 +106,6 @@ public class DrawerManager {
         return view;
     }
 
-    // TODO: Change icons
     public DrawerManager buildMenu() {
         drawerList.removeAllViews();
 
@@ -120,7 +119,7 @@ public class DrawerManager {
         });
         drawerList.addView(home, 0);
 
-        View commits = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.commits), false);
+        View commits = newItem(R.drawable.ic_linear_scale_black_48dp, context.getString(R.string.commits), false);
         commits.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,7 +129,7 @@ public class DrawerManager {
         });
         drawerList.addView(commits, 1);
 
-        View durations = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.durations), false);
+        View durations = newItem(R.drawable.ic_schedule_black_48dp, context.getString(R.string.durations), false);
         durations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,7 +139,7 @@ public class DrawerManager {
         });
         drawerList.addView(durations, 2);
 
-        View projects = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.projects), false);
+        View projects = newItem(R.drawable.ic_content_paste_black_48dp, context.getString(R.string.projects), false);
         projects.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,7 +149,7 @@ public class DrawerManager {
         });
         drawerList.addView(projects, 3);
 
-        View summaries = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.summaries), false);
+        View summaries = newItem(R.drawable.ic_book_black_48dp, context.getString(R.string.summaries), false);
         projects.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,7 +159,7 @@ public class DrawerManager {
         });
         drawerList.addView(summaries, 4);
 
-        View leaders = newItem(R.drawable.ic_home_black_48dp, context.getString(R.string.leaderboards), false);
+        View leaders = newItem(R.drawable.ic_show_chart_black_48dp, context.getString(R.string.leaderboards), false);
         leaders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
