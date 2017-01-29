@@ -9,7 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.Objects.Project;
@@ -29,9 +32,10 @@ public class CommitsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.commits_fragment, container, false);
+        final SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.commits_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
-
+        final ProgressBar loading = (ProgressBar) layout.findViewById(R.id.commitsFragment_loading);
+        final TextView error = (TextView) layout.findViewById(R.id.commitsFragment_error);
         final RecyclerView list = (RecyclerView) layout.findViewById(R.id.commitsFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
@@ -44,6 +48,8 @@ public class CommitsFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                layout.setRefreshing(false);
+                                error.setVisibility(View.GONE);
                                 list.setAdapter(new CommitsAdapter(getActivity(), list, commits));
                             }
                         });
@@ -51,7 +57,12 @@ public class CommitsFragment extends Fragment {
 
                     @Override
                     public void onException(Exception ex) {
-                        ex.printStackTrace();
+                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                            @Override
+                            public void run() {
+                                layout.setRefreshing(false);
+                            }
+                        });
                     }
                 });
             }
@@ -63,6 +74,9 @@ public class CommitsFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        error.setVisibility(View.GONE);
+                        loading.setVisibility(View.GONE);
+                        list.setVisibility(View.VISIBLE);
                         list.setAdapter(new CommitsAdapter(getActivity(), list, commits));
                     }
                 });
@@ -70,7 +84,13 @@ public class CommitsFragment extends Fragment {
 
             @Override
             public void onException(Exception ex) {
-                ex.printStackTrace();
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        loading.setVisibility(View.GONE);
+                        error.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         });
 

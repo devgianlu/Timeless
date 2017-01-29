@@ -9,11 +9,14 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
+    public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault());
+    public static final SimpleDateFormat ISOParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
     private static final int[] COLORS = new int[]{R.color.red, R.color.pink, R.color.purple, R.color.deepPurple, R.color.indigo, R.color.blue, R.color.lightBlue, R.color.cyan, R.color.teal, R.color.green, R.color.lightGreen, R.color.lime, R.color.yellow, R.color.amber, R.color.orange, R.color.deepOrange, R.color.brown};
 
     public static int getColor(int pos) {
@@ -39,7 +42,6 @@ public class Utils {
         return COLORS;
     }
 
-
     public static long parseWithCallback(SimpleDateFormat parser, String string, long callback) {
         if (string != null) {
             try {
@@ -52,7 +54,7 @@ public class Utils {
         }
     }
 
-    public static void shuffleArray(int[] ar) {
+    private static void shuffleArray(int[] ar) {
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);

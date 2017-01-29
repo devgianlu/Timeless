@@ -10,7 +10,7 @@
     <string name="languagesSummary">Percentage of time spent on each language</string>
     <string name="editorsSummary">Percentage of time spent on each editor</string>
     <string name="totalTimeSpent"><![CDATA[<b>Total time spent:</b>]]> %s</string>
-    <string name="statsErrorMessage">Failed loading data. Pull to refresh or restart the application!</string>
+    <string name="errorMessage">Failed loading data. Pull to refresh or restart the application!</string>
     <string name="openDrawer">Open drawer</string>
     <string name="closeDrawer">Close drawer</string>
     <string name="preferences">Preferences</string>
@@ -24,4 +24,5 @@
     <string name="summaries">Summaries</string>
     <string name="operatingSystemsSummary">Percentage of time spent on each operating system</string>
     <string name="periodActivity">Activity in this period</string>
+    <string name="loadingData">Loading data. Please wait…</string>
 </resources>

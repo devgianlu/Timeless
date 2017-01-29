@@ -158,7 +158,7 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
                     handler.onException(ex);
                 }
             }

@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class Commits {
     public int page;
     public int next_page;
 
-    public Commits(JSONObject obj) throws JSONException {
+    public Commits(JSONObject obj) throws JSONException, ParseException {
         JSONArray commitsArray = obj.getJSONArray("commits");
         commits = new ArrayList<>();
         for (int i = 0; i < commitsArray.length(); i++)

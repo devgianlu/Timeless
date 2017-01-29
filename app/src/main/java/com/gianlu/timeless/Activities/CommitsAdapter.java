@@ -18,6 +18,8 @@ import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
+import java.util.Date;
+
 class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_LOADING = 0;
     private static final int TYPE_ITEM = 1;
@@ -92,6 +94,8 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ItemViewHolder castHolder = (ItemViewHolder) holder;
             castHolder.message.setText(commit.message);
             castHolder.author.setText(commit.getAuthor());
+            castHolder.hash.setText(commit.truncated_hash);
+            castHolder.date.setText(Utils.dateFormatter.format(new Date(commit.committer_date)));
             castHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -109,12 +113,16 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private class ItemViewHolder extends RecyclerView.ViewHolder {
         final TextView author;
         final TextView message;
+        final TextView hash;
+        final TextView date;
 
         ItemViewHolder(View itemView) {
             super(itemView);
 
             author = (TextView) itemView.findViewById(R.id.commit_author);
             message = (TextView) itemView.findViewById(R.id.commit_message);
+            hash = (TextView) itemView.findViewById(R.id.commit_hash);
+            date = (TextView) itemView.findViewById(R.id.commit_date);
         }
     }
 

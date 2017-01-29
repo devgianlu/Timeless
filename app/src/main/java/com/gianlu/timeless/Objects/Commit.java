@@ -5,20 +5,25 @@ import com.gianlu.timeless.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-// TODO
+import java.text.ParseException;
+
 public class Commit {
     public final String message;
+    public final String truncated_hash;
+    public final long committer_date;
     public final String author_email;
     public final String author_name;
     public final String author_username;
     public final String html_url;
 
-    public Commit(JSONObject obj) throws JSONException {
-        message = obj.getString("message");
+    public Commit(JSONObject obj) throws JSONException, ParseException {
+        message = obj.getString("message").replace('\n', '\0');
+        truncated_hash = obj.getString("truncated_hash");
         html_url = obj.getString("html_url");
         author_email = Utils.parseStupidNullJSON(obj, "author_email");
         author_name = Utils.parseStupidNullJSON(obj, "author_name");
         author_username = Utils.parseStupidNullJSON(obj, "author_username");
+        committer_date = Utils.ISOParser.parse(obj.getString("committer_date")).getTime();
     }
 
     public String getAuthor() {

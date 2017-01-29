@@ -36,7 +36,7 @@ public class MainFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.stats_fragment, container, false);
+        final SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.main_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
         final ProgressBar loading = (ProgressBar) layout.findViewById(R.id.stats_loading);
         final LinearLayout list = (LinearLayout) layout.findViewById(R.id.stats_list);

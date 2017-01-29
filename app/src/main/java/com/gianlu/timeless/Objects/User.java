@@ -6,8 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class User implements Serializable {
     public final String email;
@@ -34,16 +32,13 @@ public class User implements Serializable {
         username = Utils.parseStupidNullJSON(obj, "username");
         full_name = Utils.parseStupidNullJSON(obj, "full_name");
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
-        last_heartbeat = Utils.parseWithCallback(formatter, obj.getString("last_heartbeat"), -1);
-        created_at = Utils.parseWithCallback(formatter, obj.getString("created_at"), -1);
-        modified_at = Utils.parseWithCallback(formatter, obj.getString("modified_at"), -1);
+        last_heartbeat = Utils.parseWithCallback(Utils.ISOParser, obj.getString("last_heartbeat"), -1);
+        created_at = Utils.parseWithCallback(Utils.ISOParser, obj.getString("created_at"), -1);
+        modified_at = Utils.parseWithCallback(Utils.ISOParser, obj.getString("modified_at"), -1);
 
         email_public = obj.getBoolean("email_public");
         photo_public = obj.getBoolean("photo_public");
     }
-
-
 
     public String getInitials() {
         if (username == null && email == null && full_name == null)
