@@ -198,7 +198,6 @@ public class Summary {
         return card;
     }
 
-    // FIXME: Small LoggedEntity issue
     public static CardView createPieChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
         CardView card = (CardView) inflater.inflate(R.layout.pie_chart_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.pieChartCard_title);
@@ -218,7 +217,7 @@ public class Summary {
 
         PieDataSet set = new PieDataSet(entries, null);
         set.setValueTextSize(15);
-        set.setSliceSpace(2);
+        set.setSliceSpace(0);
         set.setValueTextColor(ContextCompat.getColor(context, android.R.color.white));
         set.setValueFormatter(new IValueFormatter() {
             @Override
