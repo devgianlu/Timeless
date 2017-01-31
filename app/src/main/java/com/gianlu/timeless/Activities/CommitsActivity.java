@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Activities.Commits.CommitsFragment;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;

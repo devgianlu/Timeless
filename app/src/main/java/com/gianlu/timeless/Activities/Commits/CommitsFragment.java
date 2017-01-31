@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Activities;
+package com.gianlu.timeless.Activities.Commits;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

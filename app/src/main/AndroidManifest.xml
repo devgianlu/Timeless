@@ -51,6 +51,7 @@
             android:name=".Activities.CommitsActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.LeadersActivity"></activity>
     </application>
 
 </manifest>

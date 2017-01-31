@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Activities;
+package com.gianlu.timeless.Activities.Commits;
 
 import android.app.Activity;
 import android.content.Context;

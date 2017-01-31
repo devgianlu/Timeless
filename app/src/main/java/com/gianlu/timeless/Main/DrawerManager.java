@@ -129,16 +129,6 @@ public class DrawerManager {
         });
         drawerList.addView(commits, 1);
 
-        View durations = newItem(R.drawable.ic_schedule_black_48dp, context.getString(R.string.durations), false);
-        durations.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener != null)
-                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.DURATIONS));
-            }
-        });
-        drawerList.addView(durations, 2);
-
         View projects = newItem(R.drawable.ic_content_paste_black_48dp, context.getString(R.string.projects), false);
         projects.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +137,7 @@ public class DrawerManager {
                     setDrawerState(false, listener.onListItemSelected(DrawerListItems.PROJECTS));
             }
         });
-        drawerList.addView(projects, 3);
+        drawerList.addView(projects, 2);
 
         View summaries = newItem(R.drawable.ic_book_black_48dp, context.getString(R.string.summaries), false);
         projects.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +147,7 @@ public class DrawerManager {
                     setDrawerState(false, listener.onListItemSelected(DrawerListItems.SUMMARIES));
             }
         });
-        drawerList.addView(summaries, 4);
+        drawerList.addView(summaries, 3);
 
         View leaders = newItem(R.drawable.ic_show_chart_black_48dp, context.getString(R.string.leaderboards), false);
         leaders.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +157,7 @@ public class DrawerManager {
                     setDrawerState(false, listener.onListItemSelected(DrawerListItems.LEADERS));
             }
         });
-        drawerList.addView(leaders, 5);
+        drawerList.addView(leaders, 4);
 
         // Footer group
         drawerFooterList.removeAllViews();
@@ -203,7 +193,11 @@ public class DrawerManager {
     public enum DrawerListItems {
         HOME,
         PREFERENCES,
-        COMMITS, DURATIONS, PROJECTS, SUMMARIES, LEADERS, SUPPORT
+        COMMITS,
+        PROJECTS,
+        SUMMARIES,
+        LEADERS,
+        SUPPORT
     }
 
     public interface IDrawerListener {

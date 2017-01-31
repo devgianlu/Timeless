@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.gianlu.timeless.Objects.Commits;
+import com.gianlu.timeless.Objects.Leader;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.Objects.User;
@@ -165,6 +166,26 @@ public class WakaTime {
         }).start();
     }
 
+    public void getLeaders(final ILeaders handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/leaders");
+
+                    if (response.getCode() == 200) {
+                        JSONObject obj = new JSONObject(response.getBody());
+                        handler.onLeaders(new Leader(obj.getJSONObject("current_user")), Leader.fromJSON(obj.getJSONArray("data")));
+                    } else {
+                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                    }
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                    handler.onException(ex);
+                }
+            }
+        }).start();
+    }
+
     public void getRangeSummary(Pair<Date, Date> startAndEnd, final ISummary handler) {
         getRangeSummary(startAndEnd.first, startAndEnd.second, handler);
     }
@@ -219,6 +240,12 @@ public class WakaTime {
                 }
             }
         }).start();
+    }
+
+    public interface ILeaders {
+        void onLeaders(Leader me, List<Leader> leaders);
+
+        void onException(Exception ex);
     }
 
     public interface ISummary {
