@@ -9,9 +9,11 @@ import java.util.List;
 
 public class Leader {
     public final int rank;
+    public final User user;
 
     public Leader(JSONObject obj) throws JSONException {
         rank = obj.optInt("rank", -1);
+        user = new User(obj.getJSONObject("user"));
     }
 
     public static List<Leader> fromJSON(JSONArray array) throws JSONException {

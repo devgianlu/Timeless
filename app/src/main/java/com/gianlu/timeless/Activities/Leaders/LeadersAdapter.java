@@ -36,7 +36,7 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
 
         holder.rank.setTypeface(roboto);
         holder.rank.setText(String.valueOf(leader.rank));
-        holder.name.setText("DUNNO"); // TODO
+        holder.name.setText(leader.user.getDisplayName());
     }
 
     @Override
