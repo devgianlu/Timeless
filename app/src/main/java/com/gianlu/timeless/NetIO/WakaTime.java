@@ -175,7 +175,7 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
-                        handler.onLeaders(new Leader(obj.getJSONObject("current_user")), Leader.fromJSON(obj.getJSONArray("data")));
+                        handler.onLeaders(Leader.fromJSON(obj.getJSONArray("data")));
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
@@ -243,7 +243,7 @@ public class WakaTime {
     }
 
     public interface ILeaders {
-        void onLeaders(Leader me, List<Leader> leaders);
+        void onLeaders(List<Leader> leaders);
 
         void onException(Exception ex);
     }

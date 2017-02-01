@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Leader {
+    public final int rank;
 
     public Leader(JSONObject obj) throws JSONException {
-        // TODO: Parse leader
+        rank = obj.optInt("rank", -1);
     }
 
     public static List<Leader> fromJSON(JSONArray array) throws JSONException {
