@@ -12,17 +12,12 @@ public class User implements Serializable {
     public final String username;
     final String id;
     final String full_name;
-    final boolean email_public;
-    final boolean photo_public;
 
     public User(JSONObject obj) throws JSONException {
         id = obj.getString("id");
         email = Utils.parseStupidNullJSON(obj, "email");
         username = Utils.parseStupidNullJSON(obj, "username");
         full_name = Utils.parseStupidNullJSON(obj, "full_name");
-
-        email_public = obj.getBoolean("email_public");
-        photo_public = obj.getBoolean("photo_public");
     }
 
     public String getDisplayName() {

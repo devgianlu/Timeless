@@ -13,8 +13,8 @@ public class Leader {
     public final int rank;
     public final User user;
     public final long total_seconds;
-    final long daily_average;
-    final Map<String, Long> languages;
+    public final long daily_average;
+    public final Map<String, Long> languages;
 
     public Leader(JSONObject obj) throws JSONException {
         rank = obj.optInt("rank", -1);

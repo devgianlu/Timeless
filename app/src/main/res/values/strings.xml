@@ -25,4 +25,6 @@
     <string name="operatingSystemsSummary">Percentage of time spent on each operating system</string>
     <string name="periodActivity">Activity in this period</string>
     <string name="loadingData">Loading data. Please wait…</string>
+    <string name="dailyTimeSpent"><![CDATA[<b>Daily on average:</b>]]>  %s</string>
+    <string name="last7DaysTimeSpent"><![CDATA[<b>Last 7 days:</b>]]> %s</string>
 </resources>
