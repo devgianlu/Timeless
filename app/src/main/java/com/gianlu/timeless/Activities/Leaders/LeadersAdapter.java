@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.gianlu.timeless.Objects.Leader;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.Utils;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
         holder.rank.setTypeface(roboto);
         holder.rank.setText(String.valueOf(leader.rank));
         holder.name.setText(leader.user.getDisplayName());
+        holder.total.setText(Utils.timeFormatterHours(leader.total_seconds));
     }
 
     @Override
@@ -47,12 +49,14 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
         final TextView rank;
         final TextView name;
+        final TextView total;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             rank = (TextView) itemView.findViewById(R.id.leader_rank);
             name = (TextView) itemView.findViewById(R.id.leader_name);
+            total = (TextView) itemView.findViewById(R.id.leader_total);
         }
     }
 }

@@ -117,7 +117,7 @@ public class Summary {
     public static CardView createSummaryCard(Context context, LayoutInflater inflater, ViewGroup parent, Summary summary) {
         CardView card = (CardView) inflater.inflate(R.layout.summary_card, parent, false);
         LinearLayout container = (LinearLayout) card.findViewById(R.id.summaryCard_container);
-        container.addView(CommonUtils.fastTextView(context, Html.fromHtml(context.getString(R.string.totalTimeSpent, CommonUtils.timeFormatter(summary.total_seconds)))));
+        container.addView(CommonUtils.fastTextView(context, Html.fromHtml(context.getString(R.string.totalTimeSpent, Utils.timeFormatterHours(summary.total_seconds)))));
 
         return card;
     }
