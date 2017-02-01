@@ -60,6 +60,7 @@ public class LoadingActivity extends AppCompatActivity {
                 WakaTime.getInstance().getCurrentUser(new WakaTime.IUser() {
                     @Override
                     public void onUser(User user) {
+                        CurrentUser.set(user);
                         goTo(MainActivity.class, user);
                     }
 

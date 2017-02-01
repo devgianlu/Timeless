@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/leaders_me"
+        android:icon="@drawable/ic_account_circle_white_48dp"
+        android:title="@string/findMe"
+        app:showAsAction="always" />
+</menu>

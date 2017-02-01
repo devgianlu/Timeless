@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class User implements Serializable {
     public final String email;
     public final String username;
-    final String id;
+    public final String id;
     final String full_name;
 
     public User(JSONObject obj) throws JSONException {

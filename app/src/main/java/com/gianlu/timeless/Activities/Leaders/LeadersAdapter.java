@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Objects.Leader;
+import com.gianlu.timeless.Objects.User;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.SquarePieChart;
 import com.gianlu.timeless.Utils;
@@ -30,15 +31,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHolder> {
     private final Activity activity;
+    private final User me;
     private final List<Leader> leaders;
     private final LayoutInflater inflater;
     private final Typeface roboto;
 
-    public LeadersAdapter(Activity activity, List<Leader> leaders) {
+    public LeadersAdapter(final Activity activity, User me, List<Leader> leaders) {
         this.activity = activity;
+        this.me = me;
         this.leaders = leaders;
 
         inflater = LayoutInflater.from(activity);
@@ -58,6 +62,11 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
         holder.rank.setText(String.valueOf(leader.rank));
         holder.name.setText(leader.user.getDisplayName());
         holder.total.setText(Utils.timeFormatterHours(leader.total_seconds));
+
+        if (Objects.equals(leader.user.id, me.id)) {
+            holder.setIsRecyclable(false);
+            holder.itemView.setBackgroundResource(R.color.colorPrimary_drawerSelected);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @SuppressWarnings("deprecation")
@@ -110,10 +119,17 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return leaders.size();
+    }
+
+    public int find(String id) {
+        for (int i = 0; i < leaders.size(); i++)
+            if (Objects.equals(leaders.get(i).user.id, id))
+                return i;
+
+        return -1;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

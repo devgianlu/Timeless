@@ -92,5 +92,6 @@ public class Utils {
         public static final CommonUtils.ToastMessage FAILED_LOADING = new CommonUtils.ToastMessage("Failed loading data.", true);
         public static final CommonUtils.ToastMessage TOKEN_REJECTED = new CommonUtils.ToastMessage("Server rejected your request. Try again or contact me!", false);
         public static final CommonUtils.ToastMessage CANT_REFRESH_TOKEN = new CommonUtils.ToastMessage("Failed refreshing the token!", true);
+        public static final CommonUtils.ToastMessage USER_NOT_FOUND = new CommonUtils.ToastMessage("You have not been found.", false);
     }
 }
