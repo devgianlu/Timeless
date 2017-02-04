@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class Summary {
     private static final SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -117,7 +116,7 @@ public class Summary {
     public static CardView createSummaryCard(Context context, LayoutInflater inflater, ViewGroup parent, Summary summary) {
         CardView card = (CardView) inflater.inflate(R.layout.summary_card, parent, false);
         LinearLayout container = (LinearLayout) card.findViewById(R.id.summaryCard_container);
-        container.addView(CommonUtils.fastTextView(context, Html.fromHtml(context.getString(R.string.totalTimeSpent, Utils.timeFormatterHours(summary.total_seconds)))));
+        container.addView(CommonUtils.fastTextView(context, Html.fromHtml(context.getString(R.string.totalTimeSpent, Utils.timeFormatterHours(summary.total_seconds, true)))));
 
         return card;
     }
@@ -147,7 +146,7 @@ public class Summary {
         leftAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return String.format(Locale.getDefault(), "%dh", TimeUnit.SECONDS.toHours((long) value));
+                return Utils.timeFormatterHours((long) value, false);
             }
         });
 

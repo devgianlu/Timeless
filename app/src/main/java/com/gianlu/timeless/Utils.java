@@ -43,16 +43,22 @@ public class Utils {
         return COLORS;
     }
 
-    public static String timeFormatterHours(long sec) {
+    public static String timeFormatterHours(long sec, boolean seconds) {
         long hours = TimeUnit.SECONDS.toHours(sec);
         long minute = TimeUnit.SECONDS.toMinutes(sec) - TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(sec));
         long second = TimeUnit.SECONDS.toSeconds(sec) - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(sec));
 
         if (hours > 0) {
-            return String.format(Locale.getDefault(), "%02d", hours) + "h " + String.format(Locale.getDefault(), "%02d", minute) + "m " + String.format(Locale.getDefault(), "%02d", second) + "s";
+            if (seconds)
+                return String.format(Locale.getDefault(), "%02d", hours) + "h " + String.format(Locale.getDefault(), "%02d", minute) + "m " + String.format(Locale.getDefault(), "%02d", second) + "s";
+            else
+                return String.format(Locale.getDefault(), "%02d", hours) + "h " + String.format(Locale.getDefault(), "%02d", minute) + "m";
         } else {
             if (minute > 0) {
-                return String.format(Locale.getDefault(), "%02d", minute) + "m " + String.format(Locale.getDefault(), "%02d", second) + "s";
+                if (seconds)
+                    return String.format(Locale.getDefault(), "%02d", minute) + "m " + String.format(Locale.getDefault(), "%02d", second) + "s";
+                else
+                    return String.format(Locale.getDefault(), "%02d", minute) + "m";
             } else {
                 if (second > 0) {
                     return String.format(Locale.getDefault(), "%02d", second) + "s";

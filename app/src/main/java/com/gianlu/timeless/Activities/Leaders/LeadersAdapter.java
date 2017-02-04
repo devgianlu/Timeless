@@ -61,7 +61,7 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
         holder.rank.setTypeface(roboto);
         holder.rank.setText(String.valueOf(leader.rank));
         holder.name.setText(leader.user.getDisplayName());
-        holder.total.setText(Utils.timeFormatterHours(leader.total_seconds));
+        holder.total.setText(Utils.timeFormatterHours(leader.total_seconds, true));
 
         if (Objects.equals(leader.user.id, me.id)) {
             holder.setIsRecyclable(false);
@@ -76,10 +76,10 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
                 ScrollView layout = (ScrollView) inflater.inflate(R.layout.leader_dialog, null, false);
 
                 TextView weekTotal = (TextView) layout.findViewById(R.id.leaderDialog_weekTotal);
-                weekTotal.setText(Html.fromHtml(activity.getString(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds))));
+                weekTotal.setText(Html.fromHtml(activity.getString(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true))));
 
                 TextView dailyAverage = (TextView) layout.findViewById(R.id.leaderDialog_dailyAverage);
-                dailyAverage.setText(Html.fromHtml(activity.getString(R.string.dailyTimeSpent, Utils.timeFormatterHours(leader.daily_average))));
+                dailyAverage.setText(Html.fromHtml(activity.getString(R.string.dailyTimeSpent, Utils.timeFormatterHours(leader.daily_average, true))));
 
                 SquarePieChart chart = (SquarePieChart) layout.findViewById(R.id.leaderDialog_chart);
                 chart.setDescription(null);
