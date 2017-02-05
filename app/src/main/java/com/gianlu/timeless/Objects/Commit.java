@@ -23,7 +23,7 @@ public class Commit {
         author_email = Utils.parseStupidNullJSON(obj, "author_email");
         author_name = Utils.parseStupidNullJSON(obj, "author_name");
         author_username = Utils.parseStupidNullJSON(obj, "author_username");
-        committer_date = Utils.ISOParser.parse(obj.getString("committer_date")).getTime();
+        committer_date = Utils.getISOParser().parse(obj.getString("committer_date")).getTime();
     }
 
     public String getAuthor() {
