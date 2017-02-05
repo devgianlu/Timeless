@@ -267,7 +267,6 @@ public class Summary {
             details.addView(text);
         }
 
-        // TODO: Should scroll a bit when opened
         chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {

@@ -65,7 +65,7 @@ public class LeadersAdapter extends RecyclerView.Adapter<LeadersAdapter.ViewHold
 
         if (Objects.equals(leader.user.id, me.id)) {
             holder.setIsRecyclable(false);
-            holder.itemView.setBackgroundResource(R.color.colorPrimary_drawerSelected);
+            holder.itemView.setBackgroundResource(R.color.colorAccent_shadow);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
