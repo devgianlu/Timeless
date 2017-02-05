@@ -1,5 +1,6 @@
 package com.gianlu.timeless.Activities.Commits;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -71,15 +72,18 @@ public class CommitsFragment extends Fragment {
         WakaTime.getInstance().getCommits((Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
             @Override
             public void onCommits(final Commits commits) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        error.setVisibility(View.GONE);
-                        loading.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-                        list.setAdapter(new CommitsAdapter(getActivity(), list, commits));
-                    }
-                });
+                final Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            error.setVisibility(View.GONE);
+                            loading.setVisibility(View.GONE);
+                            list.setVisibility(View.VISIBLE);
+                            list.setAdapter(new CommitsAdapter(activity, list, commits));
+                        }
+                    });
+                }
             }
 
             @Override
