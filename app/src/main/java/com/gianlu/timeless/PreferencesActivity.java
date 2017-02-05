@@ -28,6 +28,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.preferences);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
