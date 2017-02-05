@@ -72,10 +72,12 @@ public class Summary {
 
         date = parser.parse(obj.getJSONObject("range").getString("date")).getTime();
 
-        JSONArray projectsArray = obj.getJSONArray("projects");
         projects = new ArrayList<>();
-        for (int i = 0; i < projectsArray.length(); i++)
-            projects.add(new LoggedEntity(projectsArray.getJSONObject(i)));
+        if (obj.has("projects")) {
+            JSONArray projectsArray = obj.getJSONArray("projects");
+            for (int i = 0; i < projectsArray.length(); i++)
+                projects.add(new LoggedEntity(projectsArray.getJSONObject(i)));
+        }
 
         JSONArray languagesArray = obj.getJSONArray("languages");
         languages = new ArrayList<>();

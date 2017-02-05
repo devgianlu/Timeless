@@ -28,15 +28,15 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
 
             <LinearLayout
+                android:id="@+id/projectFragment_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- TODO: ProjectsActivity -->
-            </LinearLayout>
+                android:orientation="vertical"
+                android:visibility="gone" />
         </ScrollView>
     </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

@@ -187,10 +187,14 @@ public class WakaTime {
     }
 
     public void getRangeSummary(Pair<Date, Date> startAndEnd, final ISummary handler) {
-        getRangeSummary(startAndEnd.first, startAndEnd.second, handler);
+        getRangeSummary(startAndEnd.first, startAndEnd.second, null, handler);
     }
 
-    private void getRangeSummary(final Date start, final Date end, final ISummary handler) {
+    public void getRangeSummary(Pair<Date, Date> startAndEnd, Project project, final ISummary handler) {
+        getRangeSummary(startAndEnd.first, startAndEnd.second, project, handler);
+    }
+
+    private void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -199,7 +203,8 @@ public class WakaTime {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/summaries?start="
                             + formatter.format(start)
                             + "&end="
-                            + formatter.format(end));
+                            + formatter.format(end)
+                            + (project != null ? "&project=" + project.id : ""));
 
                     if (response.getCode() == 200) {
                         handler.onSummary(Summary.fromJSON(response.getBody()),
