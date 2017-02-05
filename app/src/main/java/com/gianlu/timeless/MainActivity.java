@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Activities.LeadersActivity;
+import com.gianlu.timeless.Activities.ProjectsActivity;
 import com.gianlu.timeless.Main.DrawerManager;
 import com.gianlu.timeless.Main.MainFragment;
 import com.gianlu.timeless.Main.PagerAdapter;
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
                                 return true;
                             case COMMITS:
                                 startActivity(new Intent(MainActivity.this, CommitsActivity.class));
+                                return false;
+                            case PROJECTS:
+                                startActivity(new Intent(MainActivity.this, ProjectsActivity.class));
                                 return false;
                             case LEADERS:
                                 startActivity(new Intent(MainActivity.this, LeadersActivity.class));

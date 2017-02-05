@@ -129,7 +129,6 @@ public class DrawerManager {
         });
         drawerList.addView(commits, 1);
 
-        /* TODO: Projects
         View projects = newItem(R.drawable.ic_content_paste_black_48dp, context.getString(R.string.projects), false);
         projects.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,7 +138,6 @@ public class DrawerManager {
             }
         });
         drawerList.addView(projects, 2);
-        */
 
         /* TODO: Summaries
         View summaries = newItem(R.drawable.ic_book_black_48dp, context.getString(R.string.summaries), false);
@@ -161,7 +159,7 @@ public class DrawerManager {
                     setDrawerState(false, listener.onListItemSelected(DrawerListItems.LEADERS));
             }
         });
-        drawerList.addView(leaders, 2);
+        drawerList.addView(leaders, 3);
 
         // Footer group
         drawerFooterList.removeAllViews();

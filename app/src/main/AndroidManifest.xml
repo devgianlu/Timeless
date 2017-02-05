@@ -57,6 +57,12 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- Projects activity -->
+        <activity
+            android:name=".Activities.ProjectsActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!-- Leaders activity -->
         <activity
             android:name=".Activities.LeadersActivity"
