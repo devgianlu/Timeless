@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
@@ -73,13 +74,24 @@ public class MainFragment extends Fragment {
                     }
 
                     @Override
-                    public void onException(Exception ex) {
-                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                            @Override
-                            public void run() {
-                                layout.setRefreshing(false);
-                            }
-                        });
+                    public void onException(final Exception ex) {
+                        if (ex instanceof WakaTimeException) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.setRefreshing(false);
+                                    error.setText(ex.getMessage());
+                                    error.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        } else {
+                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.setRefreshing(false);
+                                }
+                            });
+                        }
                     }
                 });
             }
@@ -106,14 +118,25 @@ public class MainFragment extends Fragment {
             }
 
             @Override
-            public void onException(Exception ex) {
-                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.setVisibility(View.GONE);
-                        error.setVisibility(View.VISIBLE);
-                    }
-                });
+            public void onException(final Exception ex) {
+                if (ex instanceof WakaTimeException) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loading.setVisibility(View.GONE);
+                            error.setText(ex.getMessage());
+                            error.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                        @Override
+                        public void run() {
+                            loading.setVisibility(View.GONE);
+                            error.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
             }
         });
 

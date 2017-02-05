@@ -205,7 +205,7 @@ public class WakaTime {
                         handler.onSummary(Summary.fromJSON(response.getBody()),
                                 Summary.createRangeSummary(Summary.fromJSON(response.getBody())));
                     } else if (response.getCode() == 400) {
-                        handler.onException(new StatusCodeException(response.getBody()));
+                        handler.onException(new WakaTimeException(response.getBody()));
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }

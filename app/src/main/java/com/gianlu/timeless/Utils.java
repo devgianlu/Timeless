@@ -63,7 +63,7 @@ public class Utils {
                 if (second > 0) {
                     return String.format(Locale.getDefault(), "%02d", second) + "s";
                 } else {
-                    return "∞";
+                    return "0s";
                 }
             }
         }
