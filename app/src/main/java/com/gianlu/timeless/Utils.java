@@ -7,7 +7,6 @@ import com.gianlu.commonutils.CommonUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Objects;
@@ -80,18 +79,6 @@ public class Utils {
         }
     }
 
-    public static long parseWithCallback(SimpleDateFormat parser, String string, long callback) {
-        if (string != null) {
-            try {
-                return parser.parse(string).getTime();
-            } catch (ParseException ex) {
-                return callback;
-            }
-        } else {
-            return callback;
-        }
-    }
-
     private static void shuffleArray(int[] ar) {
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
@@ -110,5 +97,6 @@ public class Utils {
         public static final CommonUtils.ToastMessage TOKEN_REJECTED = new CommonUtils.ToastMessage("Server rejected your request. Try again or contact me!", false);
         public static final CommonUtils.ToastMessage CANT_REFRESH_TOKEN = new CommonUtils.ToastMessage("Failed refreshing the token!", true);
         public static final CommonUtils.ToastMessage USER_NOT_FOUND = new CommonUtils.ToastMessage("You have not been found.", false);
+        public static final CommonUtils.ToastMessage OFFLINE = new CommonUtils.ToastMessage("You're offline!", false);
     }
 }

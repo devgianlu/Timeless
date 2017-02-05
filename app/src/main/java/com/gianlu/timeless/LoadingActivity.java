@@ -15,7 +15,6 @@ import com.gianlu.timeless.Objects.User;
 import java.util.Timer;
 import java.util.TimerTask;
 
-// TODO: Check if offline
 public class LoadingActivity extends AppCompatActivity {
     private final Timer timer = new Timer();
     private Intent goTo;
@@ -54,30 +53,44 @@ public class LoadingActivity extends AppCompatActivity {
             }
         }, 1000);
 
-        WakaTime.getInstance().refreshToken(this, new WakaTime.IRefreshToken() {
+        new Thread(new Runnable() {
             @Override
-            public void onRefreshed() {
-                WakaTime.getInstance().getCurrentUser(new WakaTime.IUser() {
-                    @Override
-                    public void onUser(User user) {
-                        CurrentUser.set(user);
-                        goTo(MainActivity.class, user);
-                    }
+            public void run() {
+                if (CommonUtils.hasInternetAccess()) {
+                    WakaTime.getInstance().refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
+                        @Override
+                        public void onRefreshed() {
+                            WakaTime.getInstance().getCurrentUser(new WakaTime.IUser() {
+                                @Override
+                                public void onUser(User user) {
+                                    CurrentUser.set(user);
+                                    goTo(MainActivity.class, user);
+                                }
 
-                    @Override
-                    public void onException(Exception ex) {
-                        CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
-                        finish();
-                    }
-                });
-            }
+                                @Override
+                                public void onException(Exception ex) {
+                                    CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                                    finish();
+                                }
+                            });
+                        }
 
-            @Override
-            public void onException(Exception ex) {
-                CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.CANT_REFRESH_TOKEN, ex);
-                goTo(GrantActivity.class, null);
+                        @Override
+                        public void onException(Exception ex) {
+                            CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.CANT_REFRESH_TOKEN, ex);
+                            goTo(GrantActivity.class, null);
+                        }
+                    });
+                } else {
+                    CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.OFFLINE, new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    });
+                }
             }
-        });
+        }).start();
     }
 
     private void goTo(Class goTo, @Nullable User user) {
