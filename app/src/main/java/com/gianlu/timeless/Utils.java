@@ -1,6 +1,9 @@
 package com.gianlu.timeless;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.support.annotation.Nullable;
+import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 
@@ -17,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Utils {
     private static final int[] COLORS = new int[]{R.color.red, R.color.pink, R.color.purple, R.color.deepPurple, R.color.indigo, R.color.blue, R.color.lightBlue, R.color.cyan, R.color.teal, R.color.green, R.color.lightGreen, R.color.lime, R.color.yellow, R.color.amber, R.color.orange, R.color.deepOrange, R.color.brown};
+    private static ColorStateList textViewDefaultColor;
 
     public static int getColor(int pos) {
         int i = pos;
@@ -24,6 +28,13 @@ public class Utils {
             i = i - COLORS.length;
 
         return COLORS[i];
+    }
+
+    public static ColorStateList getTextViewDefaultColor(Context context) {
+        if (textViewDefaultColor == null)
+            textViewDefaultColor = new TextView(context).getTextColors();
+
+        return textViewDefaultColor;
     }
 
     public static SimpleDateFormat getDateFormatter() {

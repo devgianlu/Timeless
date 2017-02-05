@@ -31,6 +31,8 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.json.JSONArray;
@@ -45,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class Summary {
     private static final SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -200,7 +203,7 @@ public class Summary {
     }
 
     @SuppressWarnings("deprecation")
-    public static CardView createPieChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
+    public static CardView createPieChartCard(final Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
         CardView card = (CardView) inflater.inflate(R.layout.pie_chart_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.pieChartCard_title);
         title.setText(titleRes);
@@ -249,9 +252,9 @@ public class Summary {
         });
 
         long total_seconds = LoggedEntity.sumSeconds(entities);
-        LinearLayout details = (LinearLayout) card.findViewById(R.id.pieChartCard_details);
-        for (LoggedEntity entity : entities)
-            details.addView(CommonUtils.fastTextView(context,
+        final LinearLayout details = (LinearLayout) card.findViewById(R.id.pieChartCard_details);
+        for (LoggedEntity entity : entities) {
+            TextView text = CommonUtils.fastTextView(context,
                     Html.fromHtml(
                             context.getString(
                                     R.string.cardDetailsEntity,
@@ -259,7 +262,41 @@ public class Summary {
                                     Utils.timeFormatterHours(entity.total_seconds, true),
                                     String.format(Locale.getDefault(),
                                             "%.2f",
-                                            ((float) entity.total_seconds) / ((float) total_seconds) * 100)))));
+                                            ((float) entity.total_seconds) / ((float) total_seconds) * 100))));
+            text.setTag(entity.name);
+            details.addView(text);
+        }
+
+        // TODO: Should scroll a bit when opened
+        chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (!CommonUtils.isExpanded(container))
+                    expand.callOnClick();
+
+                for (int i = 0; i < details.getChildCount(); i++) {
+                    View view = details.getChildAt(i);
+                    if (view instanceof TextView) {
+                        if (Objects.equals(view.getTag(), ((PieEntry) e).getLabel()))
+                            ((TextView) view).setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+                        else
+                            ((TextView) view).setTextColor(Utils.getTextViewDefaultColor(context));
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                if (CommonUtils.isExpanded(container))
+                    expand.callOnClick();
+
+                for (int i = 0; i < details.getChildCount(); i++) {
+                    View view = details.getChildAt(i);
+                    if (view instanceof TextView)
+                        ((TextView) view).setTextColor(Utils.getTextViewDefaultColor(context));
+                }
+            }
+        });
 
         return card;
     }
