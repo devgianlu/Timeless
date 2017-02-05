@@ -12,13 +12,17 @@
     <string name="totalTimeSpent"><![CDATA[<b>Total time spent:</b>]]> %s</string>
     <string name="errorMessage">Failed loading data. Pull to refresh or restart the application!</string>
     <string name="openDrawer">Open drawer</string>
+    <string name="mpAndroidChart_details">Copyright 2016 Philipp Jahoda</string>
+    <string name="app_version">Application version</string>
+    <string name="developer">Developer: Gianlu (Report bugs or any suggestion)</string>
+    <string name="email">altomanigianluca@gmail.com</string>
+    <string name="apacheLicense">Licensed under Apache License 2.0</string>
     <string name="closeDrawer">Close drawer</string>
     <string name="preferences">Preferences</string>
     <string name="support">Support</string>
     <string name="home">Home</string>
     <string name="noUsername">Anonymous user</string>
     <string name="commits">Commits</string>
-    <string name="durations">Durations</string>
     <string name="projects">Projects</string>
     <string name="leaderboards">Leaderboards</string>
     <string name="summaries">Summaries</string>
@@ -28,4 +32,10 @@
     <string name="dailyTimeSpent"><![CDATA[<b>Daily on average:</b>]]>  %s</string>
     <string name="last7DaysTimeSpent"><![CDATA[<b>Last 7 days:</b>]]> %s</string>
     <string name="findMe">Find me</string>
+    <string name="logs">Logs</string>
+    <string name="about_app">About this app</string>
+    <string name="third_part">Third part projects</string>
+    <string name="tracking">Disable anonymous statistics</string>
+    <string name="trackingOn">No statistics will be sent to the developer.</string>
+    <string name="trackingOff">Statistics about the application behavior will be sent to the developer. (No personal data will be sent)</string>
 </resources>

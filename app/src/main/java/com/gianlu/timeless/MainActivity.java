@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(new Intent(MainActivity.this, LeadersActivity.class));
                                 return false;
                             case PREFERENCES:
-                                // TODO: Preferences
+                                startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
                                 return false;
                             case SUPPORT:
                                 CommonUtils.sendEmail(MainActivity.this, getString(R.string.app_name));

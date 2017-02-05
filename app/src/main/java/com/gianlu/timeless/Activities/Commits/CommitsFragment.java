@@ -46,14 +46,17 @@ public class CommitsFragment extends Fragment {
                 WakaTime.getInstance().getCommits((Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
                     @Override
                     public void onCommits(final Commits commits) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                layout.setRefreshing(false);
-                                error.setVisibility(View.GONE);
-                                list.setAdapter(new CommitsAdapter(getActivity(), list, commits));
-                            }
-                        });
+                        final Activity activity = getActivity();
+                        if (activity != null) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.setRefreshing(false);
+                                    error.setVisibility(View.GONE);
+                                    list.setAdapter(new CommitsAdapter(activity, list, commits));
+                                }
+                            });
+                        }
                     }
 
                     @Override

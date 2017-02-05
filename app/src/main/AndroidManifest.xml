@@ -29,6 +29,11 @@
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- Preferences activity -->
+        <activity
+            android:name=".PreferencesActivity"
+            android:parentActivityName=".MainActivity" />
+
         <!-- Grant permission activity -->
         <activity
             android:name=".GrantActivity"
@@ -57,5 +62,4 @@
             android:name=".Activities.LeadersActivity"
             android:parentActivityName=".MainActivity" />
     </application>
-
 </manifest>
