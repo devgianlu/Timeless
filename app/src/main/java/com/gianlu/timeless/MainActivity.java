@@ -72,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        pager.setOffscreenPageLimit(3);
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
+                MainFragment.getInstance(this, MainFragment.Range.TODAY),
                 MainFragment.getInstance(this, MainFragment.Range.LAST_7_DAYS),
                 MainFragment.getInstance(this, MainFragment.Range.LAST_30_DAYS)));
 

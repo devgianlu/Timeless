@@ -38,4 +38,5 @@
     <string name="tracking">Disable anonymous statistics</string>
     <string name="trackingOn">No statistics will be sent to the developer.</string>
     <string name="trackingOff">Statistics about the application behavior will be sent to the developer. (No personal data will be sent)</string>
+    <string name="today">Today</string>
 </resources>

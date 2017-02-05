@@ -63,8 +63,10 @@ public class MainFragment extends Fragment {
                                 layout.setRefreshing(false);
                                 error.setVisibility(View.GONE);
 
+
                                 list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
-                                list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
+                                if (range != Range.TODAY)
+                                    list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                                 list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.projectsSummary, summary.projects));
                                 list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                                 list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.editorsSummary, summary.editors));
@@ -107,8 +109,10 @@ public class MainFragment extends Fragment {
                         list.setVisibility(View.VISIBLE);
                         error.setVisibility(View.GONE);
 
+
                         list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
-                        list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
+                        if (range != Range.TODAY)
+                            list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                         list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.projectsSummary, summary.projects));
                         list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                         list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.editorsSummary, summary.editors));
@@ -144,11 +148,14 @@ public class MainFragment extends Fragment {
     }
 
     public enum Range {
+        TODAY,
         LAST_7_DAYS,
         LAST_30_DAYS;
 
         public String getFormal(Context context) {
             switch (this) {
+                case TODAY:
+                    return context.getString(R.string.today);
                 default:
                 case LAST_7_DAYS:
                     return context.getString(R.string.last_7_days);
@@ -162,6 +169,8 @@ public class MainFragment extends Fragment {
             Date end = cal.getTime();
 
             switch (this) {
+                case TODAY:
+                    break;
                 default:
                 case LAST_7_DAYS:
                     cal.add(Calendar.DATE, -7);
