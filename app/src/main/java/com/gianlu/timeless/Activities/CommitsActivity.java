@@ -59,7 +59,7 @@ public class CommitsActivity extends AppCompatActivity {
 
         WakaTime.getInstance().getProjects(new WakaTime.IProjects() {
             @Override
-            public void onProjects(List<Project> projects) {
+            public void onProjects(final List<Project> projects) {
                 for (Project project : projects)
                     if (project.hasRepository)
                         fragments.add(CommitsFragment.getInstance(project));
@@ -70,6 +70,13 @@ public class CommitsActivity extends AppCompatActivity {
                         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
                         pager.setOffscreenPageLimit(fragments.size());
                         pd.dismiss();
+
+                        String project_id = getIntent().getStringExtra("project_id");
+                        if (project_id != null) {
+                            int pos = projects.indexOf(Project.find(project_id, projects));
+                            if (pos != -1)
+                                pager.setCurrentItem(pos, false);
+                        }
                     }
                 });
             }
