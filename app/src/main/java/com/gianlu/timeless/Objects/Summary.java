@@ -6,7 +6,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -197,6 +199,7 @@ public class Summary {
         return card;
     }
 
+    @SuppressWarnings("deprecation")
     public static CardView createPieChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
         CardView card = (CardView) inflater.inflate(R.layout.pie_chart_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.pieChartCard_title);
@@ -230,6 +233,34 @@ public class Summary {
         set.setColors(Utils.getColors(), context);
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
+
+        final LinearLayout container = (LinearLayout) card.findViewById(R.id.pieChartCard_container);
+        final ImageButton expand = (ImageButton) card.findViewById(R.id.pieChartCard_expand);
+        expand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CommonUtils.animateCollapsingArrowBellows(expand, CommonUtils.isExpanded(container));
+
+                if (CommonUtils.isExpanded(container))
+                    CommonUtils.collapse(container);
+                else
+                    CommonUtils.expand(container);
+            }
+        });
+
+        long total_seconds = LoggedEntity.sumSeconds(entities);
+        LinearLayout details = (LinearLayout) card.findViewById(R.id.pieChartCard_details);
+        for (LoggedEntity entity : entities)
+            details.addView(CommonUtils.fastTextView(context,
+                    Html.fromHtml(
+                            context.getString(
+                                    R.string.cardDetailsEntity,
+                                    entity.name,
+                                    Utils.timeFormatterHours(entity.total_seconds, true),
+                                    String.format(Locale.getDefault(),
+                                            "%.2f",
+                                            ((float) entity.total_seconds) / ((float) total_seconds) * 100)))));
+
         return card;
     }
 }

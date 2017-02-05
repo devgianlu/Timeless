@@ -12,23 +12,61 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="24dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/pieChartCard_title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:paddingBottom="16dp"
-            android:textColor="@android:color/black"
-            android:textSize="24sp" />
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="24dp">
 
-        <com.gianlu.timeless.SquarePieChart
-            android:id="@+id/pieChartCard_chart"
+            <TextView
+                android:id="@+id/pieChartCard_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/black"
+                android:textSize="24sp" />
+
+            <com.gianlu.timeless.SquarePieChart
+                android:id="@+id/pieChartCard_chart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/pieChartCard_expand"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="end"
+                android:adjustViewBounds="true"
+                android:alpha="0.54"
+                android:background="@drawable/ripple_effect_dark"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_keyboard_arrow_down_black_48dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pieChartCard_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"
+            android:background="@color/colorAccent_shadow"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@drawable/material_drawer_shadow_bottom" />
+
+            <LinearLayout
+                android:id="@+id/pieChartCard_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp" />
+        </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

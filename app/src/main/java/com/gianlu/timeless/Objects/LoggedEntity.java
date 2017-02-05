@@ -23,6 +23,14 @@ public class LoggedEntity {
                 parents.add(child);
     }
 
+    public static long sumSeconds(List<LoggedEntity> entities) {
+        long sum = 0;
+        for (LoggedEntity entity : entities)
+            sum += entity.total_seconds;
+
+        return sum;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof LoggedEntity) {

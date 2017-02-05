@@ -6,6 +6,7 @@
     <color name="colorPrimary_drawerSelected">#1a4f5b69</color>
     <color name="colorPrimaryDark">#29333a</color>
     <color name="colorAccent">#00acac</color>
+    <color name="colorAccent_shadow">#1a00acac</color>
 
     <color name="red">#f44336</color>
     <color name="pink">#e91e63</color>
