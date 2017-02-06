@@ -58,6 +58,7 @@ public class Summary {
     public final List<LoggedEntity> languages;
     public final List<LoggedEntity> editors;
     public final List<LoggedEntity> operating_systems;
+    public final List<LoggedEntity> entities;
     public long total_seconds;
     public long date;
 
@@ -68,6 +69,7 @@ public class Summary {
         languages = new ArrayList<>();
         editors = new ArrayList<>();
         operating_systems = new ArrayList<>();
+        entities = new ArrayList<>();
     }
 
     public Summary(JSONObject obj) throws JSONException, ParseException {
@@ -96,6 +98,13 @@ public class Summary {
         operating_systems = new ArrayList<>();
         for (int i = 0; i < operatingSystemsArray.length(); i++)
             operating_systems.add(new LoggedEntity(operatingSystemsArray.getJSONObject(i)));
+
+        JSONArray entitiesArray = obj.getJSONArray("entities");
+        entities = new ArrayList<>();
+        for (int i = 0; i < entitiesArray.length(); i++)
+            entities.add(new LoggedEntity(entitiesArray.getJSONObject(i)));
+
+        Collections.sort(entities, new LoggedEntity.TotalSecondsComparator());
     }
 
     public static List<Summary> fromJSON(String json) throws JSONException, ParseException {
@@ -117,8 +126,10 @@ public class Summary {
             LoggedEntity.sum(rangeSummary.languages, summary.languages);
             LoggedEntity.sum(rangeSummary.projects, summary.projects);
             LoggedEntity.sum(rangeSummary.operating_systems, summary.operating_systems);
+            LoggedEntity.sum(rangeSummary.entities, summary.entities);
         }
 
+        Collections.sort(rangeSummary.entities, new LoggedEntity.TotalSecondsComparator());
         return rangeSummary;
     }
 
@@ -357,6 +368,18 @@ public class Summary {
         set.setColor(ContextCompat.getColor(context, R.color.colorAccent));
         set.setDrawFilled(true);
         chart.setData(new LineData(set));
+
+        return card;
+    }
+
+    public static CardView createListCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
+        CardView card = (CardView) inflater.inflate(R.layout.list_card, parent, false);
+        final TextView title = (TextView) card.findViewById(R.id.listCard_title);
+        title.setText(titleRes);
+
+        final LinearLayout list = (LinearLayout) card.findViewById(R.id.listCard_list);
+        for (LoggedEntity entity : entities)
+            list.addView(LoggedEntity.createSimpleItem(inflater, list, entity));
 
         return card;
     }

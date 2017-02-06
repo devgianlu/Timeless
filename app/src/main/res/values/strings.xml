@@ -41,4 +41,5 @@
     <string name="today">Today</string>
     <string name="cardDetailsEntity"><![CDATA[<b>%1$s:</b>]]> %2$s (%3$s %%)</string>
     <string name="noData">Nothing to show here.</string>
+    <string name="filesSummary">Total time spent on each file</string>
 </resources>
