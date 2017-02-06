@@ -71,6 +71,11 @@
             android:name=".Activities.LeadersActivity"
             android:parentActivityName=".MainActivity" />
 
+        <!-- Logs activity -->
+        <activity
+            android:name="com.gianlu.commonutils.LogsActivity"
+            android:parentActivityName=".PreferencesActivity" />
+
         <!-- Google Analytics -->
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"

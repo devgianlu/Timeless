@@ -27,7 +27,7 @@ public class GrantActivity extends AppCompatActivity {
                 public void onTokenAccepted() {
                     PreferenceManager.getDefaultSharedPreferences(GrantActivity.this).edit().putBoolean("firstRun", false).apply();
                     pd.dismiss();
-                    startActivity(new Intent(GrantActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(new Intent(GrantActivity.this, LoadingActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
 
                 @Override
