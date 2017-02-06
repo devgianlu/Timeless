@@ -212,6 +212,7 @@ public class Summary {
 
         final PieChart chart = (PieChart) card.findViewById(R.id.pieChartCard_chart);
         chart.setDescription(null);
+        chart.setNoDataText(context.getString(R.string.noData));
         chart.setDrawEntryLabels(false);
         chart.setRotationEnabled(false);
 
@@ -298,6 +299,9 @@ public class Summary {
                 }
             }
         });
+
+        if (total_seconds == 0)
+            chart.clear();
 
         return card;
     }

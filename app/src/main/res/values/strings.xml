@@ -40,4 +40,5 @@
     <string name="trackingOff">Statistics about the application behavior will be sent to the developer. (No personal data will be sent)</string>
     <string name="today">Today</string>
     <string name="cardDetailsEntity"><![CDATA[<b>%1$s:</b>]]> %2$s (%3$s %%)</string>
+    <string name="noData">Nothing to show here.</string>
 </resources>
