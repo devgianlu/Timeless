@@ -5,15 +5,13 @@
     android:orientation="horizontal"
     android:padding="4dp">
 
-    <!-- FIXME: Ellipsize start not working -->
+    <!-- FIXME: do ellipsize -->
     <TextView
         android:id="@+id/loggedEntityItem_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:ellipsize="start"
-        android:maxLines="2" />
+        android:layout_weight="1" />
 
     <TextView
         android:id="@+id/loggedEntityItem_time"
