@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "59795410814",
+    "project_id": "timeless-ae23e"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59795410814:android:a4e707586231c2c6",
+        "android_client_info": {
+          "package_name": "com.gianlu.timeless"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPMVvwY8ugwbNs-tyv-LGEh3GdOo86bOI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-78508159-9"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
