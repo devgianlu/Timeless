@@ -75,7 +75,7 @@ public class ProjectFragment extends Fragment {
             public void onRefresh() {
                 WakaTime.getInstance().getRangeSummary(MainFragment.Range.LAST_7_DAYS.getStartAndEnd(), project, new WakaTime.ISummary() {
                     @Override
-                    public void onSummary(List<Summary> summaries, final Summary summary) {
+                    public void onSummary(final List<Summary> summaries, final Summary summary) {
                         final Activity activity = getActivity();
                         if (activity != null) {
                             activity.runOnUiThread(new Runnable() {
@@ -86,6 +86,7 @@ public class ProjectFragment extends Fragment {
 
                                     list.removeAllViews();
                                     list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
+                                    list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                                     list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                                 }
                             });
@@ -107,7 +108,7 @@ public class ProjectFragment extends Fragment {
 
         WakaTime.getInstance().getRangeSummary(MainFragment.Range.LAST_7_DAYS.getStartAndEnd(), project, new WakaTime.ISummary() {
             @Override
-            public void onSummary(List<Summary> summaries, final Summary summary) {
+            public void onSummary(final List<Summary> summaries, final Summary summary) {
                 final Activity activity = getActivity();
                 if (activity != null) {
                     activity.runOnUiThread(new Runnable() {
@@ -119,6 +120,7 @@ public class ProjectFragment extends Fragment {
 
                             list.removeAllViews();
                             list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
+                            list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                             list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                             // TODO: Create project's summary
                         }

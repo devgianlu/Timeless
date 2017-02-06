@@ -16,6 +16,7 @@ import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -26,6 +27,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -304,6 +307,56 @@ public class Summary {
             expand.setVisibility(View.GONE);
             chart.clear();
         }
+
+        return card;
+    }
+
+    public static CardView createLineChartCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, final List<Summary> summaries) {
+        CardView card = (CardView) inflater.inflate(R.layout.line_chart_card, parent, false);
+        final TextView title = (TextView) card.findViewById(R.id.lineChartCard_title);
+        title.setText(titleRes);
+
+        final LineChart chart = (LineChart) card.findViewById(R.id.lineChartCard_chart);
+        chart.setDescription(null);
+        chart.setTouchEnabled(false);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.valueOf((int) (value - summaries.size() + 1));
+            }
+        });
+
+        chart.getAxisRight().setEnabled(false);
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setEnabled(true);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return Utils.timeFormatterHours((long) value, false);
+            }
+        });
+
+        chart.getLegend().setEnabled(false);
+
+        List<Entry> entries = new ArrayList<>();
+        for (int i = 0; i < summaries.size(); i++) {
+            Summary summary = summaries.get(i);
+            entries.add(new Entry(i, summary.total_seconds));
+        }
+
+        LineDataSet set = new LineDataSet(entries, null);
+        set.setDrawValues(false);
+        set.setDrawCircles(false);
+        set.setFillColor(ContextCompat.getColor(context, R.color.colorAccent));
+        set.setFillAlpha(100);
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setColor(ContextCompat.getColor(context, R.color.colorAccent));
+        set.setDrawFilled(true);
+        chart.setData(new LineData(set));
 
         return card;
     }
