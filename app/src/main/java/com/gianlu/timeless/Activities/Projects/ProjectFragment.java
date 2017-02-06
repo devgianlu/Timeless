@@ -57,7 +57,7 @@ public class ProjectFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.project_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
         final ProgressBar loading = (ProgressBar) layout.findViewById(R.id.projectFragment_loading);
@@ -75,7 +75,7 @@ public class ProjectFragment extends Fragment {
             public void onRefresh() {
                 WakaTime.getInstance().getRangeSummary(MainFragment.Range.LAST_7_DAYS.getStartAndEnd(), project, new WakaTime.ISummary() {
                     @Override
-                    public void onSummary(List<Summary> summary, Summary summaries) {
+                    public void onSummary(List<Summary> summaries, final Summary summary) {
                         final Activity activity = getActivity();
                         if (activity != null) {
                             activity.runOnUiThread(new Runnable() {
@@ -84,7 +84,9 @@ public class ProjectFragment extends Fragment {
                                     layout.setRefreshing(false);
                                     error.setVisibility(View.GONE);
 
-                                    // TODO: Don't forget me!
+                                    list.removeAllViews();
+                                    list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
+                                    list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                                 }
                             });
                         }
@@ -105,7 +107,7 @@ public class ProjectFragment extends Fragment {
 
         WakaTime.getInstance().getRangeSummary(MainFragment.Range.LAST_7_DAYS.getStartAndEnd(), project, new WakaTime.ISummary() {
             @Override
-            public void onSummary(List<Summary> summary, Summary summaries) {
+            public void onSummary(List<Summary> summaries, final Summary summary) {
                 final Activity activity = getActivity();
                 if (activity != null) {
                     activity.runOnUiThread(new Runnable() {
@@ -115,6 +117,9 @@ public class ProjectFragment extends Fragment {
                             loading.setVisibility(View.GONE);
                             list.setVisibility(View.VISIBLE);
 
+                            list.removeAllViews();
+                            list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
+                            list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                             // TODO: Create project's summary
                         }
                     });

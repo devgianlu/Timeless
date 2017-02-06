@@ -300,8 +300,10 @@ public class Summary {
             }
         });
 
-        if (total_seconds == 0)
+        if (total_seconds == 0) {
+            expand.setVisibility(View.GONE);
             chart.clear();
+        }
 
         return card;
     }

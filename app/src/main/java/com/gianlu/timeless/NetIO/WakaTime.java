@@ -204,7 +204,7 @@ public class WakaTime {
                             + formatter.format(start)
                             + "&end="
                             + formatter.format(end)
-                            + (project != null ? "&project=" + project.id : ""));
+                            + (project != null ? "&project=" + project.name : ""));
 
                     if (response.getCode() == 200) {
                         handler.onSummary(Summary.fromJSON(response.getBody()),
@@ -254,7 +254,7 @@ public class WakaTime {
     }
 
     public interface ISummary {
-        void onSummary(List<Summary> summary, Summary summaries);
+        void onSummary(List<Summary> summaries, Summary summary);
 
         void onException(Exception ex);
     }

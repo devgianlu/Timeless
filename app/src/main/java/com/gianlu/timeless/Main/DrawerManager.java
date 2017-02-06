@@ -119,16 +119,6 @@ public class DrawerManager {
         });
         drawerList.addView(home, 0);
 
-        View commits = newItem(R.drawable.ic_linear_scale_black_48dp, context.getString(R.string.commits), false);
-        commits.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener != null)
-                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.COMMITS));
-            }
-        });
-        drawerList.addView(commits, 1);
-
         View projects = newItem(R.drawable.ic_content_paste_black_48dp, context.getString(R.string.projects), false);
         projects.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +127,17 @@ public class DrawerManager {
                     setDrawerState(false, listener.onListItemSelected(DrawerListItems.PROJECTS));
             }
         });
-        drawerList.addView(projects, 2);
+        drawerList.addView(projects, 1);
+
+        View commits = newItem(R.drawable.ic_linear_scale_black_48dp, context.getString(R.string.commits), false);
+        commits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.COMMITS));
+            }
+        });
+        drawerList.addView(commits, 2);
 
         /* TODO: Summaries
         View summaries = newItem(R.drawable.ic_book_black_48dp, context.getString(R.string.summaries), false);

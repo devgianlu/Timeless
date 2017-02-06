@@ -59,11 +59,10 @@ public class MainFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                list.removeAllViews();
                                 layout.setRefreshing(false);
                                 error.setVisibility(View.GONE);
 
-
+                                list.removeAllViews();
                                 list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
                                 if (range != Range.TODAY)
                                     list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
@@ -109,7 +108,7 @@ public class MainFragment extends Fragment {
                         list.setVisibility(View.VISIBLE);
                         error.setVisibility(View.GONE);
 
-
+                        list.removeAllViews();
                         list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
                         if (range != Range.TODAY)
                             list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
