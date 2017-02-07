@@ -55,6 +55,8 @@ public class LoadingActivity extends AppCompatActivity {
             }
         }, 1000);
 
+        CommonUtils.logCleaner(this);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
