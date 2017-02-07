@@ -5,7 +5,6 @@
     android:orientation="horizontal"
     android:padding="4dp">
 
-    <!-- FIXME: do ellipsize -->
     <TextView
         android:id="@+id/loggedEntityItem_name"
         android:layout_width="0dp"

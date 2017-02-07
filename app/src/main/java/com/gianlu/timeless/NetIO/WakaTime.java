@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
+import com.gianlu.timeless.Google.UncaughtExceptionHandler;
 import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.Objects.Leader;
 import com.gianlu.timeless.Objects.Project;
@@ -81,6 +82,8 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
                 try {
                     String refreshToken = loadRefreshToken(context);
                     if (refreshToken == null)
@@ -104,6 +107,8 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current");
 
@@ -123,6 +128,8 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects");
 
@@ -151,6 +158,8 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects/" + project.id + "/commits?page=" + page);
 
@@ -170,6 +179,8 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/leaders");
 
@@ -231,6 +242,8 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
                 OAuth2Authorization auth = service.extractAuthorization(uri);
                 if (Objects.equals(auth.getState(), lastState)) {
                     try {

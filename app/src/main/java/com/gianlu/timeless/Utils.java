@@ -24,7 +24,7 @@ public class Utils {
 
     public static int getColor(int pos) {
         int i = pos;
-        while (i > COLORS.length)
+        while (i >= COLORS.length)
             i = i - COLORS.length;
 
         return COLORS[i];

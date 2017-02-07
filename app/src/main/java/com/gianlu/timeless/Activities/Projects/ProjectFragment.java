@@ -88,7 +88,8 @@ public class ProjectFragment extends Fragment {
                                     list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
                                     list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                                     list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
-                                    list.addView(Summary.createListCard(getContext(), inflater, list, R.string.filesSummary, summary.entities));
+                                    if (!summary.entities.isEmpty())
+                                        list.addView(Summary.createListCard(inflater, list, R.string.filesSummary, summary.entities));
                                 }
                             });
                         }
@@ -123,7 +124,8 @@ public class ProjectFragment extends Fragment {
                             list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
                             list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                             list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
-                            list.addView(Summary.createListCard(getContext(), inflater, list, R.string.filesSummary, summary.entities));
+                            if (!summary.entities.isEmpty())
+                                list.addView(Summary.createListCard(inflater, list, R.string.filesSummary, summary.entities));
                         }
                     });
                 }

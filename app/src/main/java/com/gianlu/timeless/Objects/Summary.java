@@ -372,13 +372,14 @@ public class Summary {
         return card;
     }
 
-    public static CardView createListCard(Context context, LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
+    public static CardView createListCard(LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
         CardView card = (CardView) inflater.inflate(R.layout.list_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.listCard_title);
         title.setText(titleRes);
 
         final LinearLayout list = (LinearLayout) card.findViewById(R.id.listCard_list);
         for (LoggedEntity entity : entities)
+            if (entity.total_seconds > 0)
             list.addView(LoggedEntity.createSimpleItem(inflater, list, entity));
 
         return card;

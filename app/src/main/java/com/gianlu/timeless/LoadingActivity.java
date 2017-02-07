@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Google.UncaughtExceptionHandler;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.User;
 
@@ -25,6 +26,7 @@ public class LoadingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         CommonUtils.DEBUG = BuildConfig.DEBUG;
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun", true)) {
             startActivity(new Intent(this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
