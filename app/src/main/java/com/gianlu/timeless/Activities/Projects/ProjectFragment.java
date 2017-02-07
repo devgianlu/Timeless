@@ -89,7 +89,7 @@ public class ProjectFragment extends Fragment {
                                     list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                                     list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                                     if (!summary.entities.isEmpty())
-                                        list.addView(Summary.createListCard(inflater, list, R.string.filesSummary, summary.entities));
+                                        list.addView(Summary.createFileListCard(inflater, list, R.string.filesSummary, summary.entities));
                                 }
                             });
                         }
@@ -108,6 +108,7 @@ public class ProjectFragment extends Fragment {
             }
         });
 
+        // TODO: Select date range
         WakaTime.getInstance().getRangeSummary(MainFragment.Range.LAST_7_DAYS.getStartAndEnd(), project, new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
@@ -125,7 +126,7 @@ public class ProjectFragment extends Fragment {
                             list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
                             list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
                             if (!summary.entities.isEmpty())
-                                list.addView(Summary.createListCard(inflater, list, R.string.filesSummary, summary.entities));
+                                list.addView(Summary.createFileListCard(inflater, list, R.string.filesSummary, summary.entities));
                         }
                     });
                 }

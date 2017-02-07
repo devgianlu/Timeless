@@ -1,13 +1,5 @@
 package com.gianlu.timeless.Objects;
 
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-class LoggedEntity {
+public class LoggedEntity {
     public final String name;
     public long total_seconds;
 
@@ -40,13 +32,6 @@ class LoggedEntity {
         return sum;
     }
 
-    public static LinearLayout createSimpleItem(LayoutInflater inflater, ViewGroup parent, LoggedEntity entity) {
-        SimpleViewHolder holder = new SimpleViewHolder((LinearLayout) inflater.inflate(R.layout.logged_entity_item, parent, false));
-        holder.name.setText(entity.name);
-        holder.time.setText(Utils.timeFormatterHours(entity.total_seconds, true));
-        return holder.rootView;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof LoggedEntity) {
@@ -66,19 +51,6 @@ class LoggedEntity {
                 return -1;
             else
                 return 1;
-        }
-    }
-
-    private static class SimpleViewHolder {
-        final LinearLayout rootView;
-        final TextView name;
-        final TextView time;
-
-        public SimpleViewHolder(LinearLayout rootView) {
-            this.rootView = rootView;
-
-            name = (TextView) rootView.findViewById(R.id.loggedEntityItem_name);
-            time = (TextView) rootView.findViewById(R.id.loggedEntityItem_time);
         }
     }
 }

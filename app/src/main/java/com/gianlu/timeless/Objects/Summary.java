@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Activities.Projects.FilesAdapter;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.BarChart;
@@ -372,15 +375,14 @@ public class Summary {
         return card;
     }
 
-    public static CardView createListCard(LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
+    public static CardView createFileListCard(LayoutInflater inflater, ViewGroup parent, @StringRes int titleRes, List<LoggedEntity> entities) {
         CardView card = (CardView) inflater.inflate(R.layout.list_card, parent, false);
         final TextView title = (TextView) card.findViewById(R.id.listCard_title);
         title.setText(titleRes);
 
-        final LinearLayout list = (LinearLayout) card.findViewById(R.id.listCard_list);
-        for (LoggedEntity entity : entities)
-            if (entity.total_seconds > 0)
-            list.addView(LoggedEntity.createSimpleItem(inflater, list, entity));
+        final RecyclerView list = (RecyclerView) card.findViewById(R.id.listCard_list);
+        list.setLayoutManager(new LinearLayoutManager(inflater.getContext(), LinearLayoutManager.VERTICAL, false));
+        list.setAdapter(new FilesAdapter(inflater.getContext(), entities));
 
         return card;
     }
