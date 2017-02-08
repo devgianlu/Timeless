@@ -4,12 +4,12 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
-import com.gianlu.timeless.Google.UncaughtExceptionHandler;
 import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.Objects.Leader;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.Objects.User;
+import com.gianlu.timeless.UncaughtExceptionHandler;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;

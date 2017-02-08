@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.Google.UncaughtExceptionHandler;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.User;
 

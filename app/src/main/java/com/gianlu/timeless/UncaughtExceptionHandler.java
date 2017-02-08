@@ -1,11 +1,8 @@
-package com.gianlu.timeless.Google;
+package com.gianlu.timeless;
 
 import android.content.Context;
 
 import com.gianlu.commonutils.UncaughtExceptionActivity;
-import com.gianlu.timeless.BuildConfig;
-import com.gianlu.timeless.R;
-import com.gianlu.timeless.ThisApplication;
 import com.google.android.gms.analytics.HitBuilders;
 
 import java.io.PrintWriter;
