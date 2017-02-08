@@ -37,7 +37,7 @@ public class LeadersActivity extends AppCompatActivity {
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getLeaders(new WakaTime.ILeaders() {
+                WakaTime.getInstance().getLeaders(LeadersActivity.this, new WakaTime.ILeaders() {
                     @Override
                     public void onLeaders(final List<Leader> leaders) {
                         adapter = new LeadersAdapter(LeadersActivity.this, CurrentUser.get(), leaders);
@@ -61,7 +61,7 @@ public class LeadersActivity extends AppCompatActivity {
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        WakaTime.getInstance().getLeaders(new WakaTime.ILeaders() {
+        WakaTime.getInstance().getLeaders(this, new WakaTime.ILeaders() {
             @Override
             public void onLeaders(final List<Leader> leaders) {
                 adapter = new LeadersAdapter(LeadersActivity.this, CurrentUser.get(), leaders);

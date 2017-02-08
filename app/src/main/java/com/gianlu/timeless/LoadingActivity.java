@@ -26,7 +26,7 @@ public class LoadingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         CommonUtils.DEBUG = BuildConfig.DEBUG;
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun", true)) {
             startActivity(new Intent(this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
@@ -64,7 +64,7 @@ public class LoadingActivity extends AppCompatActivity {
                     WakaTime.getInstance().refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
                         @Override
                         public void onRefreshed() {
-                            WakaTime.getInstance().getCurrentUser(new WakaTime.IUser() {
+                            WakaTime.getInstance().getCurrentUser(LoadingActivity.this, new WakaTime.IUser() {
                                 @Override
                                 public void onUser(User user) {
                                     CurrentUser.set(user);

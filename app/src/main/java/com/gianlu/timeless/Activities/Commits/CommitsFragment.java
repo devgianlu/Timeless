@@ -43,7 +43,7 @@ public class CommitsFragment extends Fragment {
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getCommits((Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
+                WakaTime.getInstance().getCommits(getContext(), (Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
                     @Override
                     public void onCommits(final Commits commits) {
                         final Activity activity = getActivity();
@@ -72,7 +72,7 @@ public class CommitsFragment extends Fragment {
             }
         });
 
-        WakaTime.getInstance().getCommits((Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
+        WakaTime.getInstance().getCommits(getContext(), (Project) getArguments().getSerializable("project"), new WakaTime.ICommits() {
             @Override
             public void onCommits(final Commits commits) {
                 final Activity activity = getActivity();

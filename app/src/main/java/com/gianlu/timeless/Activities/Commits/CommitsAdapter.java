@@ -41,7 +41,7 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     updating = true;
                     commits.commits.add(null);
                     notifyItemInserted(commits.commits.size() - 1);
-                    WakaTime.getInstance().getCommits(commits.project, commits.next_page, new WakaTime.ICommits() {
+                    WakaTime.getInstance().getCommits(context, commits.project, commits.next_page, new WakaTime.ICommits() {
                         @Override
                         public void onCommits(Commits newCommits) {
                             commits.commits.remove(commits.commits.size() - 1);

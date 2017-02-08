@@ -82,7 +82,7 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
 
                 try {
                     String refreshToken = loadRefreshToken(context);
@@ -103,11 +103,11 @@ public class WakaTime {
         return service.getAuthorizationUrl();
     }
 
-    public void getCurrentUser(final IUser handler) {
+    public void getCurrentUser(final Context context, final IUser handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
 
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current");
@@ -124,11 +124,11 @@ public class WakaTime {
         }).start();
     }
 
-    public void getProjects(final IProjects handler) {
+    public void getProjects(final Context context, final IProjects handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
 
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects");
@@ -150,15 +150,15 @@ public class WakaTime {
         }).start();
     }
 
-    public void getCommits(final Project project, final ICommits handler) {
-        getCommits(project, 1, handler);
+    public void getCommits(final Context context, final Project project, final ICommits handler) {
+        getCommits(context, project, 1, handler);
     }
 
-    public void getCommits(final Project project, final int page, final ICommits handler) {
+    public void getCommits(final Context context, final Project project, final int page, final ICommits handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
 
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects/" + project.id + "/commits?page=" + page);
@@ -175,11 +175,11 @@ public class WakaTime {
         }).start();
     }
 
-    public void getLeaders(final ILeaders handler) {
+    public void getLeaders(final Context context, final ILeaders handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
 
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/leaders");
@@ -242,7 +242,7 @@ public class WakaTime {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
 
                 OAuth2Authorization auth = service.extractAuthorization(uri);
                 if (Objects.equals(auth.getState(), lastState)) {

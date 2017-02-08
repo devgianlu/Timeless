@@ -57,7 +57,7 @@ public class CommitsActivity extends AppCompatActivity {
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        WakaTime.getInstance().getProjects(new WakaTime.IProjects() {
+        WakaTime.getInstance().getProjects(this, new WakaTime.IProjects() {
             @Override
             public void onProjects(final List<Project> projects) {
                 for (Project project : projects)
