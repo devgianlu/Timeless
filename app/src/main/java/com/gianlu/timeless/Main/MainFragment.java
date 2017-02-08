@@ -5,15 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Summary;
@@ -40,7 +42,8 @@ public class MainFragment extends Fragment {
         final SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.main_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
         final ProgressBar loading = (ProgressBar) layout.findViewById(R.id.stats_loading);
-        final LinearLayout list = (LinearLayout) layout.findViewById(R.id.stats_list);
+        final RecyclerView list = (RecyclerView) layout.findViewById(R.id.stats_list);
+        list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         final TextView error = (TextView) layout.findViewById(R.id.stats_error);
         final Range range = (Range) getArguments().getSerializable("range");
 
@@ -62,14 +65,17 @@ public class MainFragment extends Fragment {
                                 layout.setRefreshing(false);
                                 error.setVisibility(View.GONE);
 
-                                list.removeAllViews();
-                                list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
+                                CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
+                                        .addSummary(summary);
+
                                 if (range != Range.TODAY)
-                                    list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
-                                list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.projectsSummary, summary.projects));
-                                list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
-                                list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.editorsSummary, summary.editors));
-                                list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.operatingSystemsSummary, summary.operating_systems));
+                                    cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
+
+                                list.setAdapter(new CardsAdapter(getContext(), cardsList
+                                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
                             }
                         });
                     }
@@ -108,14 +114,17 @@ public class MainFragment extends Fragment {
                         list.setVisibility(View.VISIBLE);
                         error.setVisibility(View.GONE);
 
-                        list.removeAllViews();
-                        list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
+                        CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
+                                .addSummary(summary);
+
                         if (range != Range.TODAY)
-                            list.addView(Summary.createProjectsBarChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
-                        list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.projectsSummary, summary.projects));
-                        list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
-                        list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.editorsSummary, summary.editors));
-                        list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.operatingSystemsSummary, summary.operating_systems));
+                            cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
+
+                        list.setAdapter(new CardsAdapter(getContext(), cardsList
+                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
                     }
                 });
             }

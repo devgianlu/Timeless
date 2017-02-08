@@ -6,18 +6,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.CommitsActivity;
+import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Main.MainFragment;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.Project;
@@ -57,12 +59,13 @@ public class ProjectFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         final SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.project_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
         final ProgressBar loading = (ProgressBar) layout.findViewById(R.id.projectFragment_loading);
         final TextView error = (TextView) layout.findViewById(R.id.projectFragment_error);
-        final LinearLayout list = (LinearLayout) layout.findViewById(R.id.projectFragment_list);
+        final RecyclerView list = (RecyclerView) layout.findViewById(R.id.projectFragment_list);
+        list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         final Project project = (Project) getArguments().getSerializable("project");
         if (project == null) {
             loading.setEnabled(false);
@@ -84,12 +87,11 @@ public class ProjectFragment extends Fragment {
                                     layout.setRefreshing(false);
                                     error.setVisibility(View.GONE);
 
-                                    list.removeAllViews();
-                                    list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
-                                    list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
-                                    list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
-                                    if (!summary.entities.isEmpty())
-                                        list.addView(Summary.createFileListCard(inflater, list, R.string.filesSummary, summary.entities));
+                                    list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                            .addSummary(summary)
+                                            .addLineChart(getString(R.string.periodActivity), summaries)
+                                            .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                            .addFileList(getString(R.string.filesSummary), summary.entities)));
                                 }
                             });
                         }
@@ -121,12 +123,11 @@ public class ProjectFragment extends Fragment {
                             loading.setVisibility(View.GONE);
                             list.setVisibility(View.VISIBLE);
 
-                            list.removeAllViews();
-                            list.addView(Summary.createSummaryCard(getContext(), inflater, list, summary));
-                            list.addView(Summary.createLineChartCard(getContext(), inflater, list, R.string.periodActivity, summaries));
-                            list.addView(Summary.createPieChartCard(getContext(), inflater, list, R.string.languagesSummary, summary.languages));
-                            if (!summary.entities.isEmpty())
-                                list.addView(Summary.createFileListCard(inflater, list, R.string.filesSummary, summary.entities));
+                            list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                    .addSummary(summary)
+                                    .addLineChart(getString(R.string.periodActivity), summaries)
+                                    .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                    .addFileList(getString(R.string.filesSummary), summary.entities)));
                         }
                     });
                 }
