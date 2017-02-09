@@ -1,48 +1,15 @@
 package com.gianlu.timeless.Listing;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.Activities.Projects.FilesAdapter;
 import com.gianlu.timeless.Objects.LoggedEntity;
 import com.gianlu.timeless.Objects.Summary;
-import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LegendEntry;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 
 public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_SUMMARY = 0;
@@ -85,231 +52,18 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "deprecation"})
+    @SuppressWarnings("unchecked")
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SummaryViewHolder) {
-            Summary summary = (Summary) objs.objs.get(position);
-            SummaryViewHolder castHolder = (SummaryViewHolder) holder;
-            castHolder.container.addView(CommonUtils.fastTextView(context, Html.fromHtml(context.getString(R.string.totalTimeSpent, Utils.timeFormatterHours(summary.total_seconds, true)))));
+            ((SummaryViewHolder) holder).bind(context, (Summary) objs.objs.get(position));
         } else if (holder instanceof LineChartViewHolder) {
-            final List<Summary> summaries = (List<Summary>) objs.objs.get(position);
-            LineChartViewHolder castHolder = (LineChartViewHolder) holder;
-            castHolder.title.setText(objs.titles.get(position));
-
-            castHolder.chart.setDescription(null);
-            castHolder.chart.setTouchEnabled(false);
-
-            XAxis xAxis = castHolder.chart.getXAxis();
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setValueFormatter(new IAxisValueFormatter() {
-                @Override
-                public String getFormattedValue(float value, AxisBase axis) {
-                    return String.valueOf((int) (value - summaries.size() + 1));
-                }
-            });
-
-            castHolder.chart.getAxisRight().setEnabled(false);
-            YAxis leftAxis = castHolder.chart.getAxisLeft();
-            leftAxis.setEnabled(true);
-            leftAxis.setAxisMinimum(0f);
-            leftAxis.setValueFormatter(new IAxisValueFormatter() {
-                @Override
-                public String getFormattedValue(float value, AxisBase axis) {
-                    return Utils.timeFormatterHours((long) value, false);
-                }
-            });
-
-            castHolder.chart.getLegend().setEnabled(false);
-
-            List<Entry> entries = new ArrayList<>();
-            for (int i = 0; i < summaries.size(); i++) {
-                Summary summary = summaries.get(i);
-                entries.add(new Entry(i, summary.total_seconds));
-            }
-
-            LineDataSet set = new LineDataSet(entries, null);
-            set.setDrawValues(false);
-            set.setDrawCircles(false);
-            set.setFillColor(ContextCompat.getColor(context, R.color.colorAccent));
-            set.setFillAlpha(100);
-            set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-            set.setColor(ContextCompat.getColor(context, R.color.colorAccent));
-            set.setDrawFilled(true);
-            castHolder.chart.setData(new LineData(set));
+            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position));
         } else if (holder instanceof BarChartViewHolder) {
-            final List<Summary> summaries = (List<Summary>) objs.objs.get(position);
-            BarChartViewHolder castHolder = (BarChartViewHolder) holder;
-
-            castHolder.title.setText(objs.titles.get(position));
-
-            castHolder.chart.setDescription(null);
-            castHolder.chart.setTouchEnabled(false);
-
-            XAxis xAxis = castHolder.chart.getXAxis();
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setValueFormatter(new IAxisValueFormatter() {
-                @Override
-                public String getFormattedValue(float value, AxisBase axis) {
-                    return String.valueOf((int) (value - summaries.size() + 1));
-                }
-            });
-
-            castHolder.chart.getAxisRight().setEnabled(false);
-            YAxis leftAxis = castHolder.chart.getAxisLeft();
-            leftAxis.setEnabled(true);
-            leftAxis.setAxisMinimum(0f);
-            leftAxis.setValueFormatter(new IAxisValueFormatter() {
-                @Override
-                public String getFormattedValue(float value, AxisBase axis) {
-                    return Utils.timeFormatterHours((long) value, false);
-                }
-            });
-
-            final Legend legend = castHolder.chart.getLegend();
-            legend.setWordWrapEnabled(true);
-
-            final List<BarEntry> entries = new ArrayList<>();
-            final Map<String, Integer> colorsMap = new HashMap<>();
-            final List<Integer> colors = new ArrayList<>();
-            List<LegendEntry> legendEntries = new ArrayList<>();
-            int colorCount = 0;
-            for (int i = 0; i < summaries.size(); i++) {
-                Summary summary = summaries.get(i);
-                float[] array = new float[summary.projects.size()];
-
-                for (int j = 0; j < summary.projects.size(); j++) {
-                    LoggedEntity entity = summary.projects.get(j);
-                    if (colorsMap.containsKey(entity.name)) {
-                        colors.add(colorsMap.get(entity.name));
-                    } else {
-                        int color = ContextCompat.getColor(context, Utils.getColor(colorCount));
-                        colors.add(color);
-                        colorsMap.put(entity.name, color);
-
-                        LegendEntry legendEntry = new LegendEntry();
-                        legendEntry.label = entity.name;
-                        legendEntry.formColor = color;
-                        legendEntries.add(legendEntry);
-
-                        colorCount++;
-                    }
-
-                    array[j] = summary.projects.get(j).total_seconds;
-                }
-
-                entries.add(new BarEntry(i, array));
-            }
-            Collections.reverse(legendEntries);
-            legend.setCustom(legendEntries);
-
-            BarDataSet set = new BarDataSet(entries, null);
-            set.setDrawValues(false);
-            set.setColors(colors);
-
-            castHolder.chart.setData(new BarData(set));
-            castHolder.chart.setFitBars(true);
+            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position));
         } else if (holder instanceof PieChartViewHolder) {
-            final List<LoggedEntity> entities = (List<LoggedEntity>) objs.objs.get(position);
-            final PieChartViewHolder castHolder = (PieChartViewHolder) holder;
-            castHolder.title.setText(objs.titles.get(position));
-
-            castHolder.chart.setDescription(null);
-            castHolder.chart.setNoDataText(context.getString(R.string.noData));
-            castHolder.chart.setDrawEntryLabels(false);
-            castHolder.chart.setRotationEnabled(false);
-
-            final Legend legend = castHolder.chart.getLegend();
-            legend.setWordWrapEnabled(true);
-
-            final List<PieEntry> entries = new ArrayList<>();
-            for (LoggedEntity entity : entities)
-                entries.add(new PieEntry(entity.total_seconds, entity.name));
-
-            PieDataSet set = new PieDataSet(entries, null);
-            set.setValueTextSize(15);
-            set.setSliceSpace(0);
-            set.setValueTextColor(ContextCompat.getColor(context, android.R.color.white));
-            set.setValueFormatter(new IValueFormatter() {
-                @Override
-                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                    if (value < 10)
-                        return "";
-                    else
-                        return String.format(Locale.getDefault(), "%.2f", value) + "%";
-                }
-            });
-            set.setColors(Utils.getColors(), context);
-            castHolder.chart.setData(new PieData(set));
-            castHolder.chart.setUsePercentValues(true);
-
-            castHolder.expand.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CommonUtils.animateCollapsingArrowBellows(castHolder.expand, CommonUtils.isExpanded(castHolder.container));
-
-                    if (CommonUtils.isExpanded(castHolder.container))
-                        CommonUtils.collapse(castHolder.container);
-                    else
-                        CommonUtils.expand(castHolder.container);
-                }
-            });
-
-            long total_seconds = LoggedEntity.sumSeconds(entities);
-            for (LoggedEntity entity : entities) {
-                TextView text = CommonUtils.fastTextView(context,
-                        Html.fromHtml(
-                                context.getString(
-                                        R.string.cardDetailsEntity,
-                                        entity.name,
-                                        Utils.timeFormatterHours(entity.total_seconds, true),
-                                        String.format(Locale.getDefault(),
-                                                "%.2f",
-                                                ((float) entity.total_seconds) / ((float) total_seconds) * 100))));
-                text.setTag(entity.name);
-                castHolder.details.addView(text);
-            }
-
-            castHolder.chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-                @Override
-                public void onValueSelected(Entry e, Highlight h) {
-                    if (!CommonUtils.isExpanded(castHolder.container))
-                        castHolder.expand.callOnClick();
-
-                    for (int i = 0; i < castHolder.details.getChildCount(); i++) {
-                        View view = castHolder.details.getChildAt(i);
-                        if (view instanceof TextView) {
-                            if (Objects.equals(view.getTag(), ((PieEntry) e).getLabel()))
-                                ((TextView) view).setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
-                            else
-                                ((TextView) view).setTextColor(Utils.getTextViewDefaultColor(context));
-                        }
-                    }
-                }
-
-                @Override
-                public void onNothingSelected() {
-                    if (CommonUtils.isExpanded(castHolder.container))
-                        castHolder.expand.callOnClick();
-
-                    for (int i = 0; i < castHolder.details.getChildCount(); i++) {
-                        View view = castHolder.details.getChildAt(i);
-                        if (view instanceof TextView)
-                            ((TextView) view).setTextColor(Utils.getTextViewDefaultColor(context));
-                    }
-                }
-            });
-
-            if (total_seconds == 0) {
-                castHolder.expand.setVisibility(View.GONE);
-                castHolder.chart.clear();
-            }
+            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
         } else if (holder instanceof ListViewHolder) {
-            final List<LoggedEntity> entities = (List<LoggedEntity>) objs.objs.get(position);
-            final ListViewHolder castHolder = (ListViewHolder) holder;
-            castHolder.title.setText(objs.titles.get(position));
-
-            castHolder.list.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-            castHolder.list.setAdapter(new FilesAdapter(context, entities));
+            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
         }
     }
 
