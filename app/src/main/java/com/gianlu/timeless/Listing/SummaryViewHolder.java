@@ -28,5 +28,12 @@ class SummaryViewHolder extends RecyclerView.ViewHolder {
                         context.getString(
                                 R.string.totalTimeSpent,
                                 Utils.timeFormatterHours(summary.total_seconds, true)))));
+
+        if (summary.sumNumber > 1) {
+            long average = summary.total_seconds / summary.sumNumber;
+            container.addView(CommonUtils.fastTextView(context,
+                    Html.fromHtml(
+                            context.getString(R.string.averageTimeSpent, Utils.timeFormatterHours(average, true)))));
+        }
     }
 }

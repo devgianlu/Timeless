@@ -20,9 +20,11 @@ public class Summary {
     public final List<LoggedEntity> entities;
     public long total_seconds;
     public long date;
+    public int sumNumber;
 
     private Summary() {
         total_seconds = 0;
+        sumNumber = 0;
         date = -1;
         projects = new ArrayList<>();
         languages = new ArrayList<>();
@@ -86,6 +88,7 @@ public class Summary {
             LoggedEntity.sum(rangeSummary.projects, summary.projects);
             LoggedEntity.sum(rangeSummary.operating_systems, summary.operating_systems);
             LoggedEntity.sum(rangeSummary.entities, summary.entities);
+            rangeSummary.sumNumber++;
         }
 
         Collections.sort(rangeSummary.entities, new LoggedEntity.TotalSecondsComparator());

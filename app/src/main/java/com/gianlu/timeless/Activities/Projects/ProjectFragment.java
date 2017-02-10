@@ -115,6 +115,7 @@ public class ProjectFragment extends Fragment {
             }
         });
 
+        // FIXME: WTF?!
         WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
