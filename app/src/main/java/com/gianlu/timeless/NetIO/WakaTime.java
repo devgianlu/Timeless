@@ -203,11 +203,7 @@ public class WakaTime {
         getRangeSummary(startAndEnd.first, startAndEnd.second, null, handler);
     }
 
-    public void getRangeSummary(Pair<Date, Date> startAndEnd, Project project, final ISummary handler) {
-        getRangeSummary(startAndEnd.first, startAndEnd.second, project, handler);
-    }
-
-    private void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary handler) {
+    public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {

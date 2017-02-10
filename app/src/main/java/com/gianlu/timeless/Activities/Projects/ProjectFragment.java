@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,15 +27,17 @@ import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
+import java.util.Date;
 import java.util.List;
 
 public class ProjectFragment extends Fragment {
-    public static ProjectFragment getInstance(Project project, WakaTime.Range range) {
+    public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
         ProjectFragment fragment = new ProjectFragment();
         fragment.setHasOptionsMenu(true);
         Bundle args = new Bundle();
         args.putSerializable("project", project);
-        args.putSerializable("range", range);
+        args.putSerializable("start", range.first);
+        args.putSerializable("end", range.second);
         args.putString("title", project.name);
         fragment.setArguments(args);
         return fragment;
@@ -67,8 +70,9 @@ public class ProjectFragment extends Fragment {
         final RecyclerView list = (RecyclerView) layout.findViewById(R.id.projectFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         final Project project = (Project) getArguments().getSerializable("project");
-        final WakaTime.Range range = (WakaTime.Range) getArguments().getSerializable("range");
-        if (project == null || range == null) {
+        final Date start = (Date) getArguments().getSerializable("start");
+        final Date end = (Date) getArguments().getSerializable("end");
+        if (project == null || start == null || end == null) {
             loading.setEnabled(false);
             error.setVisibility(View.VISIBLE);
             return layout;
@@ -77,7 +81,7 @@ public class ProjectFragment extends Fragment {
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), project, new WakaTime.ISummary() {
+                WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
                     @Override
                     public void onSummary(final List<Summary> summaries, final Summary summary) {
                         final Activity activity = getActivity();
@@ -111,7 +115,7 @@ public class ProjectFragment extends Fragment {
             }
         });
 
-        WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), project, new WakaTime.ISummary() {
+        WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
                 final Activity activity = getActivity();
