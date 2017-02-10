@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +21,10 @@ import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class MainFragment extends Fragment {
-    public static MainFragment getInstance(Context context, Range range) {
+    public static MainFragment getInstance(Context context, WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
         args.putString("title", range.getFormal(context));
@@ -45,7 +42,7 @@ public class MainFragment extends Fragment {
         final RecyclerView list = (RecyclerView) layout.findViewById(R.id.stats_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         final TextView error = (TextView) layout.findViewById(R.id.stats_error);
-        final Range range = (Range) getArguments().getSerializable("range");
+        final WakaTime.Range range = (WakaTime.Range) getArguments().getSerializable("range");
 
         if (range == null) {
             loading.setEnabled(false);
@@ -68,7 +65,7 @@ public class MainFragment extends Fragment {
                                 CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
                                         .addSummary(summary);
 
-                                if (range != Range.TODAY)
+                                if (range != WakaTime.Range.TODAY)
                                     cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
 
                                 list.setAdapter(new CardsAdapter(getContext(), cardsList
@@ -117,7 +114,7 @@ public class MainFragment extends Fragment {
                         CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
                                 .addSummary(summary);
 
-                        if (range != Range.TODAY)
+                        if (range != WakaTime.Range.TODAY)
                             cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
 
                         list.setAdapter(new CardsAdapter(getContext(), cardsList
@@ -153,42 +150,5 @@ public class MainFragment extends Fragment {
         });
 
         return layout;
-    }
-
-    public enum Range {
-        TODAY,
-        LAST_7_DAYS,
-        LAST_30_DAYS;
-
-        public String getFormal(Context context) {
-            switch (this) {
-                case TODAY:
-                    return context.getString(R.string.today);
-                default:
-                case LAST_7_DAYS:
-                    return context.getString(R.string.last_7_days);
-                case LAST_30_DAYS:
-                    return context.getString(R.string.last_30_days);
-            }
-        }
-
-        public Pair<Date, Date> getStartAndEnd() {
-            Calendar cal = Calendar.getInstance();
-            Date end = cal.getTime();
-
-            switch (this) {
-                case TODAY:
-                    break;
-                default:
-                case LAST_7_DAYS:
-                    cal.add(Calendar.DATE, -7);
-                    break;
-                case LAST_30_DAYS:
-                    cal.add(Calendar.DATE, -30);
-                    break;
-            }
-
-            return new Pair<>(cal.getTime(), end);
-        }
     }
 }

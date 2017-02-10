@@ -44,4 +44,5 @@
     <string name="noData">Nothing to show here.</string>
     <string name="filesSummary">Total time spent on each file</string>
     <string name="scribejava">Licensed under the MIT license</string>
+    <string name="selectRange">Select range</string>
 </resources>

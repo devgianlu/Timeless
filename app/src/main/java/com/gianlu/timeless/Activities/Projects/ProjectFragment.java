@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
-import com.gianlu.timeless.Main.MainFragment;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
@@ -30,11 +29,12 @@ import com.gianlu.timeless.Utils;
 import java.util.List;
 
 public class ProjectFragment extends Fragment {
-    public static ProjectFragment getInstance(Project project) {
+    public static ProjectFragment getInstance(Project project, WakaTime.Range range) {
         ProjectFragment fragment = new ProjectFragment();
         fragment.setHasOptionsMenu(true);
         Bundle args = new Bundle();
         args.putSerializable("project", project);
+        args.putSerializable("range", range);
         args.putString("title", project.name);
         fragment.setArguments(args);
         return fragment;
@@ -67,7 +67,8 @@ public class ProjectFragment extends Fragment {
         final RecyclerView list = (RecyclerView) layout.findViewById(R.id.projectFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         final Project project = (Project) getArguments().getSerializable("project");
-        if (project == null) {
+        final WakaTime.Range range = (WakaTime.Range) getArguments().getSerializable("range");
+        if (project == null || range == null) {
             loading.setEnabled(false);
             error.setVisibility(View.VISIBLE);
             return layout;
@@ -76,7 +77,7 @@ public class ProjectFragment extends Fragment {
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getRangeSummary(MainFragment.Range.LAST_7_DAYS.getStartAndEnd(), project, new WakaTime.ISummary() {
+                WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), project, new WakaTime.ISummary() {
                     @Override
                     public void onSummary(final List<Summary> summaries, final Summary summary) {
                         final Activity activity = getActivity();
@@ -110,8 +111,7 @@ public class ProjectFragment extends Fragment {
             }
         });
 
-        // TODO: Select date range
-        WakaTime.getInstance().getRangeSummary(MainFragment.Range.LAST_7_DAYS.getStartAndEnd(), project, new WakaTime.ISummary() {
+        WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), project, new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
                 final Activity activity = getActivity();

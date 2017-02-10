@@ -18,6 +18,7 @@ import com.gianlu.timeless.Activities.ProjectsActivity;
 import com.gianlu.timeless.Main.DrawerManager;
 import com.gianlu.timeless.Main.MainFragment;
 import com.gianlu.timeless.Main.PagerAdapter;
+import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.User;
 
 public class MainActivity extends AppCompatActivity {
@@ -78,9 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
         pager.setOffscreenPageLimit(3);
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
-                MainFragment.getInstance(this, MainFragment.Range.TODAY),
-                MainFragment.getInstance(this, MainFragment.Range.LAST_7_DAYS),
-                MainFragment.getInstance(this, MainFragment.Range.LAST_30_DAYS)));
+                MainFragment.getInstance(this, WakaTime.Range.TODAY),
+                MainFragment.getInstance(this, WakaTime.Range.LAST_7_DAYS),
+                MainFragment.getInstance(this, WakaTime.Range.LAST_30_DAYS)));
 
         tabLayout.setupWithViewPager(pager);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

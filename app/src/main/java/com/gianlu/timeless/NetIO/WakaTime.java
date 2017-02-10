@@ -9,6 +9,7 @@ import com.gianlu.timeless.Objects.Leader;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.Objects.User;
+import com.gianlu.timeless.R;
 import com.gianlu.timeless.UncaughtExceptionHandler;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
@@ -34,6 +35,7 @@ import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -258,6 +260,43 @@ public class WakaTime {
                 }
             }
         }).start();
+    }
+
+    public enum Range {
+        TODAY,
+        LAST_7_DAYS,
+        LAST_30_DAYS;
+
+        public String getFormal(Context context) {
+            switch (this) {
+                case TODAY:
+                    return context.getString(R.string.today);
+                default:
+                case LAST_7_DAYS:
+                    return context.getString(R.string.last_7_days);
+                case LAST_30_DAYS:
+                    return context.getString(R.string.last_30_days);
+            }
+        }
+
+        public Pair<Date, Date> getStartAndEnd() {
+            Calendar cal = Calendar.getInstance();
+            Date end = cal.getTime();
+
+            switch (this) {
+                case TODAY:
+                    break;
+                default:
+                case LAST_7_DAYS:
+                    cal.add(Calendar.DATE, -7);
+                    break;
+                case LAST_30_DAYS:
+                    cal.add(Calendar.DATE, -30);
+                    break;
+            }
+
+            return new Pair<>(cal.getTime(), end);
+        }
     }
 
     public interface ILeaders {

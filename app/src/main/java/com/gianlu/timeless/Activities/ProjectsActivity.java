@@ -34,6 +34,7 @@ public class ProjectsActivity extends AppCompatActivity {
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
         final ViewPager pager = (ViewPager) findViewById(R.id.projects_pager);
+        pager.setOffscreenPageLimit(4);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.projects_tabs);
 
         tabLayout.setupWithViewPager(pager);
@@ -62,13 +63,12 @@ public class ProjectsActivity extends AppCompatActivity {
             @Override
             public void onProjects(List<Project> projects) {
                 for (Project project : projects)
-                    fragments.add(ProjectFragment.getInstance(project));
+                    fragments.add(ProjectFragment.getInstance(project, WakaTime.Range.LAST_7_DAYS));
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
-                        pager.setOffscreenPageLimit(fragments.size());
                         pd.dismiss();
                     }
                 });
@@ -84,8 +84,14 @@ public class ProjectsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home)
-            onBackPressed();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.projects_range:
+                // TODO: Select date range
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }

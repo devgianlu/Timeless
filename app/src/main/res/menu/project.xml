@@ -3,8 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/projects_range"
+        android:icon="@drawable/ic_date_range_white_48dp"
+        android:title="@string/selectRange"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/projectFragment_commits"
         android:icon="@drawable/ic_linear_scale_white_48dp"
         android:title="@string/commits"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 </menu>

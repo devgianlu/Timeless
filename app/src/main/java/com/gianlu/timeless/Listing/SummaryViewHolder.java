@@ -22,6 +22,7 @@ class SummaryViewHolder extends RecyclerView.ViewHolder {
 
     @SuppressWarnings("deprecation")
     void bind(Context context, Summary summary) {
+        container.removeAllViews();
         container.addView(CommonUtils.fastTextView(context,
                 Html.fromHtml(
                         context.getString(
