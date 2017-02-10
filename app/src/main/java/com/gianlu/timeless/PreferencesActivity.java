@@ -91,6 +91,15 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                 }
             });
 
+            findPreference("materialDateRangePicker").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    CommonUtils.showDialog(getActivity(), builder
+                            .setTitle("MaterialDateRangePicker")
+                            .setMessage(R.string.materialDateRangePicker_details));
+                    return true;
+                }
+            });
+
             findPreference("scribejava").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
                     CommonUtils.showDialog(getActivity(), builder

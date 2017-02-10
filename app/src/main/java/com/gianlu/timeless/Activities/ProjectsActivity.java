@@ -18,7 +18,9 @@ import com.gianlu.timeless.Activities.Projects.ProjectFragment;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
+import com.google.android.gms.analytics.HitBuilders;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -171,5 +173,10 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                 onBackPressed();
             }
         });
+
+        ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
+                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
+                .setAction(ThisApplication.ACTION_DATE_RANGE)
+                .build());
     }
 }

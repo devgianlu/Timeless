@@ -6,6 +6,11 @@
         android:title="MPAndroidChart" />
 
     <Preference
+        android:key="materialDateRangePicker"
+        android:summary="@string/apacheLicense"
+        android:title="MaterialDateRangePicker" />
+
+    <Preference
         android:key="scribejava"
         android:summary="@string/scribejava"
         android:title="ScribeJava" />

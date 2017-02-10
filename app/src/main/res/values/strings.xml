@@ -46,4 +46,5 @@
     <string name="scribejava">Licensed under the MIT license</string>
     <string name="selectRange">Select range</string>
     <string name="averageTimeSpent"><![CDATA[<b>Time spent daily on average:</b>]]> %s</string>
+    <string name="materialDateRangePicker_details">https://github.com/borax12/MaterialDateRangePicker</string>
 </resources>

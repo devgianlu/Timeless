@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class ThisApplication extends Application {
     public static final String CATEGORY_USER_INPUT = "User input";
+    public static final String ACTION_DATE_RANGE = "Changed date range";
     public static Tracker tracker;
 
     @NonNull
