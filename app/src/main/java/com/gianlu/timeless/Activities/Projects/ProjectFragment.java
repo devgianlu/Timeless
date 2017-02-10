@@ -97,9 +97,13 @@ public class ProjectFragment extends Fragment {
                                             layout.setRefreshing(false);
                                             error.setVisibility(View.GONE);
 
-                                            list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                                    .addSummary(summary)
-                                                    .addRadarChart(getString(R.string.app_name), durations)
+                                            CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+                                                    .addSummary(summary);
+
+                                            if (durations.size() > 0)
+                                                cards.addBubbleChart(getString(R.string.app_name), durations);
+
+                                            list.setAdapter(new CardsAdapter(getContext(), cards
                                                     .addLineChart(getString(R.string.periodActivity), summaries)
                                                     .addPieChart(getString(R.string.languagesSummary), summary.languages)
                                                     .addFileList(getString(R.string.filesSummary), summary.entities)));
@@ -154,9 +158,13 @@ public class ProjectFragment extends Fragment {
                                     loading.setVisibility(View.GONE);
                                     list.setVisibility(View.VISIBLE);
 
-                                    list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                            .addSummary(summary)
-                                            .addRadarChart(getString(R.string.app_name), durations)
+                                    CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+                                            .addSummary(summary);
+
+                                    if (durations.size() > 0)
+                                        cards.addBubbleChart(getString(R.string.app_name), durations);
+
+                                    list.setAdapter(new CardsAdapter(getContext(), cards
                                             .addLineChart(getString(R.string.periodActivity), summaries)
                                             .addPieChart(getString(R.string.languagesSummary), summary.languages)
                                             .addFileList(getString(R.string.filesSummary), summary.entities)));

@@ -18,7 +18,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_PIE = 2;
     private static final int TYPE_LINE = 3;
     private static final int TYPE_FILE_LIST = 4;
-    private static final int TYPE_RADAR = 5;
+    private static final int TYPE_BUBBLE = 5;
     private final Context context;
     private final LayoutInflater inflater;
     private final CardsList objs;
@@ -43,8 +43,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 return new LineChartViewHolder(inflater, parent);
             case TYPE_FILE_LIST:
                 return new ListViewHolder(inflater, parent);
-            case TYPE_RADAR:
-                return new RadarChartViewHolder(inflater, parent);
+            case TYPE_BUBBLE:
+                return new BubbleChartViewHolder(inflater, parent);
             default:
                 return null;
         }
@@ -68,8 +68,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
         } else if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
-        } else if (holder instanceof RadarChartViewHolder) {
-            ((RadarChartViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
+        } else if (holder instanceof BubbleChartViewHolder) {
+            ((BubbleChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Duration>) objs.objs.get(position));
         }
     }
 
@@ -131,9 +131,9 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addRadarChart(String title, List<Duration> durations) {
+        public CardsList addBubbleChart(String title, List<Duration> durations) {
             titles.add(title);
-            types.add(TYPE_RADAR);
+            types.add(TYPE_BUBBLE);
             objs.add(durations);
 
             return this;

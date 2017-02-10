@@ -3,18 +3,18 @@ package com.gianlu.timeless;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.github.mikephil.charting.charts.RadarChart;
+import com.github.mikephil.charting.charts.BubbleChart;
 
-public class SquareRadarChart extends RadarChart {
-    public SquareRadarChart(Context context) {
+public class SquareBubbleChart extends BubbleChart {
+    public SquareBubbleChart(Context context) {
         super(context);
     }
 
-    public SquareRadarChart(Context context, AttributeSet attrs) {
+    public SquareBubbleChart(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareRadarChart(Context context, AttributeSet attrs, int defStyle) {
+    public SquareBubbleChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
