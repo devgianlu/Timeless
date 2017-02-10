@@ -22,6 +22,7 @@ import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
@@ -103,19 +104,29 @@ public class ProjectFragment extends Fragment {
                     }
 
                     @Override
-                    public void onException(Exception ex) {
-                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                            @Override
-                            public void run() {
-                                layout.setRefreshing(false);
-                            }
-                        });
+                    public void onException(final Exception ex) {
+                        if (ex instanceof WakaTimeException) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.setRefreshing(false);
+                                    error.setText(ex.getMessage());
+                                    error.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        } else {
+                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.setRefreshing(false);
+                                }
+                            });
+                        }
                     }
                 });
             }
         });
 
-        // FIXME: WTF?!
         WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
@@ -139,14 +150,25 @@ public class ProjectFragment extends Fragment {
             }
 
             @Override
-            public void onException(Exception ex) {
-                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.setVisibility(View.GONE);
-                        error.setVisibility(View.VISIBLE);
-                    }
-                });
+            public void onException(final Exception ex) {
+                if (ex instanceof WakaTimeException) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loading.setVisibility(View.GONE);
+                            error.setText(ex.getMessage());
+                            error.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                        @Override
+                        public void run() {
+                            loading.setVisibility(View.GONE);
+                            error.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
             }
         });
 

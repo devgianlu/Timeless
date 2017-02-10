@@ -69,7 +69,8 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
 
         LineDataSet set = new LineDataSet(entries, null);
         set.setDrawValues(false);
-        set.setDrawCircles(false);
+        set.setDrawCircles(entries.size() == 1);
+        set.setDrawCircleHole(false);
         set.setFillColor(ContextCompat.getColor(context, R.color.colorAccent));
         set.setFillAlpha(100);
         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
