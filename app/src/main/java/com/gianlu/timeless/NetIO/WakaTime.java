@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.gianlu.timeless.Objects.Commits;
+import com.gianlu.timeless.Objects.Duration;
 import com.gianlu.timeless.Objects.Leader;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
@@ -116,6 +117,35 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         handler.onUser(new User(new JSONObject(response.getBody()).getJSONObject("data")));
+                    } else {
+                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                    }
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                    handler.onException(ex);
+                }
+            }
+        }).start();
+    }
+
+    public void getDurations(final Context context, final Date day, @Nullable final Project project, final IDurations handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
+
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                try {
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/durations?date="
+                            + formatter.format(day)
+                            + (project != null ? "&project=" + project.name : ""));
+
+                    if (response.getCode() == 200) {
+                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
+                        List<Duration> durations = new ArrayList<>();
+                        for (int i = 0; i < projectsArray.length(); i++)
+                            durations.add(new Duration(projectsArray.getJSONObject(i)));
+
+                        handler.onDurations(durations);
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
@@ -293,6 +323,12 @@ public class WakaTime {
 
             return new Pair<>(cal.getTime(), end);
         }
+    }
+
+    public interface IDurations {
+        void onDurations(List<Duration> durations);
+
+        void onException(Exception ex);
     }
 
     public interface ILeaders {
