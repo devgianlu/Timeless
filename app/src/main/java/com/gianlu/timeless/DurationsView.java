@@ -50,6 +50,7 @@ public class DurationsView extends LinearLayout {
             addView(new ChartView(getContext(), project, Duration.filter(durations, project), projects.size() == 1));
     }
 
+    // TODO: If line is less than 1px then remove it (should also remove the whole ChartView)
     private class ChartView extends View {
         private final boolean lonely;
         private final String project;
@@ -137,8 +138,9 @@ public class DurationsView extends LinearLayout {
         }
 
         private void adjustTitleTextSize(Canvas canvas) {
+            calcInternalPadding();
             titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
-            if (titleTextBounds.width() >= canvas.getWidth()) {
+            if (titleTextBounds.width() >= canvas.getWidth() - internalPadding * 2) {
                 titleTextPaint.setTextSize(titleTextPaint.getTextSize() - 1);
                 adjustTitleTextSize(canvas);
             }
