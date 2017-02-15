@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.gianlu.timeless.Objects.Duration;
 import com.gianlu.timeless.Objects.LoggedEntity;
 import com.gianlu.timeless.Objects.Summary;
 
@@ -17,6 +18,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_PIE = 2;
     private static final int TYPE_LINE = 3;
     private static final int TYPE_FILE_LIST = 4;
+    private static final int TYPE_DURATIONS = 5;
     private final Context context;
     private final LayoutInflater inflater;
     private final CardsList objs;
@@ -41,6 +43,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 return new LineChartViewHolder(inflater, parent);
             case TYPE_FILE_LIST:
                 return new ListViewHolder(inflater, parent);
+            case TYPE_DURATIONS:
+                return new DurationsViewHolder(inflater, parent);
             default:
                 return null;
         }
@@ -64,6 +68,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
         } else if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
+        } else if (holder instanceof DurationsViewHolder) {
+            ((DurationsViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
         }
     }
 
@@ -113,6 +119,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             titles.add(title);
             types.add(TYPE_PIE);
             objs.add(entities);
+
+            return this;
+        }
+
+        public CardsList addDurations(String title, List<Duration> durations) {
+            titles.add(title);
+            types.add(TYPE_DURATIONS);
+            objs.add(durations);
 
             return this;
         }

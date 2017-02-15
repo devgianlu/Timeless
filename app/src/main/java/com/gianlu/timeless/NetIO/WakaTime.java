@@ -127,6 +127,10 @@ public class WakaTime {
         }).start();
     }
 
+    public void getDurations(final Context context, final Date day, final IDurations handler) {
+        getDurations(context, day, null, handler);
+    }
+
     public void getDurations(final Context context, final Date day, @Nullable final Project project, final IDurations handler) {
         new Thread(new Runnable() {
             @Override
