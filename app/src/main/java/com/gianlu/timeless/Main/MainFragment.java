@@ -1,5 +1,6 @@
 package com.gianlu.timeless.Main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -56,38 +57,44 @@ public class MainFragment extends Fragment {
                 WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
                     @Override
                     public void onSummary(final List<Summary> summaries, final Summary summary) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                layout.setRefreshing(false);
-                                error.setVisibility(View.GONE);
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.setRefreshing(false);
+                                    error.setVisibility(View.GONE);
 
-                                CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
-                                        .addSummary(summary);
+                                    CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
+                                            .addSummary(summary);
 
-                                if (range != WakaTime.Range.TODAY)
-                                    cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
+                                    if (range != WakaTime.Range.TODAY)
+                                        cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
 
-                                list.setAdapter(new CardsAdapter(getContext(), cardsList
-                                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
-                            }
-                        });
+                                    list.setAdapter(new CardsAdapter(getContext(), cardsList
+                                            .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                                            .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                            .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                                            .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
+                                }
+                            });
+                        }
                     }
 
                     @Override
                     public void onException(final Exception ex) {
                         if (ex instanceof WakaTimeException) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    layout.setRefreshing(false);
-                                    error.setText(ex.getMessage());
-                                    error.setVisibility(View.VISIBLE);
-                                }
-                            });
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layout.setRefreshing(false);
+                                        error.setText(ex.getMessage());
+                                        error.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
                         } else {
                             CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                                 @Override
@@ -104,39 +111,45 @@ public class MainFragment extends Fragment {
         WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-                        error.setVisibility(View.GONE);
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loading.setVisibility(View.GONE);
+                            list.setVisibility(View.VISIBLE);
+                            error.setVisibility(View.GONE);
 
-                        CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
-                                .addSummary(summary);
+                            CardsAdapter.CardsList cardsList = new CardsAdapter.CardsList()
+                                    .addSummary(summary);
 
-                        if (range != WakaTime.Range.TODAY)
-                            cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
+                            if (range != WakaTime.Range.TODAY)
+                                cardsList.addProjectsBarChart(getString(R.string.periodActivity), summaries);
 
-                        list.setAdapter(new CardsAdapter(getContext(), cardsList
-                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
-                    }
-                });
+                            list.setAdapter(new CardsAdapter(getContext(), cardsList
+                                    .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                                    .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                    .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                                    .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
+                        }
+                    });
+                }
             }
 
             @Override
             public void onException(final Exception ex) {
                 if (ex instanceof WakaTimeException) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loading.setVisibility(View.GONE);
-                            error.setText(ex.getMessage());
-                            error.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loading.setVisibility(View.GONE);
+                                error.setText(ex.getMessage());
+                                error.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    }
                 } else {
                     CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                         @Override

@@ -261,6 +261,9 @@ public class WakaTime {
     }
 
     private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException {
+        if (token == null)
+            throw new NullPointerException("OAuth2AccessToken is null");
+
         final OAuthRequest request = new OAuthRequest(verb, url);
         service.signRequest(token, request);
         return service.execute(request);

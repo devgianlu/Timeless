@@ -23,7 +23,6 @@ import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
-import com.gianlu.timeless.Objects.Duration;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
@@ -86,37 +85,22 @@ public class ProjectFragment extends Fragment {
                 WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
                     @Override
                     public void onSummary(final List<Summary> summaries, final Summary summary) {
-                        WakaTime.getInstance().getDurations(getContext(), new Date(), project, new WakaTime.IDurations() {
-                            @Override
-                            public void onDurations(final List<Duration> durations) {
-                                final Activity activity = getActivity();
-                                if (activity != null) {
-                                    activity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            layout.setRefreshing(false);
-                                            error.setVisibility(View.GONE);
+                        final Activity activity = getActivity();
+                        if (activity != null) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.setRefreshing(false);
+                                    error.setVisibility(View.GONE);
 
-                                            CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
-                                                    .addSummary(summary);
-
-                                            if (durations.size() > 0)
-                                                cards.addBubbleChart(getString(R.string.app_name), durations);
-
-                                            list.setAdapter(new CardsAdapter(getContext(), cards
-                                                    .addLineChart(getString(R.string.periodActivity), summaries)
-                                                    .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                                    .addFileList(getString(R.string.filesSummary), summary.entities)));
-                                        }
-                                    });
+                                    list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                            .addSummary(summary)
+                                            .addLineChart(getString(R.string.periodActivity), summaries)
+                                            .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                            .addFileList(getString(R.string.filesSummary), summary.entities)));
                                 }
-                            }
-
-                            @Override
-                            public void onException(final Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        });
+                            });
+                        }
                     }
 
                     @Override
@@ -146,38 +130,23 @@ public class ProjectFragment extends Fragment {
         WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
-                WakaTime.getInstance().getDurations(getContext(), new Date(), project, new WakaTime.IDurations() {
-                    @Override
-                    public void onDurations(final List<Duration> durations) {
-                        final Activity activity = getActivity();
-                        if (activity != null) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    error.setVisibility(View.GONE);
-                                    loading.setVisibility(View.GONE);
-                                    list.setVisibility(View.VISIBLE);
+                final Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            error.setVisibility(View.GONE);
+                            loading.setVisibility(View.GONE);
+                            list.setVisibility(View.VISIBLE);
 
-                                    CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
-                                            .addSummary(summary);
-
-                                    if (durations.size() > 0)
-                                        cards.addBubbleChart(getString(R.string.app_name), durations);
-
-                                    list.setAdapter(new CardsAdapter(getContext(), cards
-                                            .addLineChart(getString(R.string.periodActivity), summaries)
-                                            .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                            .addFileList(getString(R.string.filesSummary), summary.entities)));
-                                }
-                            });
+                            list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                    .addSummary(summary)
+                                    .addLineChart(getString(R.string.periodActivity), summaries)
+                                    .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                    .addFileList(getString(R.string.filesSummary), summary.entities)));
                         }
-                    }
-
-                    @Override
-                    public void onException(Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                    });
+                }
             }
 
             @Override
