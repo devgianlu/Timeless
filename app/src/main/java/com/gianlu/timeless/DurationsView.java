@@ -47,11 +47,12 @@ public class DurationsView extends LinearLayout {
             if (!projects.contains(duration.project))
                 projects.add(duration.project);
 
-        for (String project : projects)
-            addView(new ChartView(getContext(), project, Duration.filter(durations, project), projects.size() <= 1));
+        Utils.getColors();
+        for (int i = 0; i < projects.size(); i++)
+            addView(new ChartView(getContext(), projects.get(i), Duration.filter(durations, projects.get(i)), ContextCompat.getColor(getContext(), Utils.getColor(i)), projects.size() <= 1));
 
         if (projects.isEmpty())
-            addView(new ChartView(getContext(), "", Collections.<Duration>emptyList(), true));
+            addView(new ChartView(getContext(), "", Collections.<Duration>emptyList(), 0, true));
     }
 
     private int countVisibleChildren() {
@@ -80,10 +81,10 @@ public class DurationsView extends LinearLayout {
         private float internalPadding;
 
         @SuppressLint("UseSparseArrays")
-        public ChartView(Context context, String project, List<Duration> durations, boolean lonely) {
+        public ChartView(Context context, String project, List<Duration> durations, int color, boolean lonely) {
             super(context);
             durationPaint = new Paint();
-            durationPaint.setColor(ContextCompat.getColor(context, R.color.colorAccent));
+            durationPaint.setColor(color);
 
             gridPaint = new Paint();
             gridPaint.setColor(Color.GRAY);
