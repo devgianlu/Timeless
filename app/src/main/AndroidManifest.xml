@@ -19,6 +19,7 @@
         <activity
             android:name=".LoadingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,17 +31,21 @@
         <!-- Main activity -->
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
+
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Preferences activity -->
         <activity
             android:name=".PreferencesActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Grant permission activity -->
         <activity
             android:name=".GrantActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -58,23 +63,27 @@
         <activity
             android:name=".Activities.CommitsActivity"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Projects activity -->
         <activity
             android:name=".Activities.ProjectsActivity"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Leaders activity -->
         <activity
             android:name=".Activities.LeadersActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Logs activity -->
         <activity
             android:name="com.gianlu.commonutils.LogsActivity"
-            android:parentActivityName=".PreferencesActivity" />
+            android:parentActivityName=".PreferencesActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Google Analytics -->
         <receiver
