@@ -30,7 +30,7 @@ public class Commits {
         next_page = obj.optInt("next_page", -1);
     }
 
-    public void merge(Commits newCommits) {
+    public void update(Commits newCommits) {
         commits.addAll(newCommits.commits);
 
         page = newCommits.page;

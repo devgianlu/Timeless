@@ -18,34 +18,39 @@ import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_LOADING = 0;
     private static final int TYPE_ITEM = 1;
-    private final Commits commits;
+    private static final int TYPE_SEPARATOR = 2;
+    private final List<Object> objs;
     private final LayoutInflater inflater;
     private final Context context;
     private boolean updating;
 
     CommitsAdapter(final Activity context, RecyclerView list, final Commits commits) {
-        this.commits = commits;
         this.context = context;
-
         inflater = LayoutInflater.from(context);
+
+        objs = new ArrayList<>();
+        objs.addAll(commits.commits);
 
         list.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (!recyclerView.canScrollVertically(1) && !updating && commits.next_page > 0) {
                     updating = true;
-                    commits.commits.add(null);
-                    notifyItemInserted(commits.commits.size() - 1);
+                    objs.add(null);
+                    notifyItemInserted(objs.size() - 1);
                     WakaTime.getInstance().getCommits(context, commits.project, commits.next_page, new WakaTime.ICommits() {
                         @Override
                         public void onCommits(Commits newCommits) {
-                            commits.commits.remove(commits.commits.size() - 1);
-                            commits.merge(newCommits);
+                            objs.remove(objs.size() - 1);
+                            commits.update(newCommits);
+                            objs.addAll(newCommits.commits);
 
                             context.runOnUiThread(new Runnable() {
                                 @Override
@@ -59,7 +64,7 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                         @Override
                         public void onException(Exception ex) {
-                            commits.commits.remove(commits.commits.size() - 1);
+                            objs.remove(objs.size() - 1);
                             CommonUtils.UIToast(context, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                                 @Override
                                 public void run() {
@@ -76,21 +81,34 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ITEM)
-            return new ItemViewHolder(inflater.inflate(R.layout.commit_item, parent, false));
-        else
-            return new LoadingViewHolder(inflater.inflate(R.layout.loading_item, parent, false));
+        switch (viewType) {
+            case TYPE_ITEM:
+                return new ItemViewHolder(inflater.inflate(R.layout.commit_item, parent, false));
+            case TYPE_LOADING:
+                return new LoadingViewHolder(inflater.inflate(R.layout.loading_item, parent, false));
+            case TYPE_SEPARATOR:
+                return new SeparatorViewHolder(inflater.inflate(R.layout.separator_item, parent, false));
+            default:
+                return null;
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        return commits.commits.get(position) == null ? TYPE_LOADING : TYPE_ITEM;
+        if (objs.get(position) == null)
+            return TYPE_LOADING;
+        else if (objs.get(position) instanceof Commit)
+            return TYPE_ITEM;
+        else if (objs.get(position) instanceof Date)
+            return TYPE_SEPARATOR;
+        else
+            return TYPE_LOADING;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHolder) {
-            final Commit commit = commits.commits.get(position);
+            final Commit commit = (Commit) objs.get(position);
             ItemViewHolder castHolder = (ItemViewHolder) holder;
             castHolder.message.setText(commit.message);
             castHolder.author.setText(commit.getAuthor());
@@ -102,12 +120,17 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url)));
                 }
             });
+        } else if (holder instanceof SeparatorViewHolder) {
+            Date date = (Date) objs.get(position);
+            SeparatorViewHolder castHolder = (SeparatorViewHolder) holder;
+
+            castHolder.date.setText(Utils.getDateFormatter().format(date));
         }
     }
 
     @Override
     public int getItemCount() {
-        return commits.commits.size();
+        return objs.size();
     }
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -133,6 +156,16 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
 
             loading = (ProgressBar) ((ViewGroup) itemView).getChildAt(0);
+        }
+    }
+
+    private class SeparatorViewHolder extends RecyclerView.ViewHolder {
+        final TextView date;
+
+        public SeparatorViewHolder(View itemView) {
+            super(itemView);
+
+            date = (TextView) ((ViewGroup) itemView).getChildAt(0);
         }
     }
 }

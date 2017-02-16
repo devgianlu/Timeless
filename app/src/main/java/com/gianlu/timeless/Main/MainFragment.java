@@ -26,6 +26,7 @@ import com.gianlu.timeless.Utils;
 import java.util.Date;
 import java.util.List;
 
+// FIXME: Some views inside cards gets duplicated on scrolling
 public class MainFragment extends Fragment {
     public static MainFragment getInstance(Context context, WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
