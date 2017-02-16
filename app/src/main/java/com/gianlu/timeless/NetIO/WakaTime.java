@@ -127,11 +127,7 @@ public class WakaTime {
         }).start();
     }
 
-    public void getDurations(final Context context, final Date day, final IDurations handler) {
-        getDurations(context, day, null, handler);
-    }
-
-    public void getDurations(final Context context, final Date day, @Nullable final Project project, final IDurations handler) {
+    public void getDurationsDetailed(final Context context, final Date day, final Project project, final IDurations handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -141,7 +137,7 @@ public class WakaTime {
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/durations?date="
                             + formatter.format(day)
-                            + (project != null ? "&project=" + project.name : ""));
+                            + "&project=" + project.name);
 
                     if (response.getCode() == 200) {
                         JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
@@ -158,6 +154,48 @@ public class WakaTime {
                 }
             }
         }).start();
+    }
+
+    public void getDurations(final Context context, final Date day, final IDurations handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
+
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                try {
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/durations?date="
+                            + formatter.format(day));
+
+                    if (response.getCode() == 200) {
+                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
+                        List<Duration> durations = new ArrayList<>();
+                        for (int i = 0; i < projectsArray.length(); i++)
+                            durations.add(new Duration(projectsArray.getJSONObject(i)));
+
+                        handler.onDurations(durations);
+                    } else {
+                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                    }
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                    handler.onException(ex);
+                }
+            }
+        }).start();
+    }
+
+    public void getDurations(final Context context, final Date day, final Project project, final IDurations handler) {
+        getDurations(context, day, new IDurations() {
+            @Override
+            public void onDurations(List<Duration> durations) {
+                handler.onDurations(Duration.filter(durations, project.name));
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                handler.onException(ex);
+            }
+        });
     }
 
     public void getProjects(final Context context, final IProjects handler) {

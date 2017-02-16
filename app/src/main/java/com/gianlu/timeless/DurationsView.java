@@ -17,6 +17,7 @@ import com.gianlu.timeless.Objects.Duration;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +48,21 @@ public class DurationsView extends LinearLayout {
                 projects.add(duration.project);
 
         for (String project : projects)
-            addView(new ChartView(getContext(), project, Duration.filter(durations, project), projects.size() == 1));
+            addView(new ChartView(getContext(), project, Duration.filter(durations, project), projects.size() <= 1));
+
+        if (projects.isEmpty())
+            addView(new ChartView(getContext(), "", Collections.<Duration>emptyList(), true));
     }
 
-    // TODO: If line is less than 1px then remove it (should also remove the whole ChartView)
+    private int countVisibleChildren() {
+        int count = 0;
+        for (int i = 0; i < getChildCount(); i++)
+            if (getChildAt(i).getVisibility() == VISIBLE)
+                count++;
+
+        return count;
+    }
+
     private class ChartView extends View {
         private final boolean lonely;
         private final String project;
@@ -61,6 +73,8 @@ public class DurationsView extends LinearLayout {
         private final Paint durationPaint;
         private final Paint gridPaint;
         private final Paint textPaint;
+        private final Paint noDataPaint;
+        private final Rect noDataBounds = new Rect();
         private final int padding;
         private final int defaultHeight;
         private float internalPadding;
@@ -78,6 +92,11 @@ public class DurationsView extends LinearLayout {
             textPaint.setColor(Color.BLACK);
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
+
+            noDataPaint = new Paint();
+            noDataPaint.setColor(Color.rgb(247, 189, 51));
+            noDataPaint.setAntiAlias(true);
+            noDataPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
 
             titleTextPaint = new Paint();
             titleTextPaint.setColor(Color.BLACK);
@@ -155,7 +174,7 @@ public class DurationsView extends LinearLayout {
             if (!lonely) {
                 adjustTitleTextSize(canvas);
                 titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
-                canvas.drawText(project, (canvas.getWidth() - titleTextBounds.width()) / 2, ((canvas.getHeight() + titleTextBounds.height()) / 2) - textBounds.height() - 5, titleTextPaint);
+                canvas.drawText(project, (canvas.getWidth() - titleTextBounds.width()) / 2, (canvas.getHeight() + titleTextBounds.height()) / 2 - textBounds.height() - 5, titleTextPaint);
             }
 
             for (int i = 0; i <= 24; i++) {
@@ -163,14 +182,28 @@ public class DurationsView extends LinearLayout {
                 float pos = (i * 3600 * secPerPixel) + internalPadding;
 
                 textPaint.getTextBounds(hour, 0, hour.length(), textBounds);
-                canvas.drawLine(pos, padding, pos, canvas.getHeight() - textBounds.height() - 5 - padding, gridPaint);
+                canvas.drawLine(pos, padding, pos, canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - padding, gridPaint);
                 if (i % 2 == 0)
                     canvas.drawText(hour, pos - (textBounds.width() / 2), canvas.getHeight() - padding, textPaint);
             }
 
-            if (values != null)
+            boolean drawn = false;
+            if (values != null && !values.isEmpty())
                 for (Map.Entry<Long, Long> entry : values.entrySet())
-                    canvas.drawRect((entry.getKey() * secPerPixel) + internalPadding, padding, ((entry.getKey() + entry.getValue()) * secPerPixel) + internalPadding, canvas.getHeight() - textBounds.height() - 5 - padding, durationPaint);
+                    if (drawn = (entry.getValue() * secPerPixel >= 1))
+                        canvas.drawRect((entry.getKey() * secPerPixel) + internalPadding, padding, ((entry.getKey() + entry.getValue()) * secPerPixel) + internalPadding, canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - padding, durationPaint);
+
+            if (!drawn) {
+                canvas.drawColor(Color.WHITE);
+
+                if (lonely || DurationsView.this.countVisibleChildren() == 1) {
+                    String noData = getContext().getString(R.string.noData);
+                    noDataPaint.getTextBounds(noData, 0, noData.length(), noDataBounds);
+                    canvas.drawText(noData, (canvas.getWidth() - noDataBounds.width()) / 2, (canvas.getHeight() + noDataBounds.height()) / 2, noDataPaint);
+                } else {
+                    setVisibility(GONE);
+                }
+            }
         }
     }
 }

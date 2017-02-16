@@ -23,6 +23,7 @@ import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
+import com.gianlu.timeless.Objects.Duration;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
@@ -85,21 +86,66 @@ public class ProjectFragment extends Fragment {
                 WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
                     @Override
                     public void onSummary(final List<Summary> summaries, final Summary summary) {
-                        final Activity activity = getActivity();
-                        if (activity != null) {
-                            activity.runOnUiThread(new Runnable() {
+                        if (start.getTime() == end.getTime()) {
+                            WakaTime.getInstance().getDurations(getContext(), start, project, new WakaTime.IDurations() {
                                 @Override
-                                public void run() {
-                                    layout.setRefreshing(false);
-                                    error.setVisibility(View.GONE);
+                                public void onDurations(final List<Duration> durations) {
+                                    final Activity activity = getActivity();
+                                    if (activity != null) {
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                layout.setRefreshing(false);
+                                                error.setVisibility(View.GONE);
 
-                                    list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                            .addSummary(summary)
-                                            .addLineChart(getString(R.string.periodActivity), summaries)
-                                            .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                            .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                                list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                                        .addSummary(summary)
+                                                        .addDurations(getString(R.string.durationsSummary), durations)
+                                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                                        .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                            }
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onException(final Exception ex) {
+                                    if (ex instanceof WakaTimeException) {
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                layout.setRefreshing(false);
+                                                error.setText(ex.getMessage());
+                                                error.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+                                    } else {
+                                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                layout.setRefreshing(false);
+                                            }
+                                        });
+                                    }
                                 }
                             });
+                        } else {
+                            final Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layout.setRefreshing(false);
+                                        error.setVisibility(View.GONE);
+
+                                        list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                                .addSummary(summary)
+                                                .addLineChart(getString(R.string.periodActivity), summaries)
+                                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                                .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                    }
+                                });
+                            }
                         }
                     }
 
@@ -130,22 +176,69 @@ public class ProjectFragment extends Fragment {
         WakaTime.getInstance().getRangeSummary(start, end, project, new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
-                final Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
+                if (start.getTime() == end.getTime()) {
+                    WakaTime.getInstance().getDurations(getContext(), start, project, new WakaTime.IDurations() {
                         @Override
-                        public void run() {
-                            error.setVisibility(View.GONE);
-                            loading.setVisibility(View.GONE);
-                            list.setVisibility(View.VISIBLE);
+                        public void onDurations(final List<Duration> durations) {
+                            final Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        error.setVisibility(View.GONE);
+                                        loading.setVisibility(View.GONE);
+                                        list.setVisibility(View.VISIBLE);
 
-                            list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                    .addSummary(summary)
-                                    .addLineChart(getString(R.string.periodActivity), summaries)
-                                    .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                    .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                        list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                                .addSummary(summary)
+                                                .addDurations(getString(R.string.durationsSummary), durations)
+                                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                                .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onException(final Exception ex) {
+                            if (ex instanceof WakaTimeException) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loading.setVisibility(View.GONE);
+                                        error.setText(ex.getMessage());
+                                        error.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            } else {
+                                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loading.setVisibility(View.GONE);
+                                        error.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
                         }
                     });
+                } else {
+                    final Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                error.setVisibility(View.GONE);
+                                loading.setVisibility(View.GONE);
+                                list.setVisibility(View.VISIBLE);
+
+                                list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                                        .addSummary(summary)
+                                        .addLineChart(getString(R.string.periodActivity), summaries)
+                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                        .addFileList(getString(R.string.filesSummary), summary.entities)));
+                            }
+                        });
+                    }
                 }
             }
 

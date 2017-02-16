@@ -47,5 +47,5 @@
     <string name="selectRange">Select range</string>
     <string name="averageTimeSpent"><![CDATA[<b>Time spent daily on average:</b>]]> %s</string>
     <string name="materialDateRangePicker_details">https://github.com/borax12/MaterialDateRangePicker</string>
-    <string name="durationsSummary">Time spent during this day</string>
+    <string name="durationsSummary">Time spent distribution</string>
 </resources>
