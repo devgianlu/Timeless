@@ -43,6 +43,12 @@ public class Utils {
         return sdf;
     }
 
+    public static SimpleDateFormat getOnlyDateFormatter() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getDefault());
+        return sdf;
+    }
+
     public static SimpleDateFormat getISOParser() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

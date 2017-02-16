@@ -30,13 +30,14 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final LayoutInflater inflater;
     private final Context context;
     private boolean updating;
+    private long currDay = -1;
 
     CommitsAdapter(final Activity context, RecyclerView list, final Commits commits) {
         this.context = context;
         inflater = LayoutInflater.from(context);
 
         objs = new ArrayList<>();
-        objs.addAll(commits.commits);
+        populateObjs(commits);
 
         list.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -50,7 +51,7 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         public void onCommits(Commits newCommits) {
                             objs.remove(objs.size() - 1);
                             commits.update(newCommits);
-                            objs.addAll(newCommits.commits);
+                            populateObjs(newCommits);
 
                             context.runOnUiThread(new Runnable() {
                                 @Override
@@ -77,6 +78,17 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         });
+    }
+
+    private void populateObjs(Commits commits) {
+        for (Commit commit : commits.commits) {
+            if (currDay != commit.committer_date / 86400000) {
+                objs.add(new Date(commit.committer_date));
+                currDay = commit.committer_date / 86400000;
+            }
+
+            objs.add(commit);
+        }
     }
 
     @Override
@@ -123,8 +135,7 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (holder instanceof SeparatorViewHolder) {
             Date date = (Date) objs.get(position);
             SeparatorViewHolder castHolder = (SeparatorViewHolder) holder;
-
-            castHolder.date.setText(Utils.getDateFormatter().format(date));
+            castHolder.date.setText(Utils.getOnlyDateFormatter().format(date));
         }
     }
 
