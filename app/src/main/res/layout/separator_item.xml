@@ -38,6 +38,6 @@
             android:alpha="0.54"
             android:background="@drawable/ripple_effect_dark"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_content_paste_black_48dp" />
+            android:src="@drawable/ic_view_module_black_48dp" />
     </LinearLayout>
 </LinearLayout>

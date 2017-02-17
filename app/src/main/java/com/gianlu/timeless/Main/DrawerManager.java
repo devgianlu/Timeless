@@ -119,7 +119,7 @@ public class DrawerManager {
         });
         drawerList.addView(home, 0);
 
-        View projects = newItem(R.drawable.ic_content_paste_black_48dp, context.getString(R.string.projects), false);
+        View projects = newItem(R.drawable.ic_view_module_black_48dp, context.getString(R.string.projects), false);
         projects.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
