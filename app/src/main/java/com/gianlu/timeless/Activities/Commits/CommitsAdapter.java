@@ -85,6 +85,19 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
+    private int countForDate(Date date) {
+        int pos = objs.indexOf(date);
+        int count = 0;
+        for (int i = pos + 1; i < objs.size(); i++) {
+            if (objs.get(i) instanceof Date)
+                break;
+            else
+                count++;
+        }
+
+        return count;
+    }
+
     private void populateObjs(Commits commits) {
         for (Commit commit : commits.commits) {
             if (currDay != commit.committer_date / 86400000) {
@@ -140,7 +153,7 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (holder instanceof SeparatorViewHolder) {
             final Date date = (Date) objs.get(position);
             SeparatorViewHolder castHolder = (SeparatorViewHolder) holder;
-            castHolder.date.setText(Utils.getOnlyDateFormatter().format(date));
+            castHolder.date.setText(Utils.getOnlyDateFormatter().format(date) + " (" + countForDate(date) + ")");
             castHolder.project.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
