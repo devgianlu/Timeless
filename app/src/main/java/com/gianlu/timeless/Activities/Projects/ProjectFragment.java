@@ -100,9 +100,9 @@ public class ProjectFragment extends Fragment {
 
                                                 list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                                                         .addSummary(summary)
-                                                        .addDurations(getString(R.string.durationsSummary), durations)
-                                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                                        .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                                        .addDurations(activity.getString(R.string.durationsSummary), durations)
+                                                        .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
+                                                        .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
                                             }
                                         });
                                     }
@@ -140,9 +140,9 @@ public class ProjectFragment extends Fragment {
 
                                         list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                                                 .addSummary(summary)
-                                                .addLineChart(getString(R.string.periodActivity), summaries)
-                                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                                .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                                .addLineChart(activity.getString(R.string.periodActivity), summaries)
+                                                .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
+                                                .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
                                     }
                                 });
                             }
@@ -191,9 +191,9 @@ public class ProjectFragment extends Fragment {
 
                                         list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                                                 .addSummary(summary)
-                                                .addDurations(getString(R.string.durationsSummary), durations)
-                                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                                .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                                .addDurations(activity.getString(R.string.durationsSummary), durations)
+                                                .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
+                                                .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
                                     }
                                 });
                             }
@@ -233,9 +233,9 @@ public class ProjectFragment extends Fragment {
 
                                 list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                                         .addSummary(summary)
-                                        .addLineChart(getString(R.string.periodActivity), summaries)
-                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                        .addFileList(getString(R.string.filesSummary), summary.entities)));
+                                        .addLineChart(activity.getString(R.string.periodActivity), summaries)
+                                        .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
+                                        .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
                             }
                         });
                     }

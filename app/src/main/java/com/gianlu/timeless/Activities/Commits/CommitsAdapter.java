@@ -8,13 +8,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Activities.ProjectsActivity;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.Commit;
 import com.gianlu.timeless.Objects.Commits;
+import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
@@ -29,11 +32,13 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Object> objs;
     private final LayoutInflater inflater;
     private final Context context;
+    private final Project project;
     private boolean updating;
     private long currDay = -1;
 
     CommitsAdapter(final Activity context, RecyclerView list, final Commits commits) {
         this.context = context;
+        this.project = commits.project;
         inflater = LayoutInflater.from(context);
 
         objs = new ArrayList<>();
@@ -133,9 +138,17 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         } else if (holder instanceof SeparatorViewHolder) {
-            Date date = (Date) objs.get(position);
+            final Date date = (Date) objs.get(position);
             SeparatorViewHolder castHolder = (SeparatorViewHolder) holder;
             castHolder.date.setText(Utils.getOnlyDateFormatter().format(date));
+            castHolder.project.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.startActivity(new Intent(context, ProjectsActivity.class)
+                            .putExtra("project_id", project.id)
+                            .putExtra("date", date));
+                }
+            });
         }
     }
 
@@ -172,11 +185,13 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private class SeparatorViewHolder extends RecyclerView.ViewHolder {
         final TextView date;
+        final ImageButton project;
 
-        public SeparatorViewHolder(View itemView) {
+        SeparatorViewHolder(View itemView) {
             super(itemView);
 
-            date = (TextView) ((ViewGroup) itemView).getChildAt(0);
+            date = (TextView) itemView.findViewById(R.id.separatorItem_date);
+            project = (ImageButton) itemView.findViewById(R.id.separatorItem_project);
         }
     }
 }

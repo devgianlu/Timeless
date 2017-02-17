@@ -97,7 +97,7 @@ public class DurationsView extends LinearLayout {
             noDataPaint = new Paint();
             noDataPaint.setColor(Color.rgb(247, 189, 51));
             noDataPaint.setAntiAlias(true);
-            noDataPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
+            noDataPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, context.getResources().getDisplayMetrics()));
 
             titleTextPaint = new Paint();
             titleTextPaint.setColor(Color.BLACK);

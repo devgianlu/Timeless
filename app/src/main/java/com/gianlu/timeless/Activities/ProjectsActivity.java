@@ -70,10 +70,15 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
+        Date date = (Date) getIntent().getSerializableExtra("date");
+        if (date != null)
+            currentRange = new Pair<>(date, date);
+        else
+            currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
+
         WakaTime.getInstance().getProjects(this, new WakaTime.IProjects() {
             @Override
-            public void onProjects(List<Project> projects) {
+            public void onProjects(final List<Project> projects) {
                 final List<Fragment> fragments = new ArrayList<>();
                 for (Project project : projects)
                     fragments.add(ProjectFragment.getInstance(project, currentRange));
@@ -83,6 +88,13 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                     public void run() {
                         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
                         pd.dismiss();
+
+                        String project_id = getIntent().getStringExtra("project_id");
+                        if (project_id != null) {
+                            int pos = projects.indexOf(Project.find(project_id, projects));
+                            if (pos != -1)
+                                pager.setCurrentItem(pos, false);
+                        }
                     }
                 });
             }
