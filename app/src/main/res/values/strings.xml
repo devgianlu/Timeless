@@ -52,4 +52,5 @@
     <string name="durationsSummary">Time spent distribution</string>
     <string name="writeExternalStorageRequest_title">Write external storage permission</string>
     <string name="writeExternalStorageRequest_message">To save the chart image, the app needs to write to the external storage</string>
+    <string name="savedIn">Image has been saved in %s!</string>
 </resources>

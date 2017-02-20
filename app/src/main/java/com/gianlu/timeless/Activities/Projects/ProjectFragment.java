@@ -120,7 +120,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
                 out.flush();
 
-                CommonUtils.UIToast(getActivity(), "Image has been saved as " + dest.getPath() + "!", Toast.LENGTH_LONG);
+                CommonUtils.UIToast(getActivity(), getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG);
             } catch (IOException ex) {
                 CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
             }
