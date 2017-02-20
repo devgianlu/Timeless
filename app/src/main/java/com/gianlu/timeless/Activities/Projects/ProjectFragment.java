@@ -7,10 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,7 +35,9 @@ import com.gianlu.timeless.Objects.Duration;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
+import com.google.android.gms.analytics.HitBuilders;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -78,34 +80,32 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (handler != null && requestCode == REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK)
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 handler.onGranted();
             else
                 CommonUtils.UIToast(getActivity(), Utils.ToastMessages.WRITE_DENIED);
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
     public void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            this.handler = handler;
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.writeExternalStorageRequest_title)
-                        .setMessage(R.string.writeExternalStorageRequest_message)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
-                            }
-                        }));
-            } else {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
-            }
+        this.handler = handler;
+        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.writeExternalStorageRequest_title)
+                    .setMessage(R.string.writeExternalStorageRequest_message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+                        }
+                    }));
+        } else {
+            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
         }
     }
 
@@ -124,6 +124,11 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
             } catch (IOException ex) {
                 CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
             }
+
+            ThisApplication.sendAnalytics(getContext(), new HitBuilders.EventBuilder()
+                    .setCategory(ThisApplication.CATEGORY_USER_INPUT)
+                    .setAction(ThisApplication.ACTION_SAVED_CHART)
+                    .build());
         } else {
             CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, new NullPointerException("Project is null"));
         }

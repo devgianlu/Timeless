@@ -5,6 +5,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -52,12 +54,33 @@ public class Utils {
     }
 
     public static Bitmap createBitmap(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap chartBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas chartCanvas = new Canvas(chartBitmap);
+        chartCanvas.drawColor(Color.WHITE);
+        view.draw(chartCanvas);
+
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth() + 20, view.getHeight() + 65, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.WHITE);
-        view.draw(canvas);
+        canvas.drawBitmap(chartBitmap, 10, 10, null);
 
-        // TODO: Draw watermark
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(40);
+
+        String text = view.getContext().getString(R.string.watermark);
+        Rect textBounds = new Rect();
+        boolean ok = false;
+        while (!ok) {
+            textPaint.getTextBounds(text, 0, text.length(), textBounds);
+            if (textBounds.width() >= canvas.getWidth() - 24)
+                textPaint.setTextSize(textPaint.getTextSize() - 1);
+            else
+                ok = true;
+        }
+
+        canvas.drawText(text, (canvas.getWidth() - textBounds.width()) / 2, view.getHeight() + ((canvas.getHeight() - view.getHeight() - 10 + textBounds.height()) / 2), textPaint);
 
         return bitmap;
     }

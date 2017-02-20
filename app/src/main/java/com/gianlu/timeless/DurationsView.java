@@ -175,7 +175,7 @@ public class DurationsView extends LinearLayout {
             if (!lonely) {
                 adjustTitleTextSize(canvas);
                 titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
-                canvas.drawText(project, (canvas.getWidth() - titleTextBounds.width()) / 2, (canvas.getHeight() + titleTextBounds.height()) / 2 - textBounds.height() - 5, titleTextPaint);
+                canvas.drawText(project, (canvas.getWidth() - titleTextBounds.width()) / 2, ((canvas.getHeight() + titleTextBounds.height()) / 2) - textBounds.height() - 5, titleTextPaint);
             }
 
             for (int i = 0; i <= 24; i++) {

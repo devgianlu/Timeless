@@ -4,9 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -28,7 +29,9 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Duration;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
+import com.google.android.gms.analytics.HitBuilders;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,15 +54,15 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (handler != null && requestCode == REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK)
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 handler.onGranted();
             else
                 CommonUtils.UIToast(getActivity(), Utils.ToastMessages.WRITE_DENIED);
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Nullable
@@ -297,11 +300,11 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
                         }
                     }));
         } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
         }
     }
 
@@ -318,5 +321,10 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
         } catch (IOException ex) {
             CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
         }
+
+        ThisApplication.sendAnalytics(getContext(), new HitBuilders.EventBuilder()
+                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
+                .setAction(ThisApplication.ACTION_SAVED_CHART)
+                .build());
     }
 }
