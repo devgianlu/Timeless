@@ -1,11 +1,19 @@
 package com.gianlu.timeless.Main;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Listing.CardsAdapter;
@@ -23,11 +32,17 @@ import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-// FIXME: Some views inside cards gets duplicated on scrolling
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
+    private static final int REQUEST_CODE = 1;
+    private CardsAdapter.IPermissionRequest handler;
+
     public static MainFragment getInstance(Context context, WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
@@ -35,6 +50,18 @@ public class MainFragment extends Fragment {
         args.putSerializable("range", range);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (handler != null && requestCode == REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK)
+                handler.onGranted();
+            else
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.WRITE_DENIED);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Nullable
@@ -78,7 +105,7 @@ public class MainFragment extends Fragment {
                                                         .addPieChart(getString(R.string.projectsSummary), summary.projects)
                                                         .addPieChart(getString(R.string.languagesSummary), summary.languages)
                                                         .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
+                                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
                                             }
                                         });
                                     }
@@ -123,7 +150,7 @@ public class MainFragment extends Fragment {
                                                 .addPieChart(getString(R.string.projectsSummary), summary.projects)
                                                 .addPieChart(getString(R.string.languagesSummary), summary.languages)
                                                 .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
+                                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
                                     }
                                 });
                             }
@@ -179,7 +206,7 @@ public class MainFragment extends Fragment {
                                                 .addPieChart(getString(R.string.projectsSummary), summary.projects)
                                                 .addPieChart(getString(R.string.languagesSummary), summary.languages)
                                                 .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
+                                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
                                     }
                                 });
                             }
@@ -226,7 +253,7 @@ public class MainFragment extends Fragment {
                                         .addPieChart(getString(R.string.projectsSummary), summary.projects)
                                         .addPieChart(getString(R.string.languagesSummary), summary.languages)
                                         .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems)));
+                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
                             }
                         });
                     }
@@ -260,5 +287,42 @@ public class MainFragment extends Fragment {
         });
 
         return layout;
+    }
+
+    @Override
+    public void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
+        this.handler = handler;
+        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.writeExternalStorageRequest_title)
+                    .setMessage(R.string.writeExternalStorageRequest_message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+                        }
+                    }));
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onSaveRequested(View chart, String name) {
+        File dest = new File(Utils.getImageDirectory(null), name + ".png");
+        try (OutputStream out = new FileOutputStream(dest)) {
+            Bitmap bitmap = Bitmap.createBitmap(chart.getWidth(), chart.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawColor(Color.WHITE);
+            chart.draw(canvas);
+            Utils.drawWatermark(canvas);
+
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+
+            CommonUtils.UIToast(getActivity(), "Image has been saved as " + dest.getPath() + "!", Toast.LENGTH_LONG);
+        } catch (IOException ex) {
+            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
+        }
     }
 }

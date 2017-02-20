@@ -139,18 +139,6 @@ public class DrawerManager {
         });
         drawerList.addView(commits, 2);
 
-        /* TODO: Summaries
-        View summaries = newItem(R.drawable.ic_book_black_48dp, context.getString(R.string.summaries), false);
-        projects.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener != null)
-                    setDrawerState(false, listener.onListItemSelected(DrawerListItems.SUMMARIES));
-            }
-        });
-        drawerList.addView(summaries, 3);
-        */
-
         View leaders = newItem(R.drawable.ic_show_chart_black_48dp, context.getString(R.string.leaderboards), false);
         leaders.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,7 +185,6 @@ public class DrawerManager {
         PREFERENCES,
         COMMITS,
         PROJECTS,
-        SUMMARIES,
         LEADERS,
         SUPPORT
     }

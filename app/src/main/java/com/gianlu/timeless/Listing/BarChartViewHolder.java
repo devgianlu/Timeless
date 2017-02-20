@@ -1,10 +1,14 @@
 package com.gianlu.timeless.Listing;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.gianlu.timeless.Objects.LoggedEntity;
@@ -31,15 +35,17 @@ import java.util.Map;
 class BarChartViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
     private final BarChart chart;
+    private final ImageButton save;
 
     BarChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
         super(inflater.inflate(R.layout.bar_chart_card, parent, false));
 
         title = (TextView) itemView.findViewById(R.id.barChartCard_title);
         chart = (BarChart) itemView.findViewById(R.id.barChartCard_chart);
+        save = (ImageButton) itemView.findViewById(R.id.barChartCard_save);
     }
 
-    void bind(Context context, String title, final List<Summary> summaries) {
+    void bind(final Context context, final String title, final List<Summary> summaries, final CardsAdapter.ISaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -108,5 +114,21 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
 
         chart.setData(new BarData(set));
         chart.setFitBars(true);
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    handler.onSaveRequested(chart, Utils.getFileName(title));
+                } else {
+                    handler.onWritePermissionRequested(new CardsAdapter.IPermissionRequest() {
+                        @Override
+                        public void onGranted() {
+                            handler.onSaveRequested(chart, Utils.getFileName(title));
+                        }
+                    });
+                }
+            }
+        });
     }
 }

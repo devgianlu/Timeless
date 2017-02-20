@@ -1,6 +1,8 @@
 package com.gianlu.timeless.Listing;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -33,6 +35,7 @@ import java.util.Objects;
 
 class PieChartViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
+    private final ImageButton save;
     private final PieChart chart;
     private final LinearLayout container;
     private final ImageButton expand;
@@ -42,6 +45,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         super(inflater.inflate(R.layout.pie_chart_card, parent, false));
 
         title = (TextView) itemView.findViewById(R.id.pieChartCard_title);
+        save = (ImageButton) itemView.findViewById(R.id.pieChartCard_save);
         chart = (PieChart) itemView.findViewById(R.id.pieChartCard_chart);
         container = (LinearLayout) itemView.findViewById(R.id.pieChartCard_container);
         expand = (ImageButton) itemView.findViewById(R.id.pieChartCard_expand);
@@ -49,7 +53,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
     }
 
     @SuppressWarnings("deprecation")
-    void bind(final Context context, String title, List<LoggedEntity> entities) {
+    void bind(final Context context, final String title, List<LoggedEntity> entities, final CardsAdapter.ISaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -81,6 +85,22 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
 
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    handler.onSaveRequested(chart, Utils.getFileName(title));
+                } else {
+                    handler.onWritePermissionRequested(new CardsAdapter.IPermissionRequest() {
+                        @Override
+                        public void onGranted() {
+                            handler.onSaveRequested(chart, Utils.getFileName(title));
+                        }
+                    });
+                }
+            }
+        });
+
         expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +113,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
+        details.removeAllViews();
         long total_seconds = LoggedEntity.sumSeconds(entities);
         for (LoggedEntity entity : entities) {
             TextView text = CommonUtils.fastTextView(context,

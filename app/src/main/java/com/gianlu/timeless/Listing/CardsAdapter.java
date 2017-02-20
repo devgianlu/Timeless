@@ -3,6 +3,7 @@ package com.gianlu.timeless.Listing;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.gianlu.timeless.Objects.Duration;
@@ -21,13 +22,15 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_DURATIONS = 5;
     private final Context context;
     private final LayoutInflater inflater;
+    private final ISaveChart handler;
     private final CardsList objs;
 
-    public CardsAdapter(Context context, CardsList objs) {
+    public CardsAdapter(Context context, CardsList objs, ISaveChart handler) {
         this.context = context;
         this.objs = objs;
 
         this.inflater = LayoutInflater.from(context);
+        this.handler = handler;
     }
 
     @Override
@@ -61,21 +64,31 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (holder instanceof SummaryViewHolder) {
             ((SummaryViewHolder) holder).bind(context, (Summary) objs.objs.get(position));
         } else if (holder instanceof LineChartViewHolder) {
-            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position));
+            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), handler);
         } else if (holder instanceof BarChartViewHolder) {
-            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position));
+            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), handler);
         } else if (holder instanceof PieChartViewHolder) {
-            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
+            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), handler);
         } else if (holder instanceof ListViewHolder) {
-            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
+            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), handler);
         } else if (holder instanceof DurationsViewHolder) {
-            ((DurationsViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
+            ((DurationsViewHolder) holder).bind(context, objs.titles.get(position), (List<Duration>) objs.objs.get(position), handler);
         }
     }
 
     @Override
     public int getItemCount() {
         return objs.objs.size();
+    }
+
+    public interface ISaveChart {
+        void onWritePermissionRequested(IPermissionRequest handler);
+
+        void onSaveRequested(View chart, String name);
+    }
+
+    public interface IPermissionRequest {
+        void onGranted();
     }
 
     public static class CardsList {

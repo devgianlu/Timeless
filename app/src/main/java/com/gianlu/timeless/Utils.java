@@ -2,6 +2,8 @@ package com.gianlu.timeless;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.TextView;
 
@@ -10,7 +12,9 @@ import com.gianlu.commonutils.CommonUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
@@ -28,6 +32,28 @@ public class Utils {
             i = i - COLORS.length;
 
         return COLORS[i];
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static File getImageDirectory(@Nullable String project) {
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Timeless");
+        dir.mkdir();
+
+        if (project != null) {
+            File subDir = new File(dir, project.replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
+            subDir.mkdir();
+            return subDir;
+        } else {
+            return dir;
+        }
+    }
+
+    public static void drawWatermark(Canvas canvas) {
+        // TODO: Draw watermark
+    }
+
+    public static String getFileName(String title) {
+        return title + " (" + new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault()).format(new Date()) + ")";
     }
 
     public static ColorStateList getTextViewDefaultColor(Context context) {
@@ -116,5 +142,7 @@ public class Utils {
         public static final CommonUtils.ToastMessage USER_NOT_FOUND = new CommonUtils.ToastMessage("You have not been found.", false);
         public static final CommonUtils.ToastMessage OFFLINE = new CommonUtils.ToastMessage("You're offline!", false);
         public static final CommonUtils.ToastMessage INVALID_TOKEN = new CommonUtils.ToastMessage("Please grant access again.", false);
+        public static final CommonUtils.ToastMessage FAILED_SAVING_CHART = new CommonUtils.ToastMessage("Failed saving the chart image!", true);
+        public static final CommonUtils.ToastMessage WRITE_DENIED = new CommonUtils.ToastMessage("You have denied the write permission.", false);
     }
 }

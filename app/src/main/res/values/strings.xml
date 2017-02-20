@@ -28,7 +28,6 @@
     <string name="donate">Donate</string>
     <string name="donateSummary">Send me a small amount of money to support me</string>
     <string name="leaderboards">Leaderboards</string>
-    <string name="summaries">Summaries</string>
     <string name="connectingBillingService">Connecting to the billing service. Please wait…</string>
     <string name="operatingSystemsSummary">Percentage of time spent on each operating system</string>
     <string name="periodActivity">Activity in this period</string>
@@ -51,4 +50,6 @@
     <string name="averageTimeSpent"><![CDATA[<b>Time spent daily on average:</b>]]> %s</string>
     <string name="materialDateRangePicker_details">https://github.com/borax12/MaterialDateRangePicker</string>
     <string name="durationsSummary">Time spent distribution</string>
+    <string name="writeExternalStorageRequest_title">Write external storage permission</string>
+    <string name="writeExternalStorageRequest_message">To save the chart image, the app needs to write to the external storage</string>
 </resources>

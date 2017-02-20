@@ -1,11 +1,20 @@
 package com.gianlu.timeless.Activities.Projects;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
@@ -17,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.CommitsActivity;
@@ -29,10 +39,17 @@ import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-public class ProjectFragment extends Fragment {
+public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart {
+    private static final int REQUEST_CODE = 1;
+    private CardsAdapter.IPermissionRequest handler;
+
     public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
         ProjectFragment fragment = new ProjectFragment();
         fragment.setHasOptionsMenu(true);
@@ -60,6 +77,62 @@ public class ProjectFragment extends Fragment {
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (handler != null && requestCode == REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK)
+                handler.onGranted();
+            else
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.WRITE_DENIED);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            this.handler = handler;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.writeExternalStorageRequest_title)
+                        .setMessage(R.string.writeExternalStorageRequest_message)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+                            }
+                        }));
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveRequested(View chart, String name) {
+        Project project = (Project) getArguments().getSerializable("project");
+        if (project != null) {
+            File dest = new File(Utils.getImageDirectory(project.name), name + ".png");
+            try (OutputStream out = new FileOutputStream(dest)) {
+                Bitmap bitmap = Bitmap.createBitmap(chart.getWidth(), chart.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                canvas.drawColor(Color.WHITE);
+                chart.draw(canvas);
+                Utils.drawWatermark(canvas);
+
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+
+                CommonUtils.UIToast(getActivity(), "Image has been saved as " + dest.getPath() + "!", Toast.LENGTH_LONG);
+            } catch (IOException ex) {
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
+            }
+        } else {
+            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, new NullPointerException("Project is null"));
+        }
     }
 
     @Nullable
@@ -102,7 +175,7 @@ public class ProjectFragment extends Fragment {
                                                         .addSummary(summary)
                                                         .addDurations(activity.getString(R.string.durationsSummary), durations)
                                                         .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
-                                                        .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
+                                                        .addFileList(activity.getString(R.string.filesSummary), summary.entities), ProjectFragment.this));
                                             }
                                         });
                                     }
@@ -142,7 +215,7 @@ public class ProjectFragment extends Fragment {
                                                 .addSummary(summary)
                                                 .addLineChart(activity.getString(R.string.periodActivity), summaries)
                                                 .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
-                                                .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
+                                                .addFileList(activity.getString(R.string.filesSummary), summary.entities), ProjectFragment.this));
                                     }
                                 });
                             }
@@ -193,7 +266,7 @@ public class ProjectFragment extends Fragment {
                                                 .addSummary(summary)
                                                 .addDurations(activity.getString(R.string.durationsSummary), durations)
                                                 .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
-                                                .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
+                                                .addFileList(activity.getString(R.string.filesSummary), summary.entities), ProjectFragment.this));
                                     }
                                 });
                             }
@@ -235,7 +308,7 @@ public class ProjectFragment extends Fragment {
                                         .addSummary(summary)
                                         .addLineChart(activity.getString(R.string.periodActivity), summaries)
                                         .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
-                                        .addFileList(activity.getString(R.string.filesSummary), summary.entities)));
+                                        .addFileList(activity.getString(R.string.filesSummary), summary.entities), ProjectFragment.this));
                             }
                         });
                     }
