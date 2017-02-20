@@ -2,9 +2,12 @@ package com.gianlu.timeless;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
@@ -48,8 +51,15 @@ public class Utils {
         }
     }
 
-    public static void drawWatermark(Canvas canvas) {
+    public static Bitmap createBitmap(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        view.draw(canvas);
+
         // TODO: Draw watermark
+
+        return bitmap;
     }
 
     public static String getFileName(String title) {

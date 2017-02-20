@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -117,11 +115,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
         if (project != null) {
             File dest = new File(Utils.getImageDirectory(project.name), name + ".png");
             try (OutputStream out = new FileOutputStream(dest)) {
-                Bitmap bitmap = Bitmap.createBitmap(chart.getWidth(), chart.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                canvas.drawColor(Color.WHITE);
-                chart.draw(canvas);
-                Utils.drawWatermark(canvas);
+                Bitmap bitmap = Utils.createBitmap(chart);
 
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
                 out.flush();
