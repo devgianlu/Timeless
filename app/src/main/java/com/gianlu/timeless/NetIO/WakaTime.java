@@ -16,6 +16,7 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
 import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -89,14 +90,18 @@ public class WakaTime {
 
                 try {
                     String refreshToken = loadRefreshToken(context);
-                    if (refreshToken == null)
+                    if (refreshToken == null || refreshToken.isEmpty())
                         throw new InvalidTokenException();
 
                     token = service.refreshAccessToken(refreshToken);
                     storeRefreshToken(context, token);
                     handler.onRefreshed();
-                } catch (IOException | InvalidTokenException | InterruptedException | ExecutionException ex) {
-                    handler.onException(ex);
+                } catch (IOException | InvalidTokenException | InterruptedException | ExecutionException | OAuth2AccessTokenErrorResponse ex) {
+                    if (ex instanceof OAuth2AccessTokenErrorResponse) {
+                        handler.onInvalidToken(ex);
+                    } else {
+                        handler.onException(ex);
+                    }
                 }
             }
         }).start();
@@ -402,6 +407,8 @@ public class WakaTime {
 
     public interface IRefreshToken {
         void onRefreshed();
+
+        void onInvalidToken(Exception ex);
 
         void onException(Exception ex);
     }

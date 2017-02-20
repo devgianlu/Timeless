@@ -115,5 +115,6 @@ public class Utils {
         public static final CommonUtils.ToastMessage CANT_REFRESH_TOKEN = new CommonUtils.ToastMessage("Failed refreshing the token!", true);
         public static final CommonUtils.ToastMessage USER_NOT_FOUND = new CommonUtils.ToastMessage("You have not been found.", false);
         public static final CommonUtils.ToastMessage OFFLINE = new CommonUtils.ToastMessage("You're offline!", false);
+        public static final CommonUtils.ToastMessage INVALID_TOKEN = new CommonUtils.ToastMessage("Please grant access again.", false);
     }
 }

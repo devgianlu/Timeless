@@ -79,6 +79,13 @@ public class LoadingActivity extends AppCompatActivity {
                         }
 
                         @Override
+                        public void onInvalidToken(Exception ex) {
+                            CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                            deleteFile("token");
+                            goTo(GrantActivity.class, null);
+                        }
+
+                        @Override
                         public void onException(Exception ex) {
                             CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.CANT_REFRESH_TOKEN, ex);
                             goTo(GrantActivity.class, null);
