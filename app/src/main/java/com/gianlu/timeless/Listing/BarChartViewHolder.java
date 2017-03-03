@@ -26,10 +26,13 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 class BarChartViewHolder extends RecyclerView.ViewHolder {
@@ -54,9 +57,13 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
+            private SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
+
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return String.valueOf((int) (value - summaries.size() + 1));
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, (int) -value);
+                return formatter.format(calendar.getTime());
             }
         });
 
