@@ -62,7 +62,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.DATE, (int) -value);
+                calendar.add(Calendar.DATE, (int) value - summaries.size() + 1);
                 return formatter.format(calendar.getTime());
             }
         });

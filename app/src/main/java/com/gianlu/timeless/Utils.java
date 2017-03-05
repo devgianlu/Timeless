@@ -7,8 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 
@@ -65,9 +67,10 @@ public class Utils {
         canvas.drawBitmap(chartBitmap, 10, 10, null);
 
         Paint textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
+        textPaint.setColor(Color.WHITE);
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(40);
+        textPaint.setTextSize(38);
+        textPaint.setTypeface(Typeface.createFromAsset(view.getContext().getAssets(), "fonts/Roboto-Light.ttf"));
 
         String text = view.getContext().getString(R.string.watermark);
         Rect textBounds = new Rect();
@@ -80,7 +83,11 @@ public class Utils {
                 ok = true;
         }
 
-        canvas.drawText(text, (canvas.getWidth() - textBounds.width()) / 2, view.getHeight() + ((canvas.getHeight() - view.getHeight() - 10 + textBounds.height()) / 2), textPaint);
+        Paint rectPaint = new Paint();
+        rectPaint.setColor(ContextCompat.getColor(view.getContext(), R.color.colorPrimaryDark));
+
+        canvas.drawRect(0, view.getHeight() + 10, canvas.getWidth(), canvas.getHeight(), rectPaint);
+        canvas.drawText(text, (canvas.getWidth() - textBounds.width()) / 2, view.getHeight() + ((canvas.getHeight() - view.getHeight() - 10 + textBounds.height()) / 2) + 6, textPaint);
 
         return bitmap;
     }
