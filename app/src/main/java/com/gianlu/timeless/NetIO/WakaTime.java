@@ -255,13 +255,18 @@ public class WakaTime {
     }
 
     public void getLeaders(final Context context, final ILeaders handler) {
+        getLeaders(context, null, handler);
+    }
+
+    public void getLeaders(final Context context, @Nullable final String language, final ILeaders handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
 
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/leaders");
+                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/leaders" +
+                            (language != null ? ("?language=" + language) : ""));
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());

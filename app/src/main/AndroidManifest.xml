@@ -79,7 +79,8 @@
         <activity
             android:name=".Activities.LeadersActivity"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Logs activity -->
         <activity

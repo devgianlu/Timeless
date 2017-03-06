@@ -54,4 +54,7 @@
     <string name="writeExternalStorageRequest_message">To save the chart image, the app needs to write to the external storage</string>
     <string name="savedIn">Image has been saved in %s!</string>
     <string name="watermark">Made with Timeless, a Wakatime client</string>
+    <string name="global_rank">Global rank</string>
+    <string name="filterByLanguage">Filter by language</string>
+    <string name="unsetFilter">Remove filter</string>
 </resources>
