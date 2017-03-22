@@ -95,13 +95,10 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                 .addPieChart(getString(R.string.editorsSummary), summary.editors)
                                 .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
 
-                        WakaTime.getInstance().getRangeSummary(range.getRangeBefore(), new WakaTime.ISummary() {
-                            @Override
-                            public void onSummary(@Nullable List<Summary> beforeSummaries, @Nullable Summary beforeSummary) {
-                                if (beforeSummary != null)
-                                    cards.addPercentage(1, getString(R.string.averageImprovement), Summary.doTotalSecondsAverage(beforeSummaries), Summary.doTotalSecondsAverage(summaries));
-
-                                if (range == WakaTime.Range.TODAY) {
+                        if (range == WakaTime.Range.TODAY) {
+                            WakaTime.getInstance().getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
+                                @Override
+                                public void onSummary(@Nullable final List<Summary> beforeSummaries, @Nullable final Summary beforeSummary) {
                                     WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
                                         @Override
                                         public void onDurations(final List<Duration> durations) {
@@ -113,9 +110,11 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                                         layout.setRefreshing(false);
                                                         error.setVisibility(View.GONE);
 
-                                                        list.setAdapter(new CardsAdapter(getContext(), cards
-                                                                .addDurations(1, getString(R.string.durationsSummary), durations),
-                                                                MainFragment.this));
+                                                        cards.addDurations(1, getString(R.string.durationsSummary), durations);
+                                                        if (beforeSummary != null)
+                                                            cards.addPercentage(1, getString(R.string.averageImprovement), summary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
+
+                                                        list.setAdapter(new CardsAdapter(getContext(), cards, MainFragment.this));
                                                     }
                                                 });
                                             }
@@ -145,28 +144,28 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                             }
                                         }
                                     });
-                                } else {
-                                    Activity activity = getActivity();
-                                    if (activity != null) {
-                                        activity.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                layout.setRefreshing(false);
-                                                error.setVisibility(View.GONE);
-
-                                                list.setAdapter(new CardsAdapter(getContext(), cards
-                                                        .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
-                                            }
-                                        });
-                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onException(Exception ex) {
-                                onSummary(null, null);
+                                @Override
+                                public void onException(Exception ex) {
+                                    onSummary(null, null);
+                                }
+                            });
+                        } else {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layout.setRefreshing(false);
+                                        error.setVisibility(View.GONE);
+
+                                        list.setAdapter(new CardsAdapter(getContext(), cards
+                                                .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
+                                    }
+                                });
                             }
-                        });
+                        }
                     }
 
                     @Override
@@ -206,13 +205,10 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                         .addPieChart(getString(R.string.editorsSummary), summary.editors)
                         .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
 
-                WakaTime.getInstance().getRangeSummary(range.getRangeBefore(), new WakaTime.ISummary() {
-                    @Override
-                    public void onSummary(@Nullable List<Summary> beforeSummaries, @Nullable Summary beforeSummary) {
-                        if (beforeSummary != null)
-                            cards.addPercentage(1, getString(R.string.averageImprovement), Summary.doTotalSecondsAverage(beforeSummaries), Summary.doTotalSecondsAverage(summaries));
-
-                        if (range == WakaTime.Range.TODAY) {
+                if (range == WakaTime.Range.TODAY) {
+                    WakaTime.getInstance().getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
+                        @Override
+                        public void onSummary(@Nullable final List<Summary> beforeSummaries, @Nullable final Summary beforeSummary) {
                             WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
                                 @Override
                                 public void onDurations(final List<Duration> durations) {
@@ -225,8 +221,11 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                                 list.setVisibility(View.VISIBLE);
                                                 error.setVisibility(View.GONE);
 
-                                                list.setAdapter(new CardsAdapter(getContext(), cards
-                                                        .addDurations(1, getString(R.string.durationsSummary), durations),
+                                                cards.addDurations(1, getString(R.string.durationsSummary), durations);
+                                                if (beforeSummary != null)
+                                                    cards.addPercentage(1, getString(R.string.averageImprovement), summary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
+
+                                                list.setAdapter(new CardsAdapter(getContext(), cards,
                                                         MainFragment.this));
                                             }
                                         });
@@ -258,29 +257,29 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                     }
                                 }
                             });
-                        } else {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loading.setVisibility(View.GONE);
-                                        list.setVisibility(View.VISIBLE);
-                                        error.setVisibility(View.GONE);
-
-                                        list.setAdapter(new CardsAdapter(getContext(), cards
-                                                .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
-                                    }
-                                });
-                            }
                         }
-                    }
 
-                    @Override
-                    public void onException(Exception ex) {
-                        onSummary(null, null);
+                        @Override
+                        public void onException(Exception ex) {
+                            onSummary(null, null);
+                        }
+                    });
+                } else {
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loading.setVisibility(View.GONE);
+                                list.setVisibility(View.VISIBLE);
+                                error.setVisibility(View.GONE);
+
+                                list.setAdapter(new CardsAdapter(getContext(), cards
+                                        .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
+                            }
+                        });
                     }
-                });
+                }
             }
 
             @Override

@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class WakaTime {
     private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
@@ -361,17 +360,6 @@ public class WakaTime {
             }
         }
 
-        public Pair<Date, Date> getRangeBefore() {
-            if (this == TODAY) {
-                Date yesterday = new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1));
-                return new Pair<>(yesterday, yesterday);
-            } else {
-                Pair<Date, Date> range = getStartAndEnd();
-                return new Pair<>(new Date(2 * range.first.getTime() - range.second.getTime()),
-                        new Date(range.first.getTime() - TimeUnit.DAYS.toMillis(1)));
-            }
-        }
-
         public Pair<Date, Date> getStartAndEnd() {
             Calendar cal = Calendar.getInstance();
             Date end = cal.getTime();
@@ -389,6 +377,19 @@ public class WakaTime {
             }
 
             return new Pair<>(cal.getTime(), end);
+        }
+
+        public Pair<Date, Date> getWeekBefore() {
+            if (this == TODAY) {
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
+                Date end = cal.getTime();
+                cal.add(Calendar.DATE, -7);
+                Date start = cal.getTime();
+                return new Pair<>(start, end);
+            } else {
+                throw new IllegalArgumentException("Range must be TODAY");
+            }
         }
     }
 

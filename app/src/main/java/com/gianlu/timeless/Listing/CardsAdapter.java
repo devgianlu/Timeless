@@ -78,7 +78,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else if (holder instanceof DurationsViewHolder) {
             ((DurationsViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
         } else if (holder instanceof PercentageViewHolder) {
-            ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Pair<Float, Float>) objs.objs.get(position));
+            ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Pair<Long, Float>) objs.objs.get(position));
         }
     }
 
@@ -108,10 +108,10 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             objs = new ArrayList<>();
         }
 
-        public CardsList addPercentage(int index, String title, Float before, Float now) {
+        public CardsList addPercentage(int index, String title, long today, float beforeAverage) {
             titles.add(index, title);
             types.add(index, TYPE_PERCENTAGE);
-            objs.add(index, new Pair<>(before, now));
+            objs.add(index, new Pair<>(today, beforeAverage));
 
             return this;
         }
