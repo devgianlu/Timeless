@@ -88,10 +88,64 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                 WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
                     @Override
                     public void onSummary(final List<Summary> summaries, final Summary summary) {
-                        if (range == WakaTime.Range.TODAY) {
-                            WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
-                                @Override
-                                public void onDurations(final List<Duration> durations) {
+                        final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+                                .addSummary(summary)
+                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
+
+                        WakaTime.getInstance().getRangeSummary(range.getRangeBefore(), new WakaTime.ISummary() {
+                            @Override
+                            public void onSummary(@Nullable List<Summary> beforeSummaries, @Nullable Summary beforeSummary) {
+                                if (beforeSummary != null)
+                                    cards.addPercentage(1, getString(R.string.averageImprovement), Summary.doTotalSecondsAverage(beforeSummaries), Summary.doTotalSecondsAverage(summaries));
+
+                                if (range == WakaTime.Range.TODAY) {
+                                    WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
+                                        @Override
+                                        public void onDurations(final List<Duration> durations) {
+                                            Activity activity = getActivity();
+                                            if (activity != null) {
+                                                activity.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        layout.setRefreshing(false);
+                                                        error.setVisibility(View.GONE);
+
+                                                        list.setAdapter(new CardsAdapter(getContext(), cards
+                                                                .addDurations(1, getString(R.string.durationsSummary), durations),
+                                                                MainFragment.this));
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onException(final Exception ex) {
+                                            if (ex instanceof WakaTimeException) {
+                                                Activity activity = getActivity();
+                                                if (activity != null) {
+                                                    activity.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            layout.setRefreshing(false);
+                                                            error.setText(ex.getMessage());
+                                                            error.setVisibility(View.VISIBLE);
+                                                        }
+                                                    });
+                                                }
+                                            } else {
+                                                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        layout.setRefreshing(false);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                } else {
                                     Activity activity = getActivity();
                                     if (activity != null) {
                                         activity.runOnUiThread(new Runnable() {
@@ -100,62 +154,19 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                                 layout.setRefreshing(false);
                                                 error.setVisibility(View.GONE);
 
-                                                list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                                        .addSummary(summary)
-                                                        .addDurations(getString(R.string.durationsSummary), durations)
-                                                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
+                                                list.setAdapter(new CardsAdapter(getContext(), cards
+                                                        .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
                                             }
                                         });
                                     }
                                 }
-
-                                @Override
-                                public void onException(final Exception ex) {
-                                    if (ex instanceof WakaTimeException) {
-                                        Activity activity = getActivity();
-                                        if (activity != null) {
-                                            activity.runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    layout.setRefreshing(false);
-                                                    error.setText(ex.getMessage());
-                                                    error.setVisibility(View.VISIBLE);
-                                                }
-                                            });
-                                        }
-                                    } else {
-                                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                layout.setRefreshing(false);
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                        } else {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        layout.setRefreshing(false);
-                                        error.setVisibility(View.GONE);
-
-                                        list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                                .addSummary(summary)
-                                                .addProjectsBarChart(getString(R.string.periodActivity), summaries)
-                                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
-                                    }
-                                });
                             }
-                        }
+
+                            @Override
+                            public void onException(Exception ex) {
+                                onSummary(null, null);
+                            }
+                        });
                     }
 
                     @Override
@@ -188,10 +199,66 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
         WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
             @Override
             public void onSummary(final List<Summary> summaries, final Summary summary) {
-                if (range == WakaTime.Range.TODAY) {
-                    WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
-                        @Override
-                        public void onDurations(final List<Duration> durations) {
+                final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+                        .addSummary(summary)
+                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
+
+                WakaTime.getInstance().getRangeSummary(range.getRangeBefore(), new WakaTime.ISummary() {
+                    @Override
+                    public void onSummary(@Nullable List<Summary> beforeSummaries, @Nullable Summary beforeSummary) {
+                        if (beforeSummary != null)
+                            cards.addPercentage(1, getString(R.string.averageImprovement), Summary.doTotalSecondsAverage(beforeSummaries), Summary.doTotalSecondsAverage(summaries));
+
+                        if (range == WakaTime.Range.TODAY) {
+                            WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
+                                @Override
+                                public void onDurations(final List<Duration> durations) {
+                                    Activity activity = getActivity();
+                                    if (activity != null) {
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                loading.setVisibility(View.GONE);
+                                                list.setVisibility(View.VISIBLE);
+                                                error.setVisibility(View.GONE);
+
+                                                list.setAdapter(new CardsAdapter(getContext(), cards
+                                                        .addDurations(1, getString(R.string.durationsSummary), durations),
+                                                        MainFragment.this));
+                                            }
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onException(final Exception ex) {
+                                    if (ex instanceof WakaTimeException) {
+                                        Activity activity = getActivity();
+                                        if (activity != null) {
+                                            activity.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    loading.setVisibility(View.GONE);
+                                                    error.setText(ex.getMessage());
+                                                    error.setVisibility(View.VISIBLE);
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                loading.setVisibility(View.GONE);
+                                                error.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
                             Activity activity = getActivity();
                             if (activity != null) {
                                 activity.runOnUiThread(new Runnable() {
@@ -201,64 +268,19 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                         list.setVisibility(View.VISIBLE);
                                         error.setVisibility(View.GONE);
 
-                                        list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                                .addSummary(summary)
-                                                .addDurations(getString(R.string.durationsSummary), durations)
-                                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
+                                        list.setAdapter(new CardsAdapter(getContext(), cards
+                                                .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
                                     }
                                 });
                             }
                         }
-
-                        @Override
-                        public void onException(final Exception ex) {
-                            if (ex instanceof WakaTimeException) {
-                                Activity activity = getActivity();
-                                if (activity != null) {
-                                    activity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loading.setVisibility(View.GONE);
-                                            error.setText(ex.getMessage());
-                                            error.setVisibility(View.VISIBLE);
-                                        }
-                                    });
-                                }
-                            } else {
-                                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loading.setVisibility(View.GONE);
-                                        error.setVisibility(View.VISIBLE);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    Activity activity = getActivity();
-                    if (activity != null) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                loading.setVisibility(View.GONE);
-                                list.setVisibility(View.VISIBLE);
-                                error.setVisibility(View.GONE);
-
-                                list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                        .addSummary(summary)
-                                        .addProjectsBarChart(getString(R.string.periodActivity), summaries)
-                                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), MainFragment.this));
-                            }
-                        });
                     }
-                }
+
+                    @Override
+                    public void onException(Exception ex) {
+                        onSummary(null, null);
+                    }
+                });
             }
 
             @Override

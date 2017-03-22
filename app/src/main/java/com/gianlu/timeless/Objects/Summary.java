@@ -68,6 +68,15 @@ public class Summary {
         Collections.sort(entities, new LoggedEntity.TotalSecondsComparator());
     }
 
+    public static float doTotalSecondsAverage(List<Summary> summaries) {
+        long sum = 0;
+
+        for (Summary summary : summaries)
+            sum += summary.total_seconds;
+
+        return (float) sum / (float) summaries.size();
+    }
+
     public static List<Summary> fromJSON(String json) throws JSONException, ParseException {
         JSONArray array = new JSONObject(json).getJSONArray("data");
 

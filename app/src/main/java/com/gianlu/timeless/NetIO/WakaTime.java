@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class WakaTime {
     private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
@@ -357,6 +358,17 @@ public class WakaTime {
                     return context.getString(R.string.last_7_days);
                 case LAST_30_DAYS:
                     return context.getString(R.string.last_30_days);
+            }
+        }
+
+        public Pair<Date, Date> getRangeBefore() {
+            if (this == TODAY) {
+                Date yesterday = new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1));
+                return new Pair<>(yesterday, yesterday);
+            } else {
+                Pair<Date, Date> range = getStartAndEnd();
+                return new Pair<>(new Date(2 * range.first.getTime() - range.second.getTime()),
+                        new Date(range.first.getTime() - TimeUnit.DAYS.toMillis(1)));
             }
         }
 

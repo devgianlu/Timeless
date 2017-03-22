@@ -57,4 +57,5 @@
     <string name="global_rank">Global rank</string>
     <string name="filterByLanguage">Filter by language</string>
     <string name="unsetFilter">Remove filter</string>
+    <string name="averageImprovement">Period average improvement</string>
 </resources>

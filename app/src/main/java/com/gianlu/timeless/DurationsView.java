@@ -47,6 +47,7 @@ public class DurationsView extends LinearLayout {
             if (!projects.contains(duration.project))
                 projects.add(duration.project);
 
+        removeAllViews();
         Utils.getColors();
         for (int i = 0; i < projects.size(); i++)
             addView(new ChartView(getContext(), projects.get(i), Duration.filter(durations, projects.get(i)), ContextCompat.getColor(getContext(), Utils.getColor(i)), projects.size() <= 1));

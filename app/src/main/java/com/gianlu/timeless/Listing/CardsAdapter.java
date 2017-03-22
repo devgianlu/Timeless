@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Listing;
 
 import android.content.Context;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_LINE = 3;
     private static final int TYPE_FILE_LIST = 4;
     private static final int TYPE_DURATIONS = 5;
+    private static final int TYPE_PERCENTAGE = 6;
     private final Context context;
     private final LayoutInflater inflater;
     private final ISaveChart handler;
@@ -48,6 +50,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 return new ListViewHolder(inflater, parent);
             case TYPE_DURATIONS:
                 return new DurationsViewHolder(inflater, parent);
+            case TYPE_PERCENTAGE:
+                return new PercentageViewHolder(inflater, parent);
             default:
                 return null;
         }
@@ -73,6 +77,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), handler);
         } else if (holder instanceof DurationsViewHolder) {
             ((DurationsViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
+        } else if (holder instanceof PercentageViewHolder) {
+            ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Pair<Float, Float>) objs.objs.get(position));
         }
     }
 
@@ -100,6 +106,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             titles = new ArrayList<>();
             types = new ArrayList<>();
             objs = new ArrayList<>();
+        }
+
+        public CardsList addPercentage(int index, String title, Float before, Float now) {
+            titles.add(index, title);
+            types.add(index, TYPE_PERCENTAGE);
+            objs.add(index, new Pair<>(before, now));
+
+            return this;
         }
 
         public CardsList addSummary(Summary summary) {
@@ -140,6 +154,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             titles.add(title);
             types.add(TYPE_DURATIONS);
             objs.add(durations);
+
+            return this;
+        }
+
+        public CardsList addDurations(int index, String title, List<Duration> durations) {
+            titles.add(index, title);
+            types.add(index, TYPE_DURATIONS);
+            objs.add(index, durations);
 
             return this;
         }
