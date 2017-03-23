@@ -30,21 +30,26 @@ class PercentageViewHolder extends RecyclerView.ViewHolder {
     void bind(String title, Pair<Long, Float> values) {
         this.title.setText(title);
 
-        BigDecimal bd = new BigDecimal(values.first);
-        bd = bd.divide(new BigDecimal(values.second), 10, BigDecimal.ROUND_HALF_UP);
-        bd = bd.multiply(new BigDecimal(100));
-        bd = bd.subtract(new BigDecimal(100));
-        float roundedPercent = bd.floatValue();
+        if (values.second != 0) {
+            BigDecimal bd = new BigDecimal(values.first);
+            bd = bd.divide(new BigDecimal(values.second), 10, BigDecimal.ROUND_HALF_UP);
+            bd = bd.multiply(new BigDecimal(100));
+            bd = bd.subtract(new BigDecimal(100));
+            float roundedPercent = bd.floatValue();
 
-        if (roundedPercent == 0) {
-            percentage.setText(String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
-            trending.setImageResource(R.drawable.ic_trending_flat_black_48dp);
-        } else if (roundedPercent > 0) {
-            percentage.setText("+" + String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
-            trending.setImageResource(R.drawable.ic_trending_up_black_48dp);
+            if (roundedPercent == 0) {
+                percentage.setText(String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
+                trending.setImageResource(R.drawable.ic_trending_flat_black_48dp);
+            } else if (roundedPercent > 0) {
+                percentage.setText("+" + String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
+                trending.setImageResource(R.drawable.ic_trending_up_black_48dp);
+            } else {
+                percentage.setText(String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
+                trending.setImageResource(R.drawable.ic_trending_down_black_48dp);
+            }
         } else {
-            percentage.setText(String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
-            trending.setImageResource(R.drawable.ic_trending_down_black_48dp);
+            percentage.setText("0%");
+            trending.setImageResource(R.drawable.ic_trending_flat_black_48dp);
         }
     }
 }

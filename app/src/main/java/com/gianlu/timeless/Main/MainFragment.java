@@ -161,7 +161,7 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                         error.setVisibility(View.GONE);
 
                                         list.setAdapter(new CardsAdapter(getContext(), cards
-                                                .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
+                                                .addProjectsBarChart(1, getString(R.string.periodActivity), summaries), MainFragment.this));
                                     }
                                 });
                             }
@@ -275,7 +275,7 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                 error.setVisibility(View.GONE);
 
                                 list.setAdapter(new CardsAdapter(getContext(), cards
-                                        .addProjectsBarChart(getString(R.string.periodActivity), summaries), MainFragment.this));
+                                        .addProjectsBarChart(1, getString(R.string.periodActivity), summaries), MainFragment.this));
                             }
                         });
                     }

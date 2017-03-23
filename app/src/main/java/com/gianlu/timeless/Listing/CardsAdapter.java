@@ -124,10 +124,10 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addProjectsBarChart(String title, List<Summary> summaries) {
-            titles.add(title);
-            types.add(TYPE_PROJECTS_BAR);
-            objs.add(summaries);
+        public CardsList addProjectsBarChart(int index, String title, List<Summary> summaries) {
+            titles.add(index, title);
+            types.add(index, TYPE_PROJECTS_BAR);
+            objs.add(index, summaries);
 
             return this;
         }
