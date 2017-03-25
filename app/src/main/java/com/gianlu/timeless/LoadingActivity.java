@@ -2,6 +2,7 @@ package com.gianlu.timeless;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -12,11 +13,7 @@ import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.Objects.User;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class LoadingActivity extends AppCompatActivity {
-    private final Timer timer = new Timer();
     private Intent goTo;
     private boolean finished = false;
 
@@ -44,11 +41,10 @@ public class LoadingActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-        timer.schedule(new TimerTask() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 finished = true;
-
                 if (goTo != null)
                     startActivity(goTo);
             }
@@ -108,13 +104,9 @@ public class LoadingActivity extends AppCompatActivity {
         if (user != null)
             intent.putExtra("user", user);
 
-        if (finished) {
-            timer.purge();
-            timer.cancel();
-
+        if (finished)
             startActivity(intent);
-        } else {
+        else
             this.goTo = intent;
-        }
     }
 }
