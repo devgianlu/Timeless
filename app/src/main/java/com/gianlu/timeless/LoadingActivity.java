@@ -88,7 +88,7 @@ public class LoadingActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.OFFLINE, new Runnable() {
+                    CommonUtils.UIToast(LoadingActivity.this, CommonUtils.ToastMessage.OFFLINE, new Runnable() {
                         @Override
                         public void run() {
                             finish();
