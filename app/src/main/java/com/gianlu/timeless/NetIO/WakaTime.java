@@ -15,6 +15,7 @@ import com.gianlu.timeless.UncaughtExceptionHandler;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
+import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
@@ -312,7 +313,7 @@ public class WakaTime {
         }).start();
     }
 
-    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException {
+    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, OAuthException {
         if (token == null)
             throw new NullPointerException("OAuth2AccessToken is null");
 

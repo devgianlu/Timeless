@@ -55,7 +55,7 @@ public class LoadingActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (CommonUtils.hasInternetAccess()) {
+                if (CommonUtils.hasInternetAccess(false)) {
                     WakaTime.getInstance().refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
                         @Override
                         public void onRefreshed() {
