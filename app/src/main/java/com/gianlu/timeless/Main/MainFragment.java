@@ -88,6 +88,9 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                 WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
                     @Override
                     public void onSummary(final List<Summary> summaries, final Summary summary) {
+                        if (isDetached())
+                            return;
+
                         final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                                 .addSummary(summary)
                                 .addPieChart(getString(R.string.projectsSummary), summary.projects)
