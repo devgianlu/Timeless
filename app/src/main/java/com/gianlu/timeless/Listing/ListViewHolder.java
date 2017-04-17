@@ -24,7 +24,7 @@ class ListViewHolder extends RecyclerView.ViewHolder {
         list = (RecyclerView) itemView.findViewById(R.id.listCard_list);
     }
 
-    void bind(Context context, String title, List<LoggedEntity> entities, CardsAdapter.ISaveChart handler) {
+    void bind(Context context, String title, List<LoggedEntity> entities) {
         this.title.setText(title);
 
         list.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));

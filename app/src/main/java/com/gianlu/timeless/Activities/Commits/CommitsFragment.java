@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities.Commits;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
@@ -68,6 +71,12 @@ public class CommitsFragment extends Fragment {
                             }
                         });
                     }
+
+                    @Override
+                    public void onWakaTimeException(WakaTimeException ex) {
+                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                        startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    }
                 });
             }
         });
@@ -98,6 +107,12 @@ public class CommitsFragment extends Fragment {
                         error.setVisibility(View.VISIBLE);
                     }
                 });
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
 

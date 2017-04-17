@@ -2,6 +2,7 @@ package com.gianlu.timeless.Activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,7 +20,9 @@ import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
 import com.gianlu.timeless.CurrentUser;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Leader;
 import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
@@ -71,6 +74,12 @@ public class LeadersActivity extends AppCompatActivity {
                     public void onException(Exception ex) {
                         ex.printStackTrace();
                     }
+
+                    @Override
+                    public void onWakaTimeException(WakaTimeException ex) {
+                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                        startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    }
                 });
             }
         });
@@ -94,6 +103,12 @@ public class LeadersActivity extends AppCompatActivity {
             @Override
             public void onException(Exception ex) {
                 ex.printStackTrace();
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
     }
@@ -127,6 +142,12 @@ public class LeadersActivity extends AppCompatActivity {
             public void onException(Exception ex) {
                 CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                 pd.dismiss();
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
     }
@@ -172,6 +193,12 @@ public class LeadersActivity extends AppCompatActivity {
                                 })
                                 .setNegativeButton(android.R.string.cancel, null);
                         CommonUtils.showDialog(LeadersActivity.this, builder);
+                    }
+
+                    @Override
+                    public void onWakaTimeException(WakaTimeException ex) {
+                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                        startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     }
 
                     @Override

@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.CommitsActivity;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -203,6 +204,12 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
                                         });
                                     }
                                 }
+
+                                @Override
+                                public void onWakaTimeException(WakaTimeException ex) {
+                                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                                    startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                }
                             });
                         } else {
                             final Activity activity = getActivity();
@@ -222,6 +229,12 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
                                 });
                             }
                         }
+                    }
+
+                    @Override
+                    public void onWakaTimeException(WakaTimeException ex) {
+                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                        startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     }
 
                     @Override
@@ -301,6 +314,12 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
                                 });
                             }
                         }
+
+                        @Override
+                        public void onWakaTimeException(WakaTimeException ex) {
+                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                            startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        }
                     });
                 } else {
                     final Activity activity = getActivity();
@@ -321,6 +340,12 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
                         });
                     }
                 }
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
 
             @Override

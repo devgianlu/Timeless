@@ -14,7 +14,9 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.ProjectsActivity;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Commit;
 import com.gianlu.timeless.Objects.Commits;
 import com.gianlu.timeless.Objects.Project;
@@ -79,6 +81,12 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             });
                             updating = false;
                         }
+
+                        @Override
+                        public void onWakaTimeException(WakaTimeException ex) {
+                            CommonUtils.UIToast(context, Utils.ToastMessages.INVALID_TOKEN, ex);
+                            context.startActivity(new Intent(context, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        }
                     });
                 }
             }
@@ -117,7 +125,7 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case TYPE_LOADING:
                 return new LoadingViewHolder(inflater.inflate(R.layout.loading_item, parent, false));
             case TYPE_SEPARATOR:
-                return new SeparatorViewHolder(inflater.inflate(R.layout.separator_item, parent, false));
+                return new SeparatorViewHolder(inflater.inflate(R.layout.commit_separator_item, parent, false));
             default:
                 return null;
         }

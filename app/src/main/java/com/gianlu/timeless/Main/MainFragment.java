@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -146,7 +148,19 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                                 });
                                             }
                                         }
+
+                                        @Override
+                                        public void onWakaTimeException(WakaTimeException ex) {
+                                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                                            startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                        }
                                     });
+                                }
+
+                                @Override
+                                public void onWakaTimeException(WakaTimeException ex) {
+                                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                                    startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                                 }
 
                                 @Override
@@ -169,6 +183,12 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                 });
                             }
                         }
+                    }
+
+                    @Override
+                    public void onWakaTimeException(WakaTimeException ex) {
+                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                        startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     }
 
                     @Override
@@ -262,7 +282,19 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                                         });
                                     }
                                 }
+
+                                @Override
+                                public void onWakaTimeException(WakaTimeException ex) {
+                                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                                    startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                }
                             });
+                        }
+
+                        @Override
+                        public void onWakaTimeException(WakaTimeException ex) {
+                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                            startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         }
 
                         @Override
@@ -286,6 +318,12 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
                         });
                     }
                 }
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
 
             @Override

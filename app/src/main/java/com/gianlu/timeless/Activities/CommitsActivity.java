@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.Commits.CommitsFragment;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
@@ -85,6 +88,12 @@ public class CommitsActivity extends AppCompatActivity {
             public void onException(Exception ex) {
                 CommonUtils.UIToast(CommitsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                 onBackPressed();
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(CommitsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(CommitsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
     }

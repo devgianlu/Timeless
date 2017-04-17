@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -15,7 +16,9 @@ import android.widget.TextView;
 import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.Projects.ProjectFragment;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
@@ -104,6 +107,12 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                 CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                 onBackPressed();
             }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            }
         });
 
         updateRangeText();
@@ -183,6 +192,12 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
             public void onException(Exception ex) {
                 CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                 onBackPressed();
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
 

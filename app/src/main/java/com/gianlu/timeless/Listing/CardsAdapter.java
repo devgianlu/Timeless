@@ -74,7 +74,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else if (holder instanceof PieChartViewHolder) {
             ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), handler);
         } else if (holder instanceof ListViewHolder) {
-            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), handler);
+            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
         } else if (holder instanceof DurationsViewHolder) {
             ((DurationsViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
         } else if (holder instanceof PercentageViewHolder) {

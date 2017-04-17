@@ -126,6 +126,8 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
+                } catch (WakaTimeException ex) {
+                    handler.onWakaTimeException(ex);
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.onException(ex);
                 }
@@ -155,6 +157,8 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
+                } catch (WakaTimeException ex) {
+                    handler.onWakaTimeException(ex);
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.onException(ex);
                 }
@@ -183,6 +187,8 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
+                } catch (WakaTimeException ex) {
+                    handler.onWakaTimeException(ex);
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.onException(ex);
                 }
@@ -200,6 +206,11 @@ public class WakaTime {
             @Override
             public void onException(Exception ex) {
                 handler.onException(ex);
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                handler.onWakaTimeException(ex);
             }
         });
     }
@@ -223,6 +234,8 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
+                } catch (WakaTimeException ex) {
+                    handler.onWakaTimeException(ex);
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.onException(ex);
                 }
@@ -248,6 +261,8 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
+                } catch (WakaTimeException ex) {
+                    handler.onWakaTimeException(ex);
                 } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
                     handler.onException(ex);
                 }
@@ -275,6 +290,8 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
+                } catch (WakaTimeException ex) {
+                    handler.onWakaTimeException(ex);
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.onException(ex);
                 }
@@ -306,6 +323,8 @@ public class WakaTime {
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
+                } catch (WakaTimeException ex) {
+                    handler.onWakaTimeException(ex);
                 } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
                     handler.onException(ex);
                 }
@@ -313,9 +332,9 @@ public class WakaTime {
         }).start();
     }
 
-    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, OAuthException {
+    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, OAuthException, JSONException, WakaTimeException {
         if (token == null)
-            throw new NullPointerException("OAuth2AccessToken is null");
+            throw new WakaTimeException("OAuth2AccessToken is null");
 
         final OAuthRequest request = new OAuthRequest(verb, url);
         service.signRequest(token, request);
@@ -398,16 +417,22 @@ public class WakaTime {
         void onDurations(List<Duration> durations);
 
         void onException(Exception ex);
+
+        void onWakaTimeException(WakaTimeException ex);
     }
 
     public interface ILeaders {
         void onLeaders(List<Leader> leaders);
 
         void onException(Exception ex);
+
+        void onWakaTimeException(WakaTimeException ex);
     }
 
     public interface ISummary {
         void onSummary(List<Summary> summaries, Summary summary);
+
+        void onWakaTimeException(WakaTimeException ex);
 
         void onException(Exception ex);
     }
@@ -416,12 +441,16 @@ public class WakaTime {
         void onProjects(List<Project> projects);
 
         void onException(Exception ex);
+
+        void onWakaTimeException(WakaTimeException ex);
     }
 
     public interface ICommits {
         void onCommits(Commits commits);
 
         void onException(Exception ex);
+
+        void onWakaTimeException(WakaTimeException ex);
     }
 
     public interface IRefreshToken {
@@ -436,6 +465,8 @@ public class WakaTime {
         void onUser(User user);
 
         void onException(Exception ex);
+
+        void onWakaTimeException(WakaTimeException ex);
     }
 
     public interface INewAccessToken {

@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.Objects.User;
 
 public class LoadingActivity extends AppCompatActivity {
@@ -70,6 +71,12 @@ public class LoadingActivity extends AppCompatActivity {
                                 public void onException(Exception ex) {
                                     CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                                     finish();
+                                }
+
+                                @Override
+                                public void onWakaTimeException(WakaTimeException ex) {
+                                    CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                                    startActivity(new Intent(LoadingActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                                 }
                             });
                         }
