@@ -271,10 +271,18 @@ public class WakaTime {
     }
 
     public void getLeaders(final Context context, final ILeaders handler) {
-        getLeaders(context, null, handler);
+        getLeaders(context, null, 1, handler);
     }
 
-    public void getLeaders(final Context context, @Nullable final String language, final ILeaders handler) {
+    public void getLeaders(final Context context, int page, final ILeaders handler) {
+        getLeaders(context, null, page, handler);
+    }
+
+    public void getLeaders(final Context context, String language, final ILeaders handler) {
+        getLeaders(context, language, 1, handler);
+    }
+
+    public void getLeaders(final Context context, @Nullable final String language, final int page, final ILeaders handler) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -282,11 +290,12 @@ public class WakaTime {
 
                 try {
                     Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/leaders" +
-                            (language != null ? ("?language=" + language) : ""));
+                            "?page=" + page +
+                            (language != null ? ("&language=" + language) : ""));
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
-                        handler.onLeaders(Leader.fromJSON(obj.getJSONArray("data")));
+                        handler.onLeaders(Leader.fromJSON(obj.getJSONArray("data")), obj.getInt("total_pages"));
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
@@ -422,7 +431,7 @@ public class WakaTime {
     }
 
     public interface ILeaders {
-        void onLeaders(List<Leader> leaders);
+        void onLeaders(List<Leader> leaders, int maxPages);
 
         void onException(Exception ex);
 

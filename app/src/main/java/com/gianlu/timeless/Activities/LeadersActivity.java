@@ -10,13 +10,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
 import com.gianlu.timeless.CurrentUser;
@@ -34,7 +34,7 @@ public class LeadersActivity extends AppCompatActivity {
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang;
-    private RecyclerView list;
+    private InfiniteRecyclerView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class LeadersActivity extends AppCompatActivity {
         final SwipeRefreshLayout layout = (SwipeRefreshLayout) findViewById(R.id.leaders_swipeRefresh);
         layout.setColorSchemeResources(Utils.getColors());
         currFilter = (TextView) findViewById(R.id.leaders_rankingText);
-        list = (RecyclerView) findViewById(R.id.leaders_list);
+        list = (InfiniteRecyclerView) findViewById(R.id.leaders_list);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -59,8 +59,8 @@ public class LeadersActivity extends AppCompatActivity {
             public void onRefresh() {
                 WakaTime.getInstance().getLeaders(LeadersActivity.this, new WakaTime.ILeaders() {
                     @Override
-                    public void onLeaders(final List<Leader> leaders) {
-                        adapter = new LeadersAdapter(LeadersActivity.this, CurrentUser.get(), leaders);
+                    public void onLeaders(final List<Leader> leaders, int maxPages) {
+                        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, CurrentUser.get());
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -72,12 +72,22 @@ public class LeadersActivity extends AppCompatActivity {
 
                     @Override
                     public void onException(Exception ex) {
-                        ex.printStackTrace();
+                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                            @Override
+                            public void run() {
+                                layout.setRefreshing(false);
+                            }
+                        });
                     }
 
                     @Override
                     public void onWakaTimeException(WakaTimeException ex) {
-                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
+                            @Override
+                            public void run() {
+                                layout.setRefreshing(false);
+                            }
+                        });
                         startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     }
                 });
@@ -89,8 +99,8 @@ public class LeadersActivity extends AppCompatActivity {
 
         WakaTime.getInstance().getLeaders(this, new WakaTime.ILeaders() {
             @Override
-            public void onLeaders(final List<Leader> leaders) {
-                adapter = new LeadersAdapter(LeadersActivity.this, CurrentUser.get(), leaders);
+            public void onLeaders(final List<Leader> leaders, int maxPages) {
+                adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, CurrentUser.get());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -102,13 +112,24 @@ public class LeadersActivity extends AppCompatActivity {
 
             @Override
             public void onException(Exception ex) {
-                ex.printStackTrace();
+                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        pd.dismiss();
+                        onBackPressed();
+                    }
+                });
             }
 
             @Override
             public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        pd.dismiss();
+                        startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    }
+                });
             }
         });
     }
@@ -124,8 +145,8 @@ public class LeadersActivity extends AppCompatActivity {
         CommonUtils.showDialog(LeadersActivity.this, pd);
         WakaTime.getInstance().getLeaders(LeadersActivity.this, language, new WakaTime.ILeaders() {
             @Override
-            public void onLeaders(List<Leader> leaders) {
-                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, CurrentUser.get(), leaders);
+            public void onLeaders(List<Leader> leaders, int maxPages) {
+                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, CurrentUser.get());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -161,11 +182,9 @@ public class LeadersActivity extends AppCompatActivity {
             case R.id.leaders_me:
                 final int pos = adapter.find(CurrentUser.get().id);
 
-                if (pos >= 0) {
-                    list.scrollToPosition(pos);
-                } else {
+                if (pos >= 0) list.scrollToPosition(pos);
+                else
                     CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND, CurrentUser.get().id);
-                }
                 break;
             case R.id.leaders_filter:
                 final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
