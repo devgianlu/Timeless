@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.GrantActivity;
+import com.gianlu.timeless.Models.Commits;
+import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
-import com.gianlu.timeless.Objects.Commits;
-import com.gianlu.timeless.Objects.Project;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 

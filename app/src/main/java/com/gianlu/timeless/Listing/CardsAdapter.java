@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gianlu.timeless.Objects.Duration;
-import com.gianlu.timeless.Objects.LoggedEntity;
-import com.gianlu.timeless.Objects.Summary;
+import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.LoggedEntity;
+import com.gianlu.timeless.Models.Summary;
 
 import java.util.ArrayList;
 import java.util.List;

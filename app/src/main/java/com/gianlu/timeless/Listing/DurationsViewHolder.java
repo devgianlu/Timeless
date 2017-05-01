@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gianlu.timeless.DurationsView;
-import com.gianlu.timeless.Objects.Duration;
+import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.R;
 
 import java.util.List;

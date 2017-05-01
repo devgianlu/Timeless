@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Objects;
+package com.gianlu.timeless.Models;
 
 import org.json.JSONArray;
 import org.json.JSONException;

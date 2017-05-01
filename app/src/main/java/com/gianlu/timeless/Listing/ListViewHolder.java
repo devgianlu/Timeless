@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gianlu.timeless.Activities.Projects.FilesAdapter;
-import com.gianlu.timeless.Objects.LoggedEntity;
+import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 
 import java.util.List;

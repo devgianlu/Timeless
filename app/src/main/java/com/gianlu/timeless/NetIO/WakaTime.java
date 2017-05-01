@@ -4,12 +4,12 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
-import com.gianlu.timeless.Objects.Commits;
-import com.gianlu.timeless.Objects.Duration;
-import com.gianlu.timeless.Objects.Leader;
-import com.gianlu.timeless.Objects.Project;
-import com.gianlu.timeless.Objects.Summary;
-import com.gianlu.timeless.Objects.User;
+import com.gianlu.timeless.Models.Commits;
+import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.Leader;
+import com.gianlu.timeless.Models.Project;
+import com.gianlu.timeless.Models.Summary;
+import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.UncaughtExceptionHandler;
 import com.github.scribejava.core.builder.ServiceBuilder;
@@ -282,6 +282,7 @@ public class WakaTime {
         getLeaders(context, language, 1, handler);
     }
 
+    // FIXME
     public void getLeaders(final Context context, @Nullable final String language, final int page, final ILeaders handler) {
         new Thread(new Runnable() {
             @Override
@@ -295,7 +296,8 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
-                        handler.onLeaders(Leader.fromJSON(obj.getJSONArray("data")), obj.getInt("total_pages"));
+                        System.out.println(obj);
+                        handler.onLeaders(Leader.fromJSON(obj.getJSONArray("data")), new Leader(obj.getJSONObject("current_user")), obj.getInt("total_pages"));
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
                     }
@@ -431,7 +433,7 @@ public class WakaTime {
     }
 
     public interface ILeaders {
-        void onLeaders(List<Leader> leaders, int maxPages);
+        void onLeaders(List<Leader> leaders, Leader me, int maxPages);
 
         void onException(Exception ex);
 

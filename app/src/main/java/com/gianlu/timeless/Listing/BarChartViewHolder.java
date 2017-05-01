@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.gianlu.timeless.Objects.LoggedEntity;
-import com.gianlu.timeless.Objects.Summary;
+import com.gianlu.timeless.Models.LoggedEntity;
+import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.BarChart;
@@ -57,7 +57,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
-            private SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
+            private final SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
 
             @Override
             public String getFormattedValue(float value, AxisBase axis) {

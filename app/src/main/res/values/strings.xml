@@ -22,7 +22,6 @@
     <string name="preferences">Preferences</string>
     <string name="support">Support</string>
     <string name="home">Home</string>
-    <string name="noUsername">Anonymous user</string>
     <string name="commits">Commits</string>
     <string name="projects">Projects</string>
     <string name="donate">Donate</string>

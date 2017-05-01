@@ -1,5 +1,6 @@
-package com.gianlu.timeless.Objects;
+package com.gianlu.timeless.Models;
 
+import com.gianlu.commonutils.Drawer.BaseDrawerProfile;
 import com.gianlu.timeless.Utils;
 
 import org.json.JSONException;
@@ -7,11 +8,11 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class User implements Serializable, BaseDrawerProfile {
     public final String email;
     public final String username;
     public final String id;
-    final String full_name;
+    private final String full_name;
 
     public User(JSONObject obj) throws JSONException {
         id = obj.getString("id");
@@ -32,6 +33,7 @@ public class User implements Serializable {
         }
     }
 
+    @Override
     public String getInitials() {
         if (username == null && email == null && full_name == null)
             return "??";
@@ -53,5 +55,15 @@ public class User implements Serializable {
         } else {
             return email.substring(0, 2);
         }
+    }
+
+    @Override
+    public String getProfileName() {
+        return getDisplayName();
+    }
+
+    @Override
+    public String getSecondaryText() {
+        return email;
     }
 }

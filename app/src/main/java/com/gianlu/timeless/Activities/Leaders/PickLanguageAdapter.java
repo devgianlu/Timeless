@@ -12,7 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gianlu.timeless.Objects.LoggedEntity;
+import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 
 import java.util.List;

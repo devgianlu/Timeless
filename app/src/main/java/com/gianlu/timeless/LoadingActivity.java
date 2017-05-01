@@ -10,9 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
-import com.gianlu.timeless.Objects.User;
 
 public class LoadingActivity extends AppCompatActivity {
     private Intent goTo;
@@ -63,7 +63,6 @@ public class LoadingActivity extends AppCompatActivity {
                             WakaTime.getInstance().getCurrentUser(LoadingActivity.this, new WakaTime.IUser() {
                                 @Override
                                 public void onUser(User user) {
-                                    CurrentUser.set(user);
                                     goTo(MainActivity.class, user);
                                 }
 

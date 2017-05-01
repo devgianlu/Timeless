@@ -13,7 +13,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.gianlu.timeless.Objects.Duration;
+import com.gianlu.timeless.Models.Duration;
 
 import java.util.ArrayList;
 import java.util.Calendar;

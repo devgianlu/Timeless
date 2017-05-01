@@ -19,12 +19,11 @@ import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
-import com.gianlu.timeless.CurrentUser;
 import com.gianlu.timeless.GrantActivity;
+import com.gianlu.timeless.Models.Leader;
+import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
-import com.gianlu.timeless.Objects.Leader;
-import com.gianlu.timeless.Objects.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
@@ -35,6 +34,7 @@ public class LeadersActivity extends AppCompatActivity {
     private TextView currFilter;
     private String currLang;
     private InfiniteRecyclerView list;
+    private Leader me;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +59,9 @@ public class LeadersActivity extends AppCompatActivity {
             public void onRefresh() {
                 WakaTime.getInstance().getLeaders(LeadersActivity.this, new WakaTime.ILeaders() {
                     @Override
-                    public void onLeaders(final List<Leader> leaders, int maxPages) {
-                        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, CurrentUser.get());
+                    public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
+                        LeadersActivity.this.me = me;
+                        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -99,8 +100,9 @@ public class LeadersActivity extends AppCompatActivity {
 
         WakaTime.getInstance().getLeaders(this, new WakaTime.ILeaders() {
             @Override
-            public void onLeaders(final List<Leader> leaders, int maxPages) {
-                adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, CurrentUser.get());
+            public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
+                LeadersActivity.this.me = me;
+                adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -145,8 +147,9 @@ public class LeadersActivity extends AppCompatActivity {
         CommonUtils.showDialog(LeadersActivity.this, pd);
         WakaTime.getInstance().getLeaders(LeadersActivity.this, language, new WakaTime.ILeaders() {
             @Override
-            public void onLeaders(List<Leader> leaders, int maxPages) {
-                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, CurrentUser.get());
+            public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
+                LeadersActivity.this.me = me;
+                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -180,11 +183,8 @@ public class LeadersActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.leaders_me:
-                final int pos = adapter.find(CurrentUser.get().id);
-
-                if (pos >= 0) list.scrollToPosition(pos);
-                else
-                    CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND, CurrentUser.get().id);
+                if (me != null) LeadersAdapter.displayRankDialog(this, me);
+                else CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND);
                 break;
             case R.id.leaders_filter:
                 final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
