@@ -25,7 +25,9 @@ import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
+import com.google.android.gms.analytics.HitBuilders;
 
 import java.util.List;
 
@@ -185,6 +187,11 @@ public class LeadersActivity extends AppCompatActivity {
             case R.id.leaders_me:
                 if (me != null) LeadersAdapter.displayRankDialog(this, me);
                 else CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND);
+
+                ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
+                        .setCategory(ThisApplication.CATEGORY_USER_INPUT)
+                        .setAction(ThisApplication.ACTION_SHOW_ME_LEADER)
+                        .build());
                 break;
             case R.id.leaders_filter:
                 final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
@@ -202,6 +209,11 @@ public class LeadersActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         gatherAndUpdate(adapter.getItem(which).name);
+
+                                        ThisApplication.sendAnalytics(LeadersActivity.this, new HitBuilders.EventBuilder()
+                                                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
+                                                .setAction(ThisApplication.ACTION_FILTER_LEADERS)
+                                                .build());
                                     }
                                 })
                                 .setNeutralButton(R.string.unsetFilter, new DialogInterface.OnClickListener() {

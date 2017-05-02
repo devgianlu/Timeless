@@ -17,6 +17,8 @@ public class ThisApplication extends Application {
     public static final String ACTION_DATE_RANGE = "Changed date range";
     public static final String ACTION_SAVED_CHART = "Chart saved as image";
     public static final String ACTION_DONATE_OPEN = "Opened donation dialog";
+    public static final String ACTION_FILTER_LEADERS = "Filtered leaders";
+    public static final String ACTION_SHOW_ME_LEADER = "Show me in leaderboards";
     public static Tracker tracker;
 
     @NonNull
