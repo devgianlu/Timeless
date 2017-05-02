@@ -151,7 +151,7 @@ class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             castHolder.message.setText(commit.message);
             castHolder.author.setText(commit.getAuthor());
             castHolder.hash.setText(commit.truncated_hash);
-            castHolder.date.setText(Utils.getDateFormatter().format(new Date(commit.committer_date)));
+            castHolder.date.setText(Utils.getDateTimeFormatter().format(new Date(commit.committer_date)));
             castHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

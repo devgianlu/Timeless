@@ -26,4 +26,5 @@
     <color name="brown">#795548</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="text_default_material_dark">#b3ffffff</color>
 </resources>

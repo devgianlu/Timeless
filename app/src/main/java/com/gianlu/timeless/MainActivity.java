@@ -19,6 +19,7 @@ import com.gianlu.commonutils.Drawer.BaseDrawerProfile;
 import com.gianlu.commonutils.Drawer.DrawerManager;
 import com.gianlu.commonutils.Drawer.ProfilesAdapter;
 import com.gianlu.timeless.Activities.CommitsActivity;
+import com.gianlu.timeless.Activities.DailyStatsActivity;
 import com.gianlu.timeless.Activities.LeadersActivity;
 import com.gianlu.timeless.Activities.ProjectsActivity;
 import com.gianlu.timeless.Main.DrawerConst;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
                     }
                 })
                 .addMenuItem(new BaseDrawerItem(DrawerConst.HOME, R.drawable.ic_home_black_48dp, getString(R.string.home)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.DAILY_STATS, R.drawable.ic_view_day_black_48dp, getString(R.string.dailyStats)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PROJECTS, R.drawable.ic_view_module_black_48dp, getString(R.string.projects)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.COMMITS, R.drawable.ic_linear_scale_black_48dp, getString(R.string.commits)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.LEADERS, R.drawable.ic_show_chart_black_48dp, getString(R.string.leaderboards)))
@@ -75,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
                 switch (which.id) {
                     case DrawerConst.HOME:
                         return true;
+                    case DrawerConst.DAILY_STATS:
+                        startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
+                        return false;
                     case DrawerConst.COMMITS:
                         startActivity(new Intent(MainActivity.this, CommitsActivity.class));
                         return false;

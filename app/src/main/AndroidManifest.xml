@@ -61,6 +61,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Daily stats activity -->
+        <activity
+            android:name=".Activities.DailyStatsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!-- Commits activity -->
         <activity
             android:name=".Activities.CommitsActivity"

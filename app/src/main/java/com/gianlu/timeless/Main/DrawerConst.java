@@ -7,4 +7,5 @@ public class DrawerConst {
     public static final int LEADERS = 3;
     public static final int PREFERENCES = 4;
     public static final int SUPPORT = 5;
+    public static final int DAILY_STATS = 6;
 }

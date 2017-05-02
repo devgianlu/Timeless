@@ -103,7 +103,7 @@ public class Utils {
         return textViewDefaultColor;
     }
 
-    public static SimpleDateFormat getDateFormatter() {
+    public static SimpleDateFormat getDateTimeFormatter() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         return sdf;
@@ -181,5 +181,6 @@ public class Utils {
         public static final CommonUtils.ToastMessage INVALID_TOKEN = new CommonUtils.ToastMessage("Please grant access again.", false);
         public static final CommonUtils.ToastMessage FAILED_SAVING_CHART = new CommonUtils.ToastMessage("Failed saving the chart image!", true);
         public static final CommonUtils.ToastMessage WRITE_DENIED = new CommonUtils.ToastMessage("You have denied the write permission.", false);
+        public static final CommonUtils.ToastMessage FUTURE_DATE = new CommonUtils.ToastMessage("You cannot go into the future!", false);
     }
 }

@@ -58,4 +58,6 @@
     <string name="unsetFilter">Remove filter</string>
     <string name="averageImprovement">Improvement to the week average</string>
     <string name="rank"><![CDATA[<b>Rank:</b>]]> %d</string>
+    <string name="dailyStats">Daily stats</string>
+    <string name="selectDay">Select day</string>
 </resources>
