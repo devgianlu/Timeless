@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.InfiniteRecyclerView;
+import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -55,11 +55,14 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     public static void displayRankDialog(Activity activity, Leader leader) {
         ScrollView layout = (ScrollView) activity.getLayoutInflater().inflate(R.layout.leader_dialog, null, false);
 
-        TextView weekTotal = (TextView) layout.findViewById(R.id.leaderDialog_weekTotal);
-        weekTotal.setText(Html.fromHtml(activity.getString(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true))));
+        SuperTextView rank = (SuperTextView) layout.findViewById(R.id.leaderDialog_rank);
+        rank.setHtml(R.string.rank, leader.rank);
 
-        TextView dailyAverage = (TextView) layout.findViewById(R.id.leaderDialog_dailyAverage);
-        dailyAverage.setText(Html.fromHtml(activity.getString(R.string.dailyTimeSpent, Utils.timeFormatterHours(leader.daily_average, true))));
+        SuperTextView weekTotal = (SuperTextView) layout.findViewById(R.id.leaderDialog_weekTotal);
+        weekTotal.setHtml(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true));
+
+        SuperTextView dailyAverage = (SuperTextView) layout.findViewById(R.id.leaderDialog_dailyAverage);
+        dailyAverage.setHtml(R.string.dailyTimeSpent, Utils.timeFormatterHours(leader.daily_average, true));
 
         SquarePieChart chart = (SquarePieChart) layout.findViewById(R.id.leaderDialog_chart);
         chart.setDescription(null);
@@ -80,10 +83,8 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
         set.setValueFormatter(new IValueFormatter() {
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                if (value < 10)
-                    return "";
-                else
-                    return String.format(Locale.getDefault(), "%.2f", value) + "%";
+                if (value < 10) return "";
+                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
         set.setColors(Utils.getColors(), activity);

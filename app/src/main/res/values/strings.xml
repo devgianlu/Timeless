@@ -57,4 +57,5 @@
     <string name="filterByLanguage">Filter by language</string>
     <string name="unsetFilter">Remove filter</string>
     <string name="averageImprovement">Improvement to the week average</string>
+    <string name="rank"><![CDATA[<b>Rank:</b>]]> %d</string>
 </resources>

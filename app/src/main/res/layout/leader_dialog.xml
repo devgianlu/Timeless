@@ -9,12 +9,17 @@
         android:orientation="vertical"
         android:padding="?dialogPreferredPadding">
 
-        <TextView
+        <com.gianlu.commonutils.SuperTextView
+            android:id="@+id/leaderDialog_rank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.gianlu.commonutils.SuperTextView
             android:id="@+id/leaderDialog_weekTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <TextView
+        <com.gianlu.commonutils.SuperTextView
             android:id="@+id/leaderDialog_dailyAverage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

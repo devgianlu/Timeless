@@ -123,12 +123,10 @@ public class Utils {
 
     @Nullable
     public static String parseStupidNullJSON(JSONObject obj, String name) throws JSONException {
-        String value = obj.getString(name);
+        String value = obj.optString(name);
 
-        if (Objects.equals(value, "null"))
-            return null;
-        else
-            return value;
+        if (Objects.equals(value, "null")) return null;
+        else return value;
     }
 
     public static int[] getColors() {

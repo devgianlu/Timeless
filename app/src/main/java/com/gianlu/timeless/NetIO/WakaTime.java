@@ -282,7 +282,6 @@ public class WakaTime {
         getLeaders(context, language, 1, handler);
     }
 
-    // FIXME
     public void getLeaders(final Context context, @Nullable final String language, final int page, final ILeaders handler) {
         new Thread(new Runnable() {
             @Override

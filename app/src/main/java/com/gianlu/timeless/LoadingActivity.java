@@ -110,9 +110,7 @@ public class LoadingActivity extends AppCompatActivity {
         if (user != null)
             intent.putExtra("user", user);
 
-        if (finished)
-            startActivity(intent);
-        else
-            this.goTo = intent;
+        if (finished) startActivity(intent);
+        else this.goTo = intent;
     }
 }
