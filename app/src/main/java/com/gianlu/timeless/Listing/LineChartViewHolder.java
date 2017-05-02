@@ -23,8 +23,11 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 class LineChartViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
@@ -48,9 +51,13 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
+            private final SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
+
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return String.valueOf((int) (value - summaries.size() + 1));
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, (int) value - summaries.size() + 1);
+                return formatter.format(calendar.getTime());
             }
         });
 
