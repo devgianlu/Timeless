@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -53,7 +54,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
     private ProgressBar loading;
     private TextView error;
 
-    private void updatePage(Date newDate) {
+    private void updatePage(Date newDate, @Nullable final SwipeRefreshLayout swipeRefresh) {
         if (newDate.after(new Date())) {
             CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
             return;
@@ -62,15 +63,19 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         currentDatePair = new Pair<>(newDate, newDate);
         currDay.setText(Utils.getOnlyDateFormatter().format(newDate));
 
-        loading.setVisibility(View.VISIBLE);
-        error.setVisibility(View.GONE);
-        list.setVisibility(View.GONE);
+        if (swipeRefresh == null) {
+            loading.setVisibility(View.VISIBLE);
+            error.setVisibility(View.GONE);
+            list.setVisibility(View.GONE);
+        }
+
         WakaTime.getInstance().getRangeSummary(currentDatePair, new WakaTime.ISummary() {
             @Override
             public void onSummary(List<Summary> summaries, final Summary summary) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
                         error.setVisibility(View.GONE);
                         loading.setVisibility(View.GONE);
                         list.setVisibility(View.VISIBLE);
@@ -98,18 +103,25 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            loading.setVisibility(View.GONE);
-                            error.setText(ex.getMessage());
-                            error.setVisibility(View.VISIBLE);
+                            if (swipeRefresh != null) {
+                                swipeRefresh.setRefreshing(false);
+                            } else {
+                                loading.setVisibility(View.GONE);
+                                error.setText(ex.getMessage());
+                                error.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
-
                 } else {
-                    CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    CommonUtils.UIToast(DailyStatsActivity.this, swipeRefresh == null ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                         @Override
                         public void run() {
-                            loading.setVisibility(View.GONE);
-                            error.setVisibility(View.VISIBLE);
+                            if (swipeRefresh != null) {
+                                swipeRefresh.setRefreshing(false);
+                            } else {
+                                loading.setVisibility(View.GONE);
+                                error.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
                 }
@@ -165,7 +177,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // TODO: Refresh
+                updatePage(currentDatePair.first, swipeRefreshLayout);
             }
         });
 
@@ -179,7 +191,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                 cal.setTime(currentDatePair.first);
                 cal.add(Calendar.DATE, 1);
 
-                updatePage(cal.getTime());
+                updatePage(cal.getTime(), null);
             }
         });
 
@@ -193,11 +205,11 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                 cal.setTime(currentDatePair.first);
                 cal.add(Calendar.DATE, -1);
 
-                updatePage(cal.getTime());
+                updatePage(cal.getTime(), null);
             }
         });
 
-        updatePage(new Date());
+        updatePage(new Date(), null);
     }
 
     @Override
@@ -256,6 +268,6 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         cal.set(Calendar.MONTH, monthOfYear);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-        updatePage(cal.getTime());
+        updatePage(cal.getTime(), null);
     }
 }

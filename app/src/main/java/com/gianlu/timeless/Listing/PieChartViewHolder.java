@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
@@ -116,15 +116,12 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         details.removeAllViews();
         long total_seconds = LoggedEntity.sumSeconds(entities);
         for (LoggedEntity entity : entities) {
-            TextView text = CommonUtils.fastTextView(context,
-                    Html.fromHtml(
-                            context.getString(
-                                    R.string.cardDetailsEntity,
-                                    entity.name,
-                                    Utils.timeFormatterHours(entity.total_seconds, true),
-                                    String.format(Locale.getDefault(),
-                                            "%.2f",
-                                            ((float) entity.total_seconds) / ((float) total_seconds) * 100))));
+            SuperTextView text = new SuperTextView(context, R.string.cardDetailsEntity,
+                    entity.name,
+                    Utils.timeFormatterHours(entity.total_seconds, true),
+                    String.format(Locale.getDefault(),
+                            "%.2f",
+                            ((float) entity.total_seconds) / ((float) total_seconds) * 100));
             text.setTag(entity.name);
             details.addView(text);
         }
