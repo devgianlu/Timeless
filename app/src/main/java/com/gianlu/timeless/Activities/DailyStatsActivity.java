@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
+import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -72,21 +73,61 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         WakaTime.getInstance().getRangeSummary(currentDatePair, new WakaTime.ISummary() {
             @Override
             public void onSummary(List<Summary> summaries, final Summary summary) {
-                runOnUiThread(new Runnable() {
+                WakaTime.getInstance().getDurations(DailyStatsActivity.this, currentDatePair.first, new WakaTime.IDurations() {
                     @Override
-                    public void run() {
-                        if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
-                        error.setVisibility(View.GONE);
-                        loading.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-                        list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
-                                .addSummary(summary)
-                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), DailyStatsActivity.this));
+                    public void onDurations(final List<Duration> durations) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+                                error.setVisibility(View.GONE);
+                                loading.setVisibility(View.GONE);
+                                list.setVisibility(View.VISIBLE);
+                                list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
+                                        .addSummary(summary)
+                                        .addDurations(getString(R.string.durationsSummary), durations)
+                                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), DailyStatsActivity.this));
+                            }
+                        });
+                    }
 
-                        // TODO: Add more charts
+                    @Override
+                    public void onException(final Exception ex) {
+                        if (ex instanceof WakaTimeException) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (swipeRefresh != null) {
+                                        swipeRefresh.setRefreshing(false);
+                                    } else {
+                                        loading.setVisibility(View.GONE);
+                                        error.setText(ex.getMessage());
+                                        error.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+                        } else {
+                            CommonUtils.UIToast(DailyStatsActivity.this, swipeRefresh == null ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (swipeRefresh != null) {
+                                        swipeRefresh.setRefreshing(false);
+                                    } else {
+                                        loading.setVisibility(View.GONE);
+                                        error.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onWakaTimeException(WakaTimeException ex) {
+                        CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                        startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     }
                 });
             }
