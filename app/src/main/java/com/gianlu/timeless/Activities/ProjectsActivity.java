@@ -13,7 +13,6 @@ import android.util.Pair;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Activities.Projects.ProjectFragment;
 import com.gianlu.timeless.GrantActivity;
@@ -24,6 +23,7 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
 import com.google.android.gms.analytics.HitBuilders;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,10 +31,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ProjectsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private Pair<Date, Date> currentRange;
     private ViewPager pager;
+    private Date tmpStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,13 +144,13 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                 Calendar start = Calendar.getInstance();
                 start.setTime(currentRange.first);
 
-                Calendar end = Calendar.getInstance();
-                end.setTime(currentRange.second);
+                DatePickerDialog dialog = DatePickerDialog.newInstance(this,
+                        start.get(Calendar.YEAR),
+                        start.get(Calendar.MONTH),
+                        start.get(Calendar.DAY_OF_MONTH));
 
-                DatePickerDialog.newInstance(this,
-                        start.get(Calendar.YEAR), start.get(Calendar.MONTH), start.get(Calendar.DAY_OF_MONTH),
-                        end.get(Calendar.YEAR), end.get(Calendar.MONTH), end.get(Calendar.DAY_OF_MONTH))
-                        .show(getFragmentManager(), "DatePickerDialog");
+                dialog.setTitle(getString(R.string.selectStartDate));
+                dialog.show(getFragmentManager(), "START");
                 break;
         }
 
@@ -156,16 +158,31 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
     }
 
     @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
-        Calendar start = Calendar.getInstance();
-        start.setTimeInMillis(0);
-        start.set(year, monthOfYear, dayOfMonth);
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        if (Objects.equals(view.getTag(), "START")) {
+            Calendar start = Calendar.getInstance();
+            start.setTimeInMillis(0);
+            start.set(year, monthOfYear, dayOfMonth);
+            tmpStart = start.getTime();
+
+            Calendar end = Calendar.getInstance();
+            end.setTime(currentRange.second);
+
+            DatePickerDialog dialog = DatePickerDialog.newInstance(this,
+                    end.get(Calendar.YEAR),
+                    end.get(Calendar.MONTH),
+                    end.get(Calendar.DAY_OF_MONTH));
+
+            dialog.setTitle(getString(R.string.selectEndDate));
+            dialog.show(getFragmentManager(), "END");
+            return;
+        }
 
         Calendar end = Calendar.getInstance();
         end.setTimeInMillis(0);
-        end.set(yearEnd, monthOfYearEnd, dayOfMonthEnd);
+        end.set(year, monthOfYear, dayOfMonth);
 
-        currentRange = new Pair<>(start.getTime(), end.getTime());
+        currentRange = new Pair<>(tmpStart, end.getTime());
         updateRangeText();
 
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);

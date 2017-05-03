@@ -24,7 +24,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
@@ -35,6 +34,7 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
 import com.google.android.gms.analytics.HitBuilders;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,6 +54,11 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
     private TextView error;
 
     private void updatePage(Date newDate) {
+        if (newDate.after(new Date())) {
+            CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
+            return;
+        }
+
         currentDatePair = new Pair<>(newDate, newDate);
         currDay.setText(Utils.getOnlyDateFormatter().format(newDate));
 
@@ -124,7 +129,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
             case android.R.id.home:
                 onBackPressed();
                 break;
-            case R.id.dailyStats_changeDay: // FIXME: I need the normal one
+            case R.id.dailyStats_changeDay:
                 Calendar now = Calendar.getInstance();
                 DatePickerDialog.newInstance(this,
                         now.get(Calendar.YEAR),
@@ -173,11 +178,6 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(currentDatePair.first);
                 cal.add(Calendar.DATE, 1);
-
-                if (cal.getTime().after(new Date())) {
-                    CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(cal.getTime()));
-                    return;
-                }
 
                 updatePage(cal.getTime());
             }
@@ -249,17 +249,12 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
     }
 
     @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, monthOfYear);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-        if (cal.getTime().after(new Date())) {
-            CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(cal.getTime()));
-            return;
-        }
 
         updatePage(cal.getTime());
     }

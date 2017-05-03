@@ -60,4 +60,6 @@
     <string name="rank"><![CDATA[<b>Rank:</b>]]> %d</string>
     <string name="dailyStats">Daily stats</string>
     <string name="selectDay">Select day</string>
+    <string name="selectStartDate">Select start date</string>
+    <string name="selectEndDate">Select end date</string>
 </resources>
