@@ -106,8 +106,12 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
             @Override
             public void onException(Exception ex) {
-                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
-                onBackPressed();
+                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        onBackPressed();
+                    }
+                });
             }
 
             @Override
@@ -207,8 +211,12 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
             @Override
             public void onException(Exception ex) {
-                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
-                onBackPressed();
+                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        onBackPressed();
+                    }
+                });
             }
 
             @Override
