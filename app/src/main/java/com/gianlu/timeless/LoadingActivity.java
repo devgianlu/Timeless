@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Logging;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -22,7 +23,6 @@ public class LoadingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        CommonUtils.DEBUG = BuildConfig.DEBUG;
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun", true)) {
             startActivity(new Intent(this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -51,7 +51,7 @@ public class LoadingActivity extends AppCompatActivity {
             }
         }, 1000);
 
-        CommonUtils.logCleaner(this);
+        Logging.clearLogs(this);
 
         new Thread(new Runnable() {
             @Override

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -15,8 +14,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Drawer.BaseDrawerItem;
-import com.gianlu.commonutils.Drawer.BaseDrawerProfile;
 import com.gianlu.commonutils.Drawer.DrawerManager;
+import com.gianlu.commonutils.Drawer.Initializer;
 import com.gianlu.commonutils.Drawer.ProfilesAdapter;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Activities.DailyStatsActivity;
@@ -30,15 +29,15 @@ import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DrawerManager.ISetup {
-    private DrawerManager drawerManager;
+public class MainActivity extends AppCompatActivity implements DrawerManager.ISetup<User> {
+    private DrawerManager<User> drawerManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        CommonUtils.DEBUG = BuildConfig.DEBUG;
+        CommonUtils.setDebug(BuildConfig.DEBUG);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         final ViewPager pager = (ViewPager) findViewById(R.id.main_pager);
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
             return;
         }
 
-        drawerManager = DrawerManager.setup(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar, this)
+        drawerManager = new DrawerManager<>(new Initializer<>(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar, this)
                 .hasSingleProfile(user, new DrawerManager.ILogout() {
                     @Override
                     public void logout() {
@@ -68,10 +67,9 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
                 .addMenuItem(new BaseDrawerItem(DrawerConst.LEADERS, R.drawable.ic_show_chart_black_48dp, getString(R.string.leaderboards)))
                 .addMenuItemSeparator()
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.ic_settings_black_48dp, getString(R.string.preferences)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.ic_report_problem_black_48dp, getString(R.string.support)))
-                .build();
+                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.ic_report_problem_black_48dp, getString(R.string.support))));
 
-        drawerManager.setDrawerListener(new DrawerManager.IDrawerListener() {
+        drawerManager.setDrawerListener(new DrawerManager.IDrawerListener<User>() {
             @Override
             public boolean onMenuItemSelected(BaseDrawerItem which) {
                 switch (which.id) {
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
             }
 
             @Override
-            public void onProfileSelected(BaseDrawerProfile profile) {
+            public void onProfileSelected(User profile) {
 
             }
 
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
             }
 
             @Override
-            public void editProfile(List<BaseDrawerProfile> items) {
+            public void editProfile(List<User> items) {
 
             }
         });
@@ -203,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
     }
 
     @Override
-    public ProfilesAdapter getProfilesAdapter(Context context, List<BaseDrawerProfile> profiles, @DrawableRes int ripple_dark, DrawerManager.IDrawerListener listener) {
+    public ProfilesAdapter<User> getProfilesAdapter(Context context, List<User> profiles, DrawerManager.IDrawerListener listener) {
         return null;
     }
 }

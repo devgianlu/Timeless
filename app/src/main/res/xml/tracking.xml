@@ -11,6 +11,8 @@
     <screenName name="com.gianlu.timeless.MainActivity">Screen~Main</screenName>
     <screenName name="com.gianlu.timeless.GrantActivity">Screen~Grant</screenName>
     <screenName name="com.gianlu.timeless.Activities.CommitsActivity">Screen~Commits</screenName>
+    <screenName name="com.gianlu.timeless.Activities.DailyStatsActivity">Screen~DailyStats
+    </screenName>
     <screenName name="com.gianlu.timeless.Activities.LeadersActivity">Screen~Leaderboards
     </screenName>
     <screenName name="com.gianlu.timeless.Activities.ProjectsActivity">Screen~Projects</screenName>
