@@ -200,8 +200,9 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
         return R.color.colorPrimary;
     }
 
+    @Nullable
     @Override
-    public ProfilesAdapter<User> getProfilesAdapter(Context context, List<User> profiles, DrawerManager.IDrawerListener listener) {
+    public ProfilesAdapter<User> getProfilesAdapter(Context context, List<User> profiles, DrawerManager.IDrawerListener<User> listener) {
         return null;
     }
 }
