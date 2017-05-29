@@ -86,8 +86,12 @@ public class CommitsActivity extends AppCompatActivity {
 
             @Override
             public void onException(Exception ex) {
-                CommonUtils.UIToast(CommitsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
-                onBackPressed();
+                CommonUtils.UIToast(CommitsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        onBackPressed();
+                    }
+                });
             }
 
             @Override
