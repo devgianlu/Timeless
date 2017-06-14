@@ -22,7 +22,6 @@ class DurationsViewHolder extends RecyclerView.ViewHolder {
         durationsView = (DurationsView) itemView.findViewById(R.id.durationsCard_view);
     }
 
-    // TODO: Save as image
     void bind(final String title, List<Duration> durations) {
         this.title.setText(title);
 

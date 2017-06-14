@@ -107,9 +107,7 @@ public class LoadingActivity extends AppCompatActivity {
 
     private void goTo(Class goTo, @Nullable User user) {
         Intent intent = new Intent(LoadingActivity.this, goTo).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (user != null)
-            intent.putExtra("user", user);
-
+        if (user != null) intent.putExtra("user", user);
         if (finished) startActivity(intent);
         else this.goTo = intent;
     }
