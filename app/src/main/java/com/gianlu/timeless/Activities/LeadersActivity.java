@@ -31,12 +31,14 @@ import com.google.android.gms.analytics.HitBuilders;
 
 import java.util.List;
 
-public class LeadersActivity extends AppCompatActivity {
+public class LeadersActivity extends AppCompatActivity implements WakaTime.ILeaders {
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang;
     private InfiniteRecyclerView list;
     private Leader me;
+    private ProgressDialog pd;
+    private SwipeRefreshLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +49,9 @@ public class LeadersActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.leaders_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        final SwipeRefreshLayout layout = (SwipeRefreshLayout) findViewById(R.id.leaders_swipeRefresh);
+        layout = (SwipeRefreshLayout) findViewById(R.id.leaders_swipeRefresh);
         layout.setColorSchemeResources(Utils.getColors());
         currFilter = (TextView) findViewById(R.id.leaders_rankingText);
         list = (InfiniteRecyclerView) findViewById(R.id.leaders_list);
@@ -59,81 +60,59 @@ public class LeadersActivity extends AppCompatActivity {
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getLeaders(LeadersActivity.this, new WakaTime.ILeaders() {
-                    @Override
-                    public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
-                        LeadersActivity.this.me = me;
-                        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.setAdapter(adapter);
-                                layout.setRefreshing(false);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onException(Exception ex) {
-                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                            @Override
-                            public void run() {
-                                layout.setRefreshing(false);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onWakaTimeException(WakaTimeException ex) {
-                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
-                            @Override
-                            public void run() {
-                                layout.setRefreshing(false);
-                            }
-                        });
-                        startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                    }
-                });
+                WakaTime.getInstance().getLeaders(LeadersActivity.this, LeadersActivity.this);
             }
         });
 
-        final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
+
+        pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        WakaTime.getInstance().getLeaders(this, new WakaTime.ILeaders() {
-            @Override
-            public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
-                LeadersActivity.this.me = me;
-                adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        list.setAdapter(adapter);
-                        pd.dismiss();
-                    }
-                });
-            }
+        WakaTime.getInstance().getLeaders(this, this);
+    }
 
+    @Override
+    public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
+        LeadersActivity.this.me = me;
+        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
+        runOnUiThread(new Runnable() {
             @Override
-            public void onException(Exception ex) {
-                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        pd.dismiss();
-                        onBackPressed();
-                    }
-                });
+            public void run() {
+                list.setAdapter(adapter);
+                layout.setRefreshing(false);
+                pd.dismiss();
             }
+        });
+    }
 
+    @Override
+    public void onException(Exception ex) {
+        if (layout.isRefreshing()) {
+            CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                @Override
+                public void run() {
+                    layout.setRefreshing(false);
+                }
+            });
+        } else {
+            CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                @Override
+                public void run() {
+                    pd.dismiss();
+                    onBackPressed();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onWakaTimeException(WakaTimeException ex) {
+        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        pd.dismiss();
-                        startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                    }
-                });
+            public void run() {
+                pd.dismiss();
+                layout.setRefreshing(false);
+                startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
     }

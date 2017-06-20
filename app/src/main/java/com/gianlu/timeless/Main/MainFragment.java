@@ -42,9 +42,14 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
+public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, WakaTime.ISummary {
     private static final int REQUEST_CODE = 1;
     private CardsAdapter.IPermissionRequest handler;
+    private WakaTime.Range range;
+    private SwipeRefreshLayout layout;
+    private ProgressBar loading;
+    private RecyclerView list;
+    private TextView error;
 
     public static MainFragment getInstance(Context context, WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
@@ -58,26 +63,22 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (handler != null && requestCode == REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                handler.onGranted();
-            else
-                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.WRITE_DENIED);
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
+            else CommonUtils.UIToast(getActivity(), Utils.ToastMessages.WRITE_DENIED);
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final SwipeRefreshLayout layout = (SwipeRefreshLayout) inflater.inflate(R.layout.main_fragment, container, false);
+        layout = (SwipeRefreshLayout) inflater.inflate(R.layout.main_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
-        final ProgressBar loading = (ProgressBar) layout.findViewById(R.id.stats_loading);
-        final RecyclerView list = (RecyclerView) layout.findViewById(R.id.stats_list);
+        loading = (ProgressBar) layout.findViewById(R.id.stats_loading);
+        list = (RecyclerView) layout.findViewById(R.id.stats_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        final TextView error = (TextView) layout.findViewById(R.id.stats_error);
-        final WakaTime.Range range = (WakaTime.Range) getArguments().getSerializable("range");
+        error = (TextView) layout.findViewById(R.id.stats_error);
 
+        range = (WakaTime.Range) getArguments().getSerializable("range");
         if (range == null) {
             loading.setEnabled(false);
             error.setVisibility(View.VISIBLE);
@@ -87,272 +88,134 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart {
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
-                    @Override
-                    public void onSummary(final List<Summary> summaries, final Summary summary) {
-                        if (isDetached())
-                            return;
-
-                        final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
-                                .addSummary(summary)
-                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
-
-                        if (range == WakaTime.Range.TODAY) {
-                            WakaTime.getInstance().getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
-                                @Override
-                                public void onSummary(@Nullable final List<Summary> beforeSummaries, @Nullable final Summary beforeSummary) {
-                                    WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
-                                        @Override
-                                        public void onDurations(final List<Duration> durations) {
-                                            Activity activity = getActivity();
-                                            if (activity != null) {
-                                                activity.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        layout.setRefreshing(false);
-                                                        error.setVisibility(View.GONE);
-
-                                                        cards.addDurations(1, getString(R.string.durationsSummary), durations);
-                                                        if (beforeSummary != null)
-                                                            cards.addPercentage(1, getString(R.string.averageImprovement), summary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
-
-                                                        list.setAdapter(new CardsAdapter(getContext(), cards, MainFragment.this));
-                                                    }
-                                                });
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onException(final Exception ex) {
-                                            if (ex instanceof WakaTimeException) {
-                                                Activity activity = getActivity();
-                                                if (activity != null) {
-                                                    activity.runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            layout.setRefreshing(false);
-                                                            error.setText(ex.getMessage());
-                                                            error.setVisibility(View.VISIBLE);
-                                                        }
-                                                    });
-                                                }
-                                            } else {
-                                                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        layout.setRefreshing(false);
-                                                    }
-                                                });
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onWakaTimeException(WakaTimeException ex) {
-                                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-                                            startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onWakaTimeException(WakaTimeException ex) {
-                                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-                                    startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                                }
-
-                                @Override
-                                public void onException(Exception ex) {
-                                    onSummary(null, null);
-                                }
-                            });
-                        } else {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        layout.setRefreshing(false);
-                                        error.setVisibility(View.GONE);
-
-                                        list.setAdapter(new CardsAdapter(getContext(), cards
-                                                .addProjectsBarChart(1, getString(R.string.periodActivity), summaries), MainFragment.this));
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onWakaTimeException(WakaTimeException ex) {
-                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-                        startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                    }
-
-                    @Override
-                    public void onException(final Exception ex) {
-                        if (ex instanceof WakaTimeException) {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        layout.setRefreshing(false);
-                                        error.setText(ex.getMessage());
-                                        error.setVisibility(View.VISIBLE);
-                                    }
-                                });
-                            }
-                        } else {
-                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                                @Override
-                                public void run() {
-                                    layout.setRefreshing(false);
-                                }
-                            });
-                        }
-                    }
-                });
+                WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), MainFragment.this);
             }
         });
 
-        WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), new WakaTime.ISummary() {
-            @Override
-            public void onSummary(final List<Summary> summaries, final Summary summary) {
-                if (isDetached())
-                    return;
+        WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), this);
 
-                final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
-                        .addSummary(summary)
-                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
+        return layout;
+    }
 
-                if (range == WakaTime.Range.TODAY) {
-                    WakaTime.getInstance().getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
+    @Override
+    public void onSummary(final List<Summary> summaries, final Summary summary) {
+        if (isDetached()) return;
+
+        final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+                .addSummary(summary)
+                .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
+
+        if (range == WakaTime.Range.TODAY) {
+            WakaTime.getInstance().getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
+                @Override
+                public void onSummary(@Nullable final List<Summary> beforeSummaries, @Nullable final Summary beforeSummary) {
+                    WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
                         @Override
-                        public void onSummary(@Nullable final List<Summary> beforeSummaries, @Nullable final Summary beforeSummary) {
-                            WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
-                                @Override
-                                public void onDurations(final List<Duration> durations) {
-                                    Activity activity = getActivity();
-                                    if (activity != null) {
-                                        activity.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                loading.setVisibility(View.GONE);
-                                                list.setVisibility(View.VISIBLE);
-                                                error.setVisibility(View.GONE);
+                        public void onDurations(final List<Duration> durations) {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layout.setRefreshing(false);
+                                        loading.setVisibility(View.GONE);
+                                        list.setVisibility(View.VISIBLE);
+                                        error.setVisibility(View.GONE);
 
-                                                cards.addDurations(1, getString(R.string.durationsSummary), durations);
-                                                if (beforeSummary != null)
-                                                    cards.addPercentage(1, getString(R.string.averageImprovement), summary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
+                                        cards.addDurations(1, getString(R.string.durationsSummary), durations);
+                                        if (beforeSummary != null)
+                                            cards.addPercentage(1, getString(R.string.averageImprovement), summary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
 
-                                                list.setAdapter(new CardsAdapter(getContext(), cards,
-                                                        MainFragment.this));
-                                            }
-                                        });
+                                        list.setAdapter(new CardsAdapter(getContext(), cards, MainFragment.this));
                                     }
-                                }
+                                });
+                            }
+                        }
 
-                                @Override
-                                public void onException(final Exception ex) {
-                                    if (ex instanceof WakaTimeException) {
-                                        Activity activity = getActivity();
-                                        if (activity != null) {
-                                            activity.runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    loading.setVisibility(View.GONE);
-                                                    error.setText(ex.getMessage());
-                                                    error.setVisibility(View.VISIBLE);
-                                                }
-                                            });
-                                        }
-                                    } else {
-                                        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                loading.setVisibility(View.GONE);
-                                                error.setVisibility(View.VISIBLE);
-                                            }
-                                        });
-                                    }
-                                }
-
-                                @Override
-                                public void onWakaTimeException(WakaTimeException ex) {
-                                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-                                    startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                                }
-                            });
+                        @Override
+                        public void onException(final Exception ex) {
+                            MainFragment.this.onException(ex);
                         }
 
                         @Override
                         public void onWakaTimeException(WakaTimeException ex) {
-                            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-                            startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        }
-
-                        @Override
-                        public void onException(Exception ex) {
-                            onSummary(null, null);
-                        }
-                    });
-                } else {
-                    Activity activity = getActivity();
-                    if (activity != null) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                loading.setVisibility(View.GONE);
-                                list.setVisibility(View.VISIBLE);
-                                error.setVisibility(View.GONE);
-
-                                list.setAdapter(new CardsAdapter(getContext(), cards
-                                        .addProjectsBarChart(1, getString(R.string.periodActivity), summaries), MainFragment.this));
-                            }
-                        });
-                    }
-                }
-            }
-
-            @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-                startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            }
-
-            @Override
-            public void onException(final Exception ex) {
-                if (ex instanceof WakaTimeException) {
-                    Activity activity = getActivity();
-                    if (activity != null) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                loading.setVisibility(View.GONE);
-                                error.setText(ex.getMessage());
-                                error.setVisibility(View.VISIBLE);
-                            }
-                        });
-                    }
-                } else {
-                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                        @Override
-                        public void run() {
-                            loading.setVisibility(View.GONE);
-                            error.setVisibility(View.VISIBLE);
+                            MainFragment.this.onWakaTimeException(ex);
                         }
                     });
                 }
-            }
-        });
 
-        return layout;
+                @Override
+                public void onWakaTimeException(WakaTimeException ex) {
+                    CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+                    startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                }
+
+                @Override
+                public void onException(Exception ex) {
+                    onSummary(null, null);
+                }
+            });
+        } else {
+            Activity activity = getActivity();
+            if (activity != null) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        layout.setRefreshing(false);
+                        loading.setVisibility(View.GONE);
+                        list.setVisibility(View.VISIBLE);
+                        error.setVisibility(View.GONE);
+
+                        list.setAdapter(new CardsAdapter(getContext(), cards
+                                .addProjectsBarChart(1, getString(R.string.periodActivity), summaries), MainFragment.this));
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onWakaTimeException(WakaTimeException ex) {
+        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+        startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    }
+
+    @Override
+    public void onException(final Exception ex) {
+        if (ex instanceof WakaTimeException) {
+            Activity activity = getActivity();
+            if (activity != null) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        layout.setRefreshing(false);
+                        loading.setVisibility(View.GONE);
+                        error.setText(ex.getMessage());
+                        error.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        } else {
+            if (layout.isRefreshing()) {
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        layout.setRefreshing(false);
+                    }
+                });
+            } else {
+                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        loading.setVisibility(View.GONE);
+                        error.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        }
     }
 
     @Override

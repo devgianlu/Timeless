@@ -33,10 +33,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class ProjectsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class ProjectsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.IProjects {
     private Pair<Date, Date> currentRange;
     private ViewPager pager;
     private Date tmpStart;
+    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +48,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         Toolbar toolbar = (Toolbar) findViewById(R.id.projects_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         pager = (ViewPager) findViewById(R.id.projects_pager);
         pager.setOffscreenPageLimit(4);
@@ -72,56 +72,53 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
             }
         });
 
-        final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
+        pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
         Date date = (Date) getIntent().getSerializableExtra("date");
-        if (date != null)
-            currentRange = new Pair<>(date, date);
-        else
-            currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
-
-        WakaTime.getInstance().getProjects(this, new WakaTime.IProjects() {
-            @Override
-            public void onProjects(final List<Project> projects) {
-                final List<Fragment> fragments = new ArrayList<>();
-                for (Project project : projects)
-                    fragments.add(ProjectFragment.getInstance(project, currentRange));
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
-                        pd.dismiss();
-
-                        String project_id = getIntent().getStringExtra("project_id");
-                        if (project_id != null) {
-                            int pos = projects.indexOf(Project.find(project_id, projects));
-                            if (pos != -1)
-                                pager.setCurrentItem(pos, false);
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        onBackPressed();
-                    }
-                });
-            }
-
-            @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            }
-        });
+        if (date != null) currentRange = new Pair<>(date, date);
+        else currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
 
         updateRangeText();
+
+        WakaTime.getInstance().getProjects(this, this);
+    }
+
+    @Override
+    public void onProjects(final List<Project> projects) {
+        final List<Fragment> fragments = new ArrayList<>();
+        for (Project project : projects)
+            fragments.add(ProjectFragment.getInstance(project, currentRange));
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
+                if (pd != null) pd.dismiss();
+
+                String project_id = getIntent().getStringExtra("project_id");
+                if (project_id != null) {
+                    int pos = projects.indexOf(Project.find(project_id, projects));
+                    if (pos != -1) pager.setCurrentItem(pos, false);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onException(Exception ex) {
+        CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+            @Override
+            public void run() {
+                onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onWakaTimeException(WakaTimeException ex) {
+        CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+        startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
     public void updateRangeText() {
@@ -231,4 +228,5 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                 .setAction(ThisApplication.ACTION_DATE_RANGE)
                 .build());
     }
+
 }

@@ -29,6 +29,7 @@ import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.List;
 
+// TODO: Use MessageLayout everywhere
 public class MainActivity extends AppCompatActivity implements DrawerManager.ISetup<User> {
     private DrawerManager<User> drawerManager;
 

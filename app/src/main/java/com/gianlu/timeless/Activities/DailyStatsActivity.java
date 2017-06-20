@@ -46,7 +46,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class DailyStatsActivity extends AppCompatActivity implements CardsAdapter.ISaveChart, DatePickerDialog.OnDateSetListener {
+public class DailyStatsActivity extends AppCompatActivity implements CardsAdapter.ISaveChart, DatePickerDialog.OnDateSetListener, WakaTime.ISummary {
     private static final int REQUEST_CODE = 3;
     private CardsAdapter.IPermissionRequest handler;
     private RecyclerView list;
@@ -54,6 +54,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
     private Pair<Date, Date> currentDatePair;
     private ProgressBar loading;
     private TextView error;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private void updatePage(Date newDate, @Nullable final SwipeRefreshLayout swipeRefresh) {
         if (newDate.after(new Date())) {
@@ -70,72 +71,31 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
             list.setVisibility(View.GONE);
         }
 
-        WakaTime.getInstance().getRangeSummary(currentDatePair, new WakaTime.ISummary() {
+        WakaTime.getInstance().getRangeSummary(currentDatePair, this);
+    }
+
+    @Override
+    public void onSummary(List<Summary> summaries, final Summary summary) {
+        WakaTime.getInstance().getDurations(DailyStatsActivity.this, currentDatePair.first, new WakaTime.IDurations() {
             @Override
-            public void onSummary(List<Summary> summaries, final Summary summary) {
-                WakaTime.getInstance().getDurations(DailyStatsActivity.this, currentDatePair.first, new WakaTime.IDurations() {
+            public void onDurations(final List<Duration> durations) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onDurations(final List<Duration> durations) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
-                                error.setVisibility(View.GONE);
-                                loading.setVisibility(View.GONE);
-                                list.setVisibility(View.VISIBLE);
-                                list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
-                                        .addSummary(summary)
-                                        .addDurations(getString(R.string.durationsSummary), durations)
-                                        .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                        .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                        .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                        .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), DailyStatsActivity.this));
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onException(final Exception ex) {
-                        if (ex instanceof WakaTimeException) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (swipeRefresh != null) {
-                                        swipeRefresh.setRefreshing(false);
-                                    } else {
-                                        loading.setVisibility(View.GONE);
-                                        error.setText(ex.getMessage());
-                                        error.setVisibility(View.VISIBLE);
-                                    }
-                                }
-                            });
-                        } else {
-                            CommonUtils.UIToast(DailyStatsActivity.this, swipeRefresh == null ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (swipeRefresh != null) {
-                                        swipeRefresh.setRefreshing(false);
-                                    } else {
-                                        loading.setVisibility(View.GONE);
-                                        error.setVisibility(View.VISIBLE);
-                                    }
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onWakaTimeException(WakaTimeException ex) {
-                        CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                        startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    public void run() {
+                        if (swipeRefreshLayout.isRefreshing())
+                            swipeRefreshLayout.setRefreshing(false);
+                        error.setVisibility(View.GONE);
+                        loading.setVisibility(View.GONE);
+                        list.setVisibility(View.VISIBLE);
+                        list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
+                                .addSummary(summary)
+                                .addDurations(getString(R.string.durationsSummary), durations)
+                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
+                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
+                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
+                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), DailyStatsActivity.this));
                     }
                 });
-            }
-
-            @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
 
             @Override
@@ -144,8 +104,8 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (swipeRefresh != null) {
-                                swipeRefresh.setRefreshing(false);
+                            if (swipeRefreshLayout.isRefreshing()) {
+                                swipeRefreshLayout.setRefreshing(false);
                             } else {
                                 loading.setVisibility(View.GONE);
                                 error.setText(ex.getMessage());
@@ -154,11 +114,11 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                         }
                     });
                 } else {
-                    CommonUtils.UIToast(DailyStatsActivity.this, swipeRefresh == null ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                    CommonUtils.UIToast(DailyStatsActivity.this, swipeRefreshLayout.isRefreshing() ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                         @Override
                         public void run() {
-                            if (swipeRefresh != null) {
-                                swipeRefresh.setRefreshing(false);
+                            if (swipeRefreshLayout.isRefreshing()) {
+                                swipeRefreshLayout.setRefreshing(false);
                             } else {
                                 loading.setVisibility(View.GONE);
                                 error.setVisibility(View.VISIBLE);
@@ -167,7 +127,51 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                     });
                 }
             }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            }
         });
+    }
+
+    @Override
+    public void onWakaTimeException(WakaTimeException ex) {
+        CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+        startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    }
+
+    @Override
+    public void onException(final Exception ex) {
+        if (ex instanceof WakaTimeException) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(false);
+                    loading.setVisibility(View.GONE);
+                    error.setText(ex.getMessage());
+                    error.setVisibility(View.VISIBLE);
+                }
+            });
+        } else {
+            if (swipeRefreshLayout.isRefreshing()) {
+                CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            } else {
+                CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                    @Override
+                    public void run() {
+                        loading.setVisibility(View.GONE);
+                        error.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -205,7 +209,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.dailyStats_swipeRefresh);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.dailyStats_swipeRefresh);
         swipeRefreshLayout.setColorSchemeResources(Utils.getColors());
         loading = (ProgressBar) findViewById(R.id.dailyStats_loading);
         error = (TextView) findViewById(R.id.dailyStats_error);
@@ -225,8 +229,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         nextDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentDatePair == null)
-                    return;
+                if (currentDatePair == null) return;
 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(currentDatePair.first);
@@ -239,8 +242,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         prevDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentDatePair == null)
-                    return;
+                if (currentDatePair == null) return;
 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(currentDatePair.first);
@@ -259,8 +261,6 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
             else CommonUtils.UIToast(this, Utils.ToastMessages.WRITE_DENIED);
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

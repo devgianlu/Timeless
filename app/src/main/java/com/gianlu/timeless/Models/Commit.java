@@ -17,7 +17,7 @@ public class Commit {
     public final String html_url;
 
     public Commit(JSONObject obj) throws JSONException, ParseException {
-        message = obj.getString("message").replace('\n', '\0');
+        message = obj.getString("message").replace("\n", "");
         truncated_hash = obj.getString("truncated_hash");
         html_url = obj.getString("html_url");
         author_email = Utils.parseStupidNullJSON(obj, "author_email");
@@ -27,13 +27,9 @@ public class Commit {
     }
 
     public String getAuthor() {
-        if (author_name != null)
-            return author_name;
-        else if (author_username != null)
-            return author_username;
-        else if (author_email != null)
-            return author_email;
-        else
-            return "Unknown";
+        if (author_name != null) return author_name;
+        else if (author_username != null) return author_username;
+        else if (author_email != null) return author_email;
+        else return "Unknown";
     }
 }
