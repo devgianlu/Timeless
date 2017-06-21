@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Project;
@@ -26,7 +26,7 @@ import com.gianlu.timeless.Utils;
 public class CommitsFragment extends Fragment implements WakaTime.ICommits {
     private ProgressBar loading;
     private TextView error;
-    private RecyclerView list;
+    private InfiniteRecyclerView list;
     private SwipeRefreshLayout layout;
 
     public static CommitsFragment getInstance(Project project) {
@@ -46,7 +46,7 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits {
 
         loading = (ProgressBar) layout.findViewById(R.id.commitsFragment_loading);
         error = (TextView) layout.findViewById(R.id.commitsFragment_error);
-        list = (RecyclerView) layout.findViewById(R.id.commitsFragment_list);
+        list = (InfiniteRecyclerView) layout.findViewById(R.id.commitsFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -72,7 +72,7 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits {
                     error.setVisibility(View.GONE);
                     loading.setVisibility(View.GONE);
                     list.setVisibility(View.VISIBLE);
-                    list.setAdapter(new CommitsAdapter(activity, list, commits));
+                    list.setAdapter(new CommitsAdapter(activity, commits));
                 }
             });
         }

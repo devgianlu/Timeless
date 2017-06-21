@@ -1,20 +1,16 @@
 package com.gianlu.timeless.Activities.Commits;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.Activities.ProjectsActivity;
-import com.gianlu.timeless.GrantActivity;
+import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Project;
@@ -23,196 +19,75 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int TYPE_LOADING = 0;
-    private static final int TYPE_ITEM = 1;
-    private static final int TYPE_SEPARATOR = 2;
-    private final List<Object> objs;
-    private final LayoutInflater inflater;
-    private final Context context;
+class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
     private final Project project;
-    private boolean updating;
-    private long currDay = -1;
 
-    CommitsAdapter(final Activity context, RecyclerView list, final Commits commits) {
-        this.context = context;
+    CommitsAdapter(final Context context, final Commits commits) {
+        super(context, commits.commits, commits.total_pages, ContextCompat.getColor(context, R.color.colorPrimary_shadow), true);
         this.project = commits.project;
-        inflater = LayoutInflater.from(context);
+    }
 
-        objs = new ArrayList<>();
-        populateObjs(commits);
+    @Nullable
+    @Override
+    protected Date getDateFromItem(Commit item) {
+        return new Date(item.committer_date);
+    }
 
-        list.addOnScrollListener(new RecyclerView.OnScrollListener() {
+    @Override
+    protected void userBindViewHolder(CommitsAdapter.ViewHolder holder, int position) {
+        final Commit commit = items.get(position).getItem();
+        holder.message.setText(commit.message);
+        holder.author.setText(commit.getAuthor());
+        holder.hash.setText(commit.truncated_hash);
+        holder.date.setText(Utils.getDateTimeFormatter().format(new Date(commit.committer_date)));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (!recyclerView.canScrollVertically(1) && !updating && commits.next_page > 0) {
-                    updating = true;
-                    objs.add(null);
-                    notifyItemInserted(objs.size() - 1);
-                    WakaTime.getInstance().getCommits(context, commits.project, commits.next_page, new WakaTime.ICommits() {
-                        @Override
-                        public void onCommits(Commits newCommits) {
-                            objs.remove(objs.size() - 1);
-                            commits.update(newCommits);
-                            populateObjs(newCommits);
-
-                            context.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyDataSetChanged();
-                                }
-                            });
-
-                            updating = false;
-                        }
-
-                        @Override
-                        public void onException(Exception ex) {
-                            objs.remove(objs.size() - 1);
-                            CommonUtils.UIToast(context, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyDataSetChanged();
-                                }
-                            });
-                            updating = false;
-                        }
-
-                        @Override
-                        public void onWakaTimeException(WakaTimeException ex) {
-                            CommonUtils.UIToast(context, Utils.ToastMessages.INVALID_TOKEN, ex);
-                            context.startActivity(new Intent(context, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        }
-                    });
-                }
+            public void onClick(View v) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url)));
             }
         });
     }
 
-    private int countForDate(Date date) {
-        int pos = objs.indexOf(date);
-        int count = 0;
-        for (int i = pos + 1; i < objs.size(); i++) {
-            if (objs.get(i) instanceof Date)
-                break;
-            else
-                count++;
-        }
-
-        return count;
+    @Override
+    protected ViewHolder createViewHolder(ViewGroup parent) {
+        return new ViewHolder(inflater.inflate(R.layout.commit_item, parent, false));
     }
 
-    private void populateObjs(Commits commits) {
-        for (Commit commit : commits.commits) {
-            if (currDay != commit.committer_date / 86400000) {
-                objs.add(new Date(commit.committer_date));
-                currDay = commit.committer_date / 86400000;
+    @Override
+    protected void moreContent(int page, final IContentProvider<Commit> provider) {
+        WakaTime.getInstance().getCommits(context, project, page, new WakaTime.ICommits() {
+            @Override
+            public void onCommits(Commits commits) {
+                provider.onMoreContent(commits.commits);
             }
 
-            objs.add(commit);
-        }
+            @Override
+            public void onException(Exception ex) {
+                provider.onFailed(ex);
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                provider.onFailed(ex);
+            }
+        });
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case TYPE_ITEM:
-                return new ItemViewHolder(inflater.inflate(R.layout.commit_item, parent, false));
-            case TYPE_LOADING:
-                return new LoadingViewHolder(inflater.inflate(R.layout.loading_item, parent, false));
-            case TYPE_SEPARATOR:
-                return new SeparatorViewHolder(inflater.inflate(R.layout.commit_separator_item, parent, false));
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (objs.get(position) == null)
-            return TYPE_LOADING;
-        else if (objs.get(position) instanceof Commit)
-            return TYPE_ITEM;
-        else if (objs.get(position) instanceof Date)
-            return TYPE_SEPARATOR;
-        else
-            return TYPE_LOADING;
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ItemViewHolder) {
-            final Commit commit = (Commit) objs.get(position);
-            ItemViewHolder castHolder = (ItemViewHolder) holder;
-            castHolder.message.setText(commit.message);
-            castHolder.author.setText(commit.getAuthor());
-            castHolder.hash.setText(commit.truncated_hash);
-            castHolder.date.setText(Utils.getDateTimeFormatter().format(new Date(commit.committer_date)));
-            castHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url)));
-                }
-            });
-        } else if (holder instanceof SeparatorViewHolder) {
-            final Date date = (Date) objs.get(position);
-            SeparatorViewHolder castHolder = (SeparatorViewHolder) holder;
-            castHolder.date.setText(Utils.getOnlyDateFormatter().format(date) + " (" + countForDate(date) + ")");
-            castHolder.project.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    context.startActivity(new Intent(context, ProjectsActivity.class)
-                            .putExtra("project_id", project.id)
-                            .putExtra("date", date));
-                }
-            });
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return objs.size();
-    }
-
-    private class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         final TextView author;
         final TextView message;
         final TextView hash;
         final TextView date;
 
-        ItemViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
 
             author = (TextView) itemView.findViewById(R.id.commit_author);
             message = (TextView) itemView.findViewById(R.id.commit_message);
             hash = (TextView) itemView.findViewById(R.id.commit_hash);
             date = (TextView) itemView.findViewById(R.id.commit_date);
-        }
-    }
-
-    private class LoadingViewHolder extends RecyclerView.ViewHolder {
-        final ProgressBar loading;
-
-        LoadingViewHolder(View itemView) {
-            super(itemView);
-
-            loading = (ProgressBar) ((ViewGroup) itemView).getChildAt(0);
-        }
-    }
-
-    private class SeparatorViewHolder extends RecyclerView.ViewHolder {
-        final TextView date;
-        final ImageButton project;
-
-        SeparatorViewHolder(View itemView) {
-            super(itemView);
-
-            date = (TextView) itemView.findViewById(R.id.separatorItem_date);
-            project = (ImageButton) itemView.findViewById(R.id.separatorItem_project);
         }
     }
 }

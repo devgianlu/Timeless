@@ -43,7 +43,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     private final Typeface roboto;
 
     public LeadersAdapter(Activity context, List<Leader> items, int maxPages, @Nullable Leader me) {
-        super(context, items, maxPages, -1);
+        super(context, items, maxPages, -1, false);
         this.activity = context;
         this.roboto = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Light.ttf");
         if (me != null) this.me = me.user;
@@ -152,11 +152,6 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
                 provider.onFailed(ex);
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

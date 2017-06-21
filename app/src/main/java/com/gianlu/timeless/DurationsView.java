@@ -192,8 +192,7 @@ public class DurationsView extends LinearLayout {
                 for (Map.Entry<Long, Long> entry : values.entrySet()) {
                     if (entry.getValue() * secPerPixel >= 1) {
                         canvas.drawRect((entry.getKey() * secPerPixel) + internalPadding, padding, ((entry.getKey() + entry.getValue()) * secPerPixel) + internalPadding, canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - padding, durationPaint);
-                        if (!drawn)
-                            drawn = true;
+                        if (!drawn) drawn = true;
                     }
                 }
             }
