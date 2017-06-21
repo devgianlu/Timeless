@@ -1,21 +1,28 @@
 package com.gianlu.timeless.Activities.Commits;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.InfiniteRecyclerView;
+import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.GrantActivity;
+import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -23,7 +30,9 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
-public class CommitsFragment extends Fragment implements WakaTime.ICommits {
+import java.util.Date;
+
+public class CommitsFragment extends Fragment implements WakaTime.ICommits, CommitsAdapter.IAdapter {
     private ProgressBar loading;
     private TextView error;
     private InfiniteRecyclerView list;
@@ -72,7 +81,7 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits {
                     error.setVisibility(View.GONE);
                     loading.setVisibility(View.GONE);
                     list.setVisibility(View.VISIBLE);
-                    list.setAdapter(new CommitsAdapter(activity, commits));
+                    list.setAdapter(new CommitsAdapter(activity, commits, CommitsFragment.this));
                 }
             });
         }
@@ -97,13 +106,36 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits {
                 }
             });
         }
-
     }
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
         CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
         startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    }
+
+    @Override
+    public void onCommitSelected(Project project, final Commit commit) {
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources().getDisplayMetrics());
+        layout.setPadding(padding, padding, padding, padding);
+
+        layout.addView(new SuperTextView(getContext(), R.string.commitAuthor, commit.getAuthor()));
+        layout.addView(new SuperTextView(getContext(), R.string.commitDate, Utils.getDateTimeFormatter().format(new Date(commit.committer_date))));
+        layout.addView(new SuperTextView(getContext(), R.string.commitHash, commit.hash));
+        layout.addView(new SuperTextView(getContext(), R.string.commitReference, commit.ref));
+        layout.addView(new SuperTextView(getContext(), R.string.commitTimeSpent, CommonUtils.timeFormatter(commit.total_seconds)));
+
+        CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getContext())
+                .setTitle(commit.message)
+                .setView(layout)
+                .setNeutralButton(R.string.seeBrowser, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url)));
+                    }
+                }));
     }
 }
 

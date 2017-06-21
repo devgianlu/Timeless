@@ -1,8 +1,6 @@
 package com.gianlu.timeless.Activities.Commits;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -23,10 +21,12 @@ import java.util.Date;
 
 class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
     private final Project project;
+    private final IAdapter handler;
 
-    CommitsAdapter(final Context context, final Commits commits) {
+    CommitsAdapter(final Context context, final Commits commits, IAdapter handler) {
         super(context, commits.commits, commits.total_pages, ContextCompat.getColor(context, R.color.colorPrimary_shadow), true);
         this.project = commits.project;
+        this.handler = handler;
     }
 
     @Nullable
@@ -40,12 +40,12 @@ class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter
         final Commit commit = items.get(position).getItem();
         holder.message.setText(commit.message);
         holder.author.setText(commit.getAuthor());
-        holder.hash.setText(commit.truncated_hash);
+        holder.hash.setText(commit.truncated_hash());
         holder.date.setText(Utils.getDateTimeFormatter().format(new Date(commit.committer_date)));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url)));
+                if (handler != null) handler.onCommitSelected(project, commit);
             }
         });
     }
@@ -73,6 +73,10 @@ class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter
                 provider.onFailed(ex);
             }
         });
+    }
+
+    public interface IAdapter {
+        void onCommitSelected(Project project, Commit commit);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -62,4 +62,10 @@
     <string name="selectDay">Select day</string>
     <string name="selectStartDate">Select start date</string>
     <string name="selectEndDate">Select end date</string>
+    <string name="seeBrowser">See on browser</string>
+    <string name="commitAuthor"><![CDATA[<b>Author:</b>]]> %s</string>
+    <string name="commitHash"><![CDATA[<b>Hash:</b>]]> %s</string>
+    <string name="commitDate"><![CDATA[<b>Date:</b>]]> %s</string>
+    <string name="commitReference"><![CDATA[<b>Git reference:</b>]]> %s</string>
+    <string name="commitTimeSpent"><![CDATA[<b>Time spent:</b>]]> %s</string>
 </resources>
