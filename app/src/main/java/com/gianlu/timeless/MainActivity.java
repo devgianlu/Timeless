@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
                         startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
                         return false;
                     case DrawerConst.SUPPORT:
-                        CommonUtils.sendEmail(MainActivity.this, getString(R.string.app_name));
+                        CommonUtils.sendEmail(MainActivity.this, getString(R.string.app_name), null);
                         return true;
                     default:
                         return true;

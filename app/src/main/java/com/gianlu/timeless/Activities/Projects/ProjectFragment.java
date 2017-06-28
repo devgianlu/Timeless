@@ -76,14 +76,19 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.projectFragment_commits).setVisible(project != null && project.hasRepository);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.projectFragment_commits:
-                Project project = (Project) getArguments().getSerializable("project");
-                if (project != null)
-                    startActivity(new Intent(getContext(), CommitsActivity.class).putExtra("project_id", project.id));
+                if (project == null) break;
+                startActivity(new Intent(getContext(), CommitsActivity.class).putExtra("project_id", project.id));
                 break;
         }
+
         return true;
     }
 
