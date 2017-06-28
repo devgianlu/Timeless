@@ -399,7 +399,7 @@ public class WakaTime {
                     break;
                 default:
                 case LAST_7_DAYS:
-                    cal.add(Calendar.DATE, -7);
+                    cal.add(Calendar.DATE, -6);
                     break;
                 case LAST_30_DAYS:
                     cal.add(Calendar.DATE, -30);
