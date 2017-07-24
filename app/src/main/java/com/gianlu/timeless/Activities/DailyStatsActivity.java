@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Duration;
@@ -58,7 +59,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
 
     private void updatePage(Date newDate, @Nullable final SwipeRefreshLayout swipeRefresh) {
         if (newDate.after(new Date())) {
-            CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
+            Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
             return;
         }
 
@@ -114,7 +115,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
                         }
                     });
                 } else {
-                    CommonUtils.UIToast(DailyStatsActivity.this, swipeRefreshLayout.isRefreshing() ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                    Toaster.show(DailyStatsActivity.this, swipeRefreshLayout.isRefreshing() ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                         @Override
                         public void run() {
                             if (swipeRefreshLayout.isRefreshing()) {
@@ -130,7 +131,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
 
             @Override
             public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
                 startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
@@ -138,7 +139,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
-        CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+        Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
         startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
@@ -156,14 +157,14 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
             });
         } else {
             if (swipeRefreshLayout.isRefreshing()) {
-                CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                     @Override
                     public void run() {
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });
             } else {
-                CommonUtils.UIToast(DailyStatsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                     @Override
                     public void run() {
                         loading.setVisibility(View.GONE);
@@ -259,7 +260,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (handler != null && requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
-            else CommonUtils.UIToast(this, Utils.ToastMessages.WRITE_DENIED);
+            else Toaster.show(this, Utils.ToastMessages.WRITE_DENIED);
         }
     }
 
@@ -290,9 +291,9 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
 
-            CommonUtils.UIToast(this, getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG);
+            Toaster.show(this, getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);
         } catch (IOException ex) {
-            CommonUtils.UIToast(this, Utils.ToastMessages.FAILED_SAVING_CHART, ex);
+            Toaster.show(this, Utils.ToastMessages.FAILED_SAVING_CHART, ex);
         }
 
         ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()

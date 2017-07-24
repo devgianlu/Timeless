@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summary;
@@ -80,6 +81,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else if (holder instanceof PercentageViewHolder) {
             ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Pair<Long, Float>) objs.objs.get(position));
         }
+
+        CommonUtils.setCardTopMargin(context, holder);
     }
 
     @Override

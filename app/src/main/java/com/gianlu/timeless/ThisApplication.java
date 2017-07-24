@@ -36,9 +36,8 @@ public class ThisApplication extends Application {
     }
 
     public static void sendAnalytics(Context context, @Nullable Map<String, String> map) {
-        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("trackingDisable", false) && !BuildConfig.DEBUG)
-            if (tracker != null)
-                tracker.send(map);
+        if (tracker != null && !PreferenceManager.getDefaultSharedPreferences(context).getBoolean("trackingDisable", false) && !BuildConfig.DEBUG)
+            tracker.send(map);
     }
 
     @Override

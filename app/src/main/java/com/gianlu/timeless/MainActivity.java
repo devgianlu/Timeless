@@ -17,6 +17,7 @@ import com.gianlu.commonutils.Drawer.BaseDrawerItem;
 import com.gianlu.commonutils.Drawer.DrawerManager;
 import com.gianlu.commonutils.Drawer.Initializer;
 import com.gianlu.commonutils.Drawer.ProfilesAdapter;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Activities.DailyStatsActivity;
 import com.gianlu.timeless.Activities.LeadersActivity;
@@ -29,7 +30,6 @@ import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.List;
 
-// TODO: Use MessageLayout everywhere
 public class MainActivity extends AppCompatActivity implements DrawerManager.ISetup<User> {
     private DrawerManager<User> drawerManager;
 
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
 
         User user = (User) getIntent().getSerializableExtra("user");
         if (user == null) {
-            CommonUtils.UIToast(this, Utils.ToastMessages.FAILED_LOADING, new NullPointerException("user is null!"));
+            Toaster.show(this, Utils.ToastMessages.FAILED_LOADING, new NullPointerException("user is null!"));
             onBackPressed();
             return;
         }
@@ -179,11 +179,6 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
     @Override
     public int getCloseDrawerDesc() {
         return R.string.closeDrawer;
-    }
-
-    @Override
-    public int getRippleDark() {
-        return R.drawable.ripple_effect_dark;
     }
 
     @Override

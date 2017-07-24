@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Commits.CommitsFragment;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Project;
@@ -88,7 +89,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
 
     @Override
     public void onException(Exception ex) {
-        CommonUtils.UIToast(CommitsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+        Toaster.show(CommitsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
             @Override
             public void run() {
                 onBackPressed();
@@ -98,7 +99,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
-        CommonUtils.UIToast(CommitsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+        Toaster.show(CommitsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
         startActivity(new Intent(CommitsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 }

@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Projects.ProjectFragment;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Project;
@@ -107,7 +108,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
     @Override
     public void onException(Exception ex) {
-        CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+        Toaster.show(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
             @Override
             public void run() {
                 onBackPressed();
@@ -117,7 +118,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
-        CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+        Toaster.show(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
         startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
@@ -208,7 +209,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
             @Override
             public void onException(Exception ex) {
-                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                Toaster.show(ProjectsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                     @Override
                     public void run() {
                         onBackPressed();
@@ -218,7 +219,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
             @Override
             public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                Toaster.show(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
                 startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });

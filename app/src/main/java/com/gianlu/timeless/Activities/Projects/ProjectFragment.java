@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
@@ -96,7 +97,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (handler != null && requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
-            else CommonUtils.UIToast(getActivity(), Utils.ToastMessages.WRITE_DENIED);
+            else Toaster.show(getActivity(), Utils.ToastMessages.WRITE_DENIED);
         }
     }
 
@@ -129,9 +130,9 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
                 out.flush();
 
-                CommonUtils.UIToast(getActivity(), getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG);
+                Toaster.show(getActivity(), getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);
             } catch (IOException ex) {
-                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
+                Toaster.show(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
             }
 
             ThisApplication.sendAnalytics(getContext(), new HitBuilders.EventBuilder()
@@ -139,7 +140,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
                     .setAction(ThisApplication.ACTION_SAVED_CHART)
                     .build());
         } else {
-            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, new NullPointerException("Project is null"));
+            Toaster.show(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, new NullPointerException("Project is null"));
         }
     }
 
@@ -234,7 +235,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
-        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+        Toaster.show(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
         startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
@@ -255,14 +256,14 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
             }
         } else {
             if (layout.isRefreshing()) {
-                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+                Toaster.show(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                     @Override
                     public void run() {
                         layout.setRefreshing(false);
                     }
                 });
             } else {
-                CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+                Toaster.show(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                     @Override
                     public void run() {
                         loading.setVisibility(View.GONE);

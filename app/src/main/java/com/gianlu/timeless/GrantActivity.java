@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.NetIO.InvalidTokenException;
 import com.gianlu.timeless.NetIO.WakaTime;
 
@@ -33,13 +34,13 @@ public class GrantActivity extends AppCompatActivity {
                 @Override
                 public void onTokenRejected(InvalidTokenException ex) {
                     pd.dismiss();
-                    CommonUtils.UIToast(GrantActivity.this, Utils.ToastMessages.TOKEN_REJECTED, ex);
+                    Toaster.show(GrantActivity.this, Utils.ToastMessages.TOKEN_REJECTED, ex);
                 }
 
                 @Override
                 public void onException(Exception ex) {
                     pd.dismiss();
-                    CommonUtils.UIToast(GrantActivity.this, Utils.ToastMessages.CANT_CHECK_GRANT, ex);
+                    Toaster.show(GrantActivity.this, Utils.ToastMessages.CANT_CHECK_GRANT, ex);
                 }
             });
         }

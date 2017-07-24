@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Logging;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -68,13 +69,13 @@ public class LoadingActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onException(Exception ex) {
-                                    CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                                    Toaster.show(LoadingActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                                     finish();
                                 }
 
                                 @Override
                                 public void onWakaTimeException(WakaTimeException ex) {
-                                    CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                                    Toaster.show(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
                                     startActivity(new Intent(LoadingActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                                 }
                             });
@@ -82,19 +83,19 @@ public class LoadingActivity extends AppCompatActivity {
 
                         @Override
                         public void onInvalidToken(Exception ex) {
-                            CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                            Toaster.show(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
                             deleteFile("token");
                             goTo(GrantActivity.class, null);
                         }
 
                         @Override
                         public void onException(Exception ex) {
-                            CommonUtils.UIToast(LoadingActivity.this, Utils.ToastMessages.CANT_REFRESH_TOKEN, ex);
+                            Toaster.show(LoadingActivity.this, Utils.ToastMessages.CANT_REFRESH_TOKEN, ex);
                             goTo(GrantActivity.class, null);
                         }
                     });
                 } else {
-                    CommonUtils.UIToast(LoadingActivity.this, CommonUtils.ToastMessage.OFFLINE, new Runnable() {
+                    Toaster.show(LoadingActivity.this, Toaster.Message.OFFLINE, new Runnable() {
                         @Override
                         public void run() {
                             finish();

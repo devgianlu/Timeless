@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.commonutils.SuperTextView;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.Models.Commits;
@@ -90,14 +91,14 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
     @Override
     public void onException(Exception ex) {
         if (layout.isRefreshing()) {
-            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+            Toaster.show(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                 @Override
                 public void run() {
                     layout.setRefreshing(false);
                 }
             });
         } else {
-            CommonUtils.UIToast(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+            Toaster.show(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                 @Override
                 public void run() {
                     loading.setVisibility(View.GONE);
@@ -110,7 +111,7 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
-        CommonUtils.UIToast(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
+        Toaster.show(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
         startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 

@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.InfiniteRecyclerView;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
 import com.gianlu.timeless.GrantActivity;
@@ -88,14 +89,14 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     @Override
     public void onException(Exception ex) {
         if (layout.isRefreshing()) {
-            CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
+            Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                 @Override
                 public void run() {
                     layout.setRefreshing(false);
                 }
             });
         } else {
-            CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+            Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
                 @Override
                 public void run() {
                     pd.dismiss();
@@ -107,7 +108,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
-        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
+        Toaster.show(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
             @Override
             public void run() {
                 pd.dismiss();
@@ -145,13 +146,13 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
             @Override
             public void onException(Exception ex) {
-                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                 pd.dismiss();
             }
 
             @Override
             public void onWakaTimeException(WakaTimeException ex) {
-                CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                Toaster.show(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
                 startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
@@ -165,7 +166,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 break;
             case R.id.leaders_me:
                 if (me != null) LeadersAdapter.displayRankDialog(this, me);
-                else CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND);
+                else Toaster.show(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND);
 
                 ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
                         .setCategory(ThisApplication.CATEGORY_USER_INPUT)
@@ -207,13 +208,13 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
                     @Override
                     public void onWakaTimeException(WakaTimeException ex) {
-                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                        Toaster.show(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
                         startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     }
 
                     @Override
                     public void onException(Exception ex) {
-                        CommonUtils.UIToast(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                        Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
                         pd.dismiss();
                     }
                 });

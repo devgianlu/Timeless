@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-    android:layout_marginStart="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
     app:cardCornerRadius="2dp">
 
     <LinearLayout
@@ -46,7 +45,7 @@
                     android:layout_gravity="top"
                     android:adjustViewBounds="true"
                     android:alpha="0.54"
-                    android:background="@drawable/ripple_effect_dark"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_save_black_48dp" />
             </LinearLayout>
@@ -63,7 +62,7 @@
                 android:layout_gravity="end"
                 android:adjustViewBounds="true"
                 android:alpha="0.54"
-                android:background="@drawable/ripple_effect_dark"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_keyboard_arrow_down_black_48dp" />
         </LinearLayout>

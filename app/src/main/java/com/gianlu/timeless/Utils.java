@@ -14,7 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 
-import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Toaster;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -172,15 +172,15 @@ public class Utils {
 
     @SuppressWarnings("WeakerAccess")
     public static class ToastMessages {
-        public static final CommonUtils.ToastMessage CANT_CHECK_GRANT = new CommonUtils.ToastMessage("Failed checking permissions!", true);
-        public static final CommonUtils.ToastMessage FAILED_REFRESHING = new CommonUtils.ToastMessage("Failed refreshing data.", true);
-        public static final CommonUtils.ToastMessage FAILED_LOADING = new CommonUtils.ToastMessage("Failed loading data.", true);
-        public static final CommonUtils.ToastMessage TOKEN_REJECTED = new CommonUtils.ToastMessage("Server rejected your request. Try again or contact me!", false);
-        public static final CommonUtils.ToastMessage CANT_REFRESH_TOKEN = new CommonUtils.ToastMessage("Failed refreshing the token!", true);
-        public static final CommonUtils.ToastMessage USER_NOT_FOUND = new CommonUtils.ToastMessage("You have not been found. Keep scrolling down.", false);
-        public static final CommonUtils.ToastMessage INVALID_TOKEN = new CommonUtils.ToastMessage("Please grant access again.", false);
-        public static final CommonUtils.ToastMessage FAILED_SAVING_CHART = new CommonUtils.ToastMessage("Failed saving the chart image!", true);
-        public static final CommonUtils.ToastMessage WRITE_DENIED = new CommonUtils.ToastMessage("You have denied the write permission.", false);
-        public static final CommonUtils.ToastMessage FUTURE_DATE = new CommonUtils.ToastMessage("You cannot go into the future!", false);
+        public static final Toaster.Message CANT_CHECK_GRANT = new Toaster.Message(R.string.failedCheckingPermissions, true);
+        public static final Toaster.Message FAILED_REFRESHING = new Toaster.Message(R.string.failedRefreshing, true);
+        public static final Toaster.Message FAILED_LOADING = new Toaster.Message(R.string.failedLoading, true);
+        public static final Toaster.Message TOKEN_REJECTED = new Toaster.Message(R.string.tokenRejected, false);
+        public static final Toaster.Message CANT_REFRESH_TOKEN = new Toaster.Message(R.string.failedRefreshingToken, true);
+        public static final Toaster.Message USER_NOT_FOUND = new Toaster.Message(R.string.userNotFound, false);
+        public static final Toaster.Message INVALID_TOKEN = new Toaster.Message(R.string.grantAccessAgain, false);
+        public static final Toaster.Message FAILED_SAVING_CHART = new Toaster.Message(R.string.failedSavingImage, true);
+        public static final Toaster.Message WRITE_DENIED = new Toaster.Message(R.string.noWritePermission, false);
+        public static final Toaster.Message FUTURE_DATE = new Toaster.Message(R.string.cannotGoFuture, false);
     }
 }

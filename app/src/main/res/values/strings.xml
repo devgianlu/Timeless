@@ -68,4 +68,14 @@
     <string name="commitDate"><![CDATA[<b>Date:</b>]]> %s</string>
     <string name="commitReference"><![CDATA[<b>Git reference:</b>]]> %s</string>
     <string name="commitTimeSpent"><![CDATA[<b>Time spent:</b>]]> %s</string>
+    <string name="failedLoading">Failed loading data.</string>
+    <string name="failedRefreshing">Failed refreshing data.</string>
+    <string name="failedCheckingPermissions">Failed checking permissions!</string>
+    <string name="failedRefreshingToken">Failed refreshing the token!</string>
+    <string name="tokenRejected">Server rejected your request. Try again or contact me!</string>
+    <string name="userNotFound">You have not been found.</string>
+    <string name="grantAccessAgain">Please grant access again.</string>
+    <string name="failedSavingImage">Failed saving the chart image!</string>
+    <string name="cannotGoFuture">You cannot go into the future!</string>
+    <string name="noWritePermission">You have denied the write permission.</string>
 </resources>
