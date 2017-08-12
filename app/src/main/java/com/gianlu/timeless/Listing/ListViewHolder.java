@@ -20,8 +20,8 @@ class ListViewHolder extends RecyclerView.ViewHolder {
     ListViewHolder(LayoutInflater inflater, ViewGroup parent) {
         super(inflater.inflate(R.layout.list_card, parent, false));
 
-        title = (TextView) itemView.findViewById(R.id.listCard_title);
-        list = (RecyclerView) itemView.findViewById(R.id.listCard_list);
+        title = itemView.findViewById(R.id.listCard_title);
+        list = itemView.findViewById(R.id.listCard_list);
     }
 
     void bind(Context context, String title, List<LoggedEntity> entities) {

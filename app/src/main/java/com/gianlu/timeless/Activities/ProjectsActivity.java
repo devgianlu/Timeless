@@ -46,14 +46,14 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         setContentView(R.layout.activity_projects);
         setTitle(R.string.projects);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.projects_toolbar);
+        Toolbar toolbar = findViewById(R.id.projects_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        pager = (ViewPager) findViewById(R.id.projects_pager);
+        pager = findViewById(R.id.projects_pager);
         pager.setOffscreenPageLimit(4);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.projects_tabs);
+        TabLayout tabLayout = findViewById(R.id.projects_tabs);
 
         tabLayout.setupWithViewPager(pager);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -127,7 +127,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
             @Override
             public void run() {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd MMM", Locale.getDefault());
-                TextView rangeTextView = (TextView) findViewById(R.id.projects_rangeText);
+                TextView rangeTextView = findViewById(R.id.projects_rangeText);
                 if (currentRange.first.getTime() == currentRange.second.getTime())
                     rangeTextView.setText(formatter.format(currentRange.first));
                 else

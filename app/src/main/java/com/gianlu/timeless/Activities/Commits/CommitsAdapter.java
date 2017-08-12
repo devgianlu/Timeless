@@ -88,10 +88,10 @@ class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter
         ViewHolder(View itemView) {
             super(itemView);
 
-            author = (TextView) itemView.findViewById(R.id.commit_author);
-            message = (TextView) itemView.findViewById(R.id.commit_message);
-            hash = (TextView) itemView.findViewById(R.id.commit_hash);
-            date = (TextView) itemView.findViewById(R.id.commit_date);
+            author = itemView.findViewById(R.id.commit_author);
+            message = itemView.findViewById(R.id.commit_message);
+            hash = itemView.findViewById(R.id.commit_hash);
+            date = itemView.findViewById(R.id.commit_date);
         }
     }
 }

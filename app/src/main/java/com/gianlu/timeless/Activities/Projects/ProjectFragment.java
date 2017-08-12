@@ -149,9 +149,9 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
     public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = (SwipeRefreshLayout) inflater.inflate(R.layout.project_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
-        loading = (ProgressBar) layout.findViewById(R.id.projectFragment_loading);
-        error = (TextView) layout.findViewById(R.id.projectFragment_error);
-        list = (RecyclerView) layout.findViewById(R.id.projectFragment_list);
+        loading = layout.findViewById(R.id.projectFragment_loading);
+        error = layout.findViewById(R.id.projectFragment_error);
+        list = layout.findViewById(R.id.projectFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         project = (Project) getArguments().getSerializable("project");

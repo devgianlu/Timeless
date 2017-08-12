@@ -16,7 +16,7 @@ class SummaryViewHolder extends RecyclerView.ViewHolder {
 
     SummaryViewHolder(LayoutInflater inflater, ViewGroup parent) {
         super(inflater.inflate(R.layout.summary_card, parent, false));
-        container = (LinearLayout) itemView.findViewById(R.id.summaryCard_container);
+        container = itemView.findViewById(R.id.summaryCard_container);
     }
 
     @SuppressWarnings("deprecation")

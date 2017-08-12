@@ -44,12 +44,12 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
     PieChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
         super(inflater.inflate(R.layout.pie_chart_card, parent, false));
 
-        title = (TextView) itemView.findViewById(R.id.pieChartCard_title);
-        save = (ImageButton) itemView.findViewById(R.id.pieChartCard_save);
-        chart = (PieChart) itemView.findViewById(R.id.pieChartCard_chart);
-        container = (LinearLayout) itemView.findViewById(R.id.pieChartCard_container);
-        expand = (ImageButton) itemView.findViewById(R.id.pieChartCard_expand);
-        details = (LinearLayout) itemView.findViewById(R.id.pieChartCard_details);
+        title = itemView.findViewById(R.id.pieChartCard_title);
+        save = itemView.findViewById(R.id.pieChartCard_save);
+        chart = itemView.findViewById(R.id.pieChartCard_chart);
+        container = itemView.findViewById(R.id.pieChartCard_container);
+        expand = itemView.findViewById(R.id.pieChartCard_expand);
+        details = itemView.findViewById(R.id.pieChartCard_details);
     }
 
     @SuppressWarnings("deprecation")

@@ -47,15 +47,15 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         setContentView(R.layout.activity_leaders);
         setTitle(R.string.leaderboards);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.leaders_toolbar);
+        Toolbar toolbar = findViewById(R.id.leaders_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        layout = (SwipeRefreshLayout) findViewById(R.id.leaders_swipeRefresh);
+        layout = findViewById(R.id.leaders_swipeRefresh);
         layout.setColorSchemeResources(Utils.getColors());
-        currFilter = (TextView) findViewById(R.id.leaders_rankingText);
-        list = (InfiniteRecyclerView) findViewById(R.id.leaders_list);
+        currFilter = findViewById(R.id.leaders_rankingText);
+        list = findViewById(R.id.leaders_list);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

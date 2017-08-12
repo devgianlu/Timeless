@@ -54,9 +54,9 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
         layout = (SwipeRefreshLayout) inflater.inflate(R.layout.commits_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
 
-        loading = (ProgressBar) layout.findViewById(R.id.commitsFragment_loading);
-        error = (TextView) layout.findViewById(R.id.commitsFragment_error);
-        list = (InfiniteRecyclerView) layout.findViewById(R.id.commitsFragment_list);
+        loading = layout.findViewById(R.id.commitsFragment_loading);
+        error = layout.findViewById(R.id.commitsFragment_error);
+        list = layout.findViewById(R.id.commitsFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

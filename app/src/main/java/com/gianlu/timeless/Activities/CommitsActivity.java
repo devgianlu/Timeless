@@ -34,12 +34,12 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
         setContentView(R.layout.activity_commits);
         setTitle(R.string.commits);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.commits_toolbar);
+        Toolbar toolbar = findViewById(R.id.commits_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-        pager = (ViewPager) findViewById(R.id.commits_pager);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.commits_tabs);
+        pager = findViewById(R.id.commits_pager);
+        TabLayout tabLayout = findViewById(R.id.commits_tabs);
 
         tabLayout.setupWithViewPager(pager);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

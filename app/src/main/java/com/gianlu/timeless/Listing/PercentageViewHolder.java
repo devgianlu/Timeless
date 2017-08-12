@@ -21,9 +21,9 @@ class PercentageViewHolder extends RecyclerView.ViewHolder {
     PercentageViewHolder(LayoutInflater inflater, ViewGroup parent) {
         super(inflater.inflate(R.layout.percentage_card, parent, false));
 
-        title = (TextView) itemView.findViewById(R.id.percentageCard_title);
-        trending = (ImageView) itemView.findViewById(R.id.percentageCard_trending);
-        percentage = (TextView) itemView.findViewById(R.id.percentageCard_percentage);
+        title = itemView.findViewById(R.id.percentageCard_title);
+        trending = itemView.findViewById(R.id.percentageCard_trending);
+        percentage = itemView.findViewById(R.id.percentageCard_percentage);
     }
 
     @SuppressLint("SetTextI18n")

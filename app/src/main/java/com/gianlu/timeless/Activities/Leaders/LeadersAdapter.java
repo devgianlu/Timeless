@@ -55,16 +55,16 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     public static void displayRankDialog(Activity activity, Leader leader) {
         ScrollView layout = (ScrollView) activity.getLayoutInflater().inflate(R.layout.leader_dialog, null, false);
 
-        SuperTextView rank = (SuperTextView) layout.findViewById(R.id.leaderDialog_rank);
+        SuperTextView rank = layout.findViewById(R.id.leaderDialog_rank);
         rank.setHtml(R.string.rank, leader.rank);
 
-        SuperTextView weekTotal = (SuperTextView) layout.findViewById(R.id.leaderDialog_weekTotal);
+        SuperTextView weekTotal = layout.findViewById(R.id.leaderDialog_weekTotal);
         weekTotal.setHtml(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true));
 
-        SuperTextView dailyAverage = (SuperTextView) layout.findViewById(R.id.leaderDialog_dailyAverage);
+        SuperTextView dailyAverage = layout.findViewById(R.id.leaderDialog_dailyAverage);
         dailyAverage.setHtml(R.string.dailyTimeSpent, Utils.timeFormatterHours(leader.daily_average, true));
 
-        SquarePieChart chart = (SquarePieChart) layout.findViewById(R.id.leaderDialog_chart);
+        SquarePieChart chart = layout.findViewById(R.id.leaderDialog_chart);
         chart.setDescription(null);
         chart.setDrawEntryLabels(false);
         chart.setRotationEnabled(false);
@@ -162,9 +162,9 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
         public ViewHolder(View itemView) {
             super(itemView);
 
-            rank = (TextView) itemView.findViewById(R.id.leader_rank);
-            name = (TextView) itemView.findViewById(R.id.leader_name);
-            total = (TextView) itemView.findViewById(R.id.leader_total);
+            rank = itemView.findViewById(R.id.leader_rank);
+            name = itemView.findViewById(R.id.leader_name);
+            total = itemView.findViewById(R.id.leader_total);
         }
     }
 }

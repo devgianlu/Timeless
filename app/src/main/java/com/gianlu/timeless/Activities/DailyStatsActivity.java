@@ -205,19 +205,19 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         setContentView(R.layout.activity_daily_stats);
         setTitle(R.string.dailyStats);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.dailyStats_toolbar);
+        Toolbar toolbar = findViewById(R.id.dailyStats_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.dailyStats_swipeRefresh);
+        swipeRefreshLayout = findViewById(R.id.dailyStats_swipeRefresh);
         swipeRefreshLayout.setColorSchemeResources(Utils.getColors());
-        loading = (ProgressBar) findViewById(R.id.dailyStats_loading);
-        error = (TextView) findViewById(R.id.dailyStats_error);
-        final ImageButton nextDay = (ImageButton) findViewById(R.id.dailyStats_nextDay);
-        final ImageButton prevDay = (ImageButton) findViewById(R.id.dailyStats_prevDay);
-        currDay = (TextView) findViewById(R.id.dailyStats_day);
-        list = (RecyclerView) findViewById(R.id.dailyStats_list);
+        loading = findViewById(R.id.dailyStats_loading);
+        error = findViewById(R.id.dailyStats_error);
+        final ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
+        final ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
+        currDay = findViewById(R.id.dailyStats_day);
+        list = findViewById(R.id.dailyStats_list);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

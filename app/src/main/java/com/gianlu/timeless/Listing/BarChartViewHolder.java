@@ -43,9 +43,9 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
     BarChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
         super(inflater.inflate(R.layout.bar_chart_card, parent, false));
 
-        title = (TextView) itemView.findViewById(R.id.barChartCard_title);
-        chart = (BarChart) itemView.findViewById(R.id.barChartCard_chart);
-        save = (ImageButton) itemView.findViewById(R.id.barChartCard_save);
+        title = itemView.findViewById(R.id.barChartCard_title);
+        chart = itemView.findViewById(R.id.barChartCard_chart);
+        save = itemView.findViewById(R.id.barChartCard_save);
     }
 
     void bind(final Context context, final String title, final List<Summary> summaries, final CardsAdapter.ISaveChart handler) {
@@ -53,6 +53,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
 
         chart.setDescription(null);
         chart.setTouchEnabled(false);
+        chart.setNoDataText(context.getString(R.string.noData));
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -117,10 +118,12 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
 
         BarDataSet set = new BarDataSet(entries, null);
         set.setDrawValues(false);
-        set.setColors(colors);
+        if (!colors.isEmpty()) set.setColors(colors);
 
         chart.setData(new BarData(set));
         chart.setFitBars(true);
+
+        if (legendEntries.isEmpty()) chart.clear();
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override

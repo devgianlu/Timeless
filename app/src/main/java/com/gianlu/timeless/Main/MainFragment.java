@@ -74,10 +74,10 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, W
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = (SwipeRefreshLayout) inflater.inflate(R.layout.main_fragment, container, false);
         layout.setColorSchemeResources(Utils.getColors());
-        loading = (ProgressBar) layout.findViewById(R.id.stats_loading);
-        list = (RecyclerView) layout.findViewById(R.id.stats_list);
+        loading = layout.findViewById(R.id.stats_loading);
+        list = layout.findViewById(R.id.stats_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        error = (TextView) layout.findViewById(R.id.stats_error);
+        error = layout.findViewById(R.id.stats_error);
 
         range = (WakaTime.Range) getArguments().getSerializable("range");
         if (range == null) {

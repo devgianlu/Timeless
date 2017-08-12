@@ -51,7 +51,7 @@ public class GrantActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grant);
 
-        Button grant = (Button) findViewById(R.id.grantActivity_grant);
+        Button grant = findViewById(R.id.grantActivity_grant);
         grant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -39,10 +39,10 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
         setContentView(R.layout.activity_main);
 
         CommonUtils.setDebug(BuildConfig.DEBUG);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-        final ViewPager pager = (ViewPager) findViewById(R.id.main_pager);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tabs);
+        final ViewPager pager = findViewById(R.id.main_pager);
+        TabLayout tabLayout = findViewById(R.id.main_tabs);
 
         User user = (User) getIntent().getSerializableExtra("user");
         if (user == null) {
@@ -169,16 +169,6 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
     @Override
     public int getHeaderBackground() {
         return R.drawable.drawer_background;
-    }
-
-    @Override
-    public int getOpenDrawerDesc() {
-        return R.string.openDrawer;
-    }
-
-    @Override
-    public int getCloseDrawerDesc() {
-        return R.string.closeDrawer;
     }
 
     @Override

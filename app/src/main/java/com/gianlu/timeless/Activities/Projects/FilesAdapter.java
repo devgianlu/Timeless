@@ -58,8 +58,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         ViewHolder(View itemView) {
             super(itemView);
 
-            name = (SuperTextView) itemView.findViewById(R.id.loggedEntityItem_name);
-            time = (TextView) itemView.findViewById(R.id.loggedEntityItem_time);
+            name = itemView.findViewById(R.id.loggedEntityItem_name);
+            time = itemView.findViewById(R.id.loggedEntityItem_time);
         }
     }
 }
