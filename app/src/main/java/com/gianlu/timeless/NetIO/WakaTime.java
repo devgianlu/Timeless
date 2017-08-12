@@ -295,7 +295,6 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
-                        System.out.println(obj);
                         handler.onLeaders(Leader.fromJSON(obj.getJSONArray("data")), new Leader(obj.getJSONObject("current_user")), obj.getInt("total_pages"));
                     } else {
                         handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));

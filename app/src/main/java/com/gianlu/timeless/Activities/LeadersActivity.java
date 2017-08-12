@@ -165,7 +165,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 onBackPressed();
                 break;
             case R.id.leaders_me:
-                if (me != null) LeadersAdapter.displayRankDialog(this, me);
+                if (me != null && me.rank != -1) LeadersAdapter.displayRankDialog(this, me);
                 else Toaster.show(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND);
 
                 ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
