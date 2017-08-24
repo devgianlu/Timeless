@@ -25,7 +25,6 @@
     <string name="commits">Commits</string>
     <string name="projects">Projects</string>
     <string name="donate">Donate</string>
-    <string name="donateSummary">Send me a small amount of money to support me</string>
     <string name="leaderboards">Leaderboards</string>
     <string name="connectingBillingService">Connecting to the billing service. Please wait…</string>
     <string name="operatingSystemsSummary">Percentage of time spent on each operating system</string>

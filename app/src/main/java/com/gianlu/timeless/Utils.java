@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.Toaster;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -122,9 +121,8 @@ public class Utils {
     }
 
     @Nullable
-    public static String parseStupidNullJSON(JSONObject obj, String name) throws JSONException {
+    public static String parseStupidNullJSON(JSONObject obj, String name) {
         String value = obj.optString(name);
-
         if (Objects.equals(value, "null")) return null;
         else return value;
     }
