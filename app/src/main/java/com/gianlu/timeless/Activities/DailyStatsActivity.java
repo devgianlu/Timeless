@@ -56,6 +56,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
     private ProgressBar loading;
     private TextView error;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private WakaTime wakaTime;
 
     private void updatePage(Date newDate, @Nullable final SwipeRefreshLayout swipeRefresh) {
         if (newDate.after(new Date())) {
@@ -72,12 +73,12 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
             list.setVisibility(View.GONE);
         }
 
-        WakaTime.getInstance().getRangeSummary(currentDatePair, this);
+        wakaTime.getRangeSummary(currentDatePair, this);
     }
 
     @Override
     public void onSummary(List<Summary> summaries, final Summary summary) {
-        WakaTime.getInstance().getDurations(DailyStatsActivity.this, currentDatePair.first, new WakaTime.IDurations() {
+        wakaTime.getDurations(currentDatePair.first, new WakaTime.IDurations() {
             @Override
             public void onDurations(final List<Duration> durations) {
                 runOnUiThread(new Runnable() {
@@ -219,6 +220,8 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         currDay = findViewById(R.id.dailyStats_day);
         list = findViewById(R.id.dailyStats_list);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        wakaTime = WakaTime.getInstance(this);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

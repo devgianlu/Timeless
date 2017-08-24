@@ -7,10 +7,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.ConnectivityChecker;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 public class ThisApplication extends Application {
@@ -48,5 +53,20 @@ public class ThisApplication extends Application {
 
         FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
         tracker = getTracker(this);
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(getApplicationContext()));
+
+        ConnectivityChecker.setUserAgent("Timeless, a Wakatime client");
+        ConnectivityChecker.setProvider(new ConnectivityChecker.URLProvider() {
+            @Override
+            public URL getUrl(boolean useDotCom) throws MalformedURLException {
+                return new URL("https://wakatime.com");
+            }
+
+            @Override
+            public boolean validateResponse(HttpURLConnection connection) throws IOException {
+                return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
+            }
+        });
     }
 }

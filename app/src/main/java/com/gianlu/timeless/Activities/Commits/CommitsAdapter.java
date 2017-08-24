@@ -22,11 +22,13 @@ import java.util.Date;
 class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
     private final Project project;
     private final IAdapter handler;
+    private final WakaTime wakaTime;
 
     CommitsAdapter(final Context context, final Commits commits, IAdapter handler) {
         super(context, commits.commits, commits.total_pages, ContextCompat.getColor(context, R.color.colorPrimary_shadow), true);
         this.project = commits.project;
         this.handler = handler;
+        this.wakaTime = WakaTime.getInstance(context);
     }
 
     @Nullable
@@ -57,7 +59,7 @@ class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter
 
     @Override
     protected void moreContent(int page, final IContentProvider<Commit> provider) {
-        WakaTime.getInstance().getCommits(context, project, page, new WakaTime.ICommits() {
+        wakaTime.getCommits(project, page, new WakaTime.ICommits() {
             @Override
             public void onCommits(Commits commits) {
                 provider.onMoreContent(commits.commits);

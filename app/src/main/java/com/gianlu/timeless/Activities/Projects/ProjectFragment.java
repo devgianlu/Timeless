@@ -58,6 +58,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
     private ProgressBar loading;
     private TextView error;
     private RecyclerView list;
+    private WakaTime wakaTime;
 
     public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
         ProjectFragment fragment = new ProjectFragment();
@@ -164,14 +165,16 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
             return layout;
         }
 
+        wakaTime = WakaTime.getInstance(getContext());
+
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getRangeSummary(start, end, project, ProjectFragment.this);
+                wakaTime.getRangeSummary(start, end, project, ProjectFragment.this);
             }
         });
 
-        WakaTime.getInstance().getRangeSummary(start, end, project, this);
+        wakaTime.getRangeSummary(start, end, project, this);
 
         return layout;
     }
@@ -179,7 +182,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
     @Override
     public void onSummary(final List<Summary> summaries, final Summary summary) {
         if (start.getTime() == end.getTime()) {
-            WakaTime.getInstance().getDurations(getContext(), start, project, new WakaTime.IDurations() {
+            wakaTime.getDurations(start, project, new WakaTime.IDurations() {
                 @Override
                 public void onDurations(final List<Duration> durations) {
                     final Activity activity = getActivity();

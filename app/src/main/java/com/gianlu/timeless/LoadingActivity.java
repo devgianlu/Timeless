@@ -9,7 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
@@ -24,7 +24,6 @@ public class LoadingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun", true)) {
             startActivity(new Intent(this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
@@ -47,8 +46,7 @@ public class LoadingActivity extends AppCompatActivity {
             @Override
             public void run() {
                 finished = true;
-                if (goTo != null)
-                    startActivity(goTo);
+                if (goTo != null) startActivity(goTo);
             }
         }, 1000);
 
@@ -57,11 +55,11 @@ public class LoadingActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (CommonUtils.hasInternetAccess(false)) {
-                    WakaTime.getInstance().refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
+                if (ConnectivityChecker.checkSync(LoadingActivity.this)) {
+                    WakaTime.getInstance(LoadingActivity.this).refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
                         @Override
-                        public void onRefreshed() {
-                            WakaTime.getInstance().getCurrentUser(LoadingActivity.this, new WakaTime.IUser() {
+                        public void onRefreshed(WakaTime wakaTime) {
+                            wakaTime.getCurrentUser(new WakaTime.IUser() {
                                 @Override
                                 public void onUser(User user) {
                                     goTo(MainActivity.class, user);

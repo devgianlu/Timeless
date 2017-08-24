@@ -51,6 +51,7 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, W
     private ProgressBar loading;
     private RecyclerView list;
     private TextView error;
+    private WakaTime wakaTime;
 
     public static MainFragment getInstance(Context context, WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
@@ -86,14 +87,16 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, W
             return layout;
         }
 
+        wakaTime = WakaTime.getInstance(getContext());
+
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), MainFragment.this);
+                wakaTime.getRangeSummary(range.getStartAndEnd(), MainFragment.this);
             }
         });
 
-        WakaTime.getInstance().getRangeSummary(range.getStartAndEnd(), this);
+        wakaTime.getRangeSummary(range.getStartAndEnd(), this);
 
         return layout;
     }
@@ -110,10 +113,10 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, W
                 .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems);
 
         if (range == WakaTime.Range.TODAY) {
-            WakaTime.getInstance().getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
+            wakaTime.getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
                 @Override
                 public void onSummary(@Nullable final List<Summary> beforeSummaries, @Nullable final Summary beforeSummary) {
-                    WakaTime.getInstance().getDurations(getContext(), new Date(), new WakaTime.IDurations() {
+                    wakaTime.getDurations(new Date(), new WakaTime.IDurations() {
                         @Override
                         public void onDurations(final List<Duration> durations) {
                             Activity activity = getActivity();

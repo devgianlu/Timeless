@@ -62,7 +62,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
         pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        WakaTime.getInstance().getProjects(this, this);
+        WakaTime.getInstance(this).getProjects(this);
     }
 
     @Override

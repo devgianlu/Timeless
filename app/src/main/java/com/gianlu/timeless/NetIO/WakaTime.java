@@ -1,6 +1,7 @@
 package com.gianlu.timeless.NetIO;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
@@ -11,7 +12,6 @@ import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.UncaughtExceptionHandler;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
@@ -44,20 +44,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WakaTime {
+    public static final String BASE_URL = "https://wakatime.com/api/v1/";
     private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
     private static final String APP_SECRET = "sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs";
     private static final String CALLBACK = "timeless://grantActivity/";
     private static WakaTime instance;
     private final OAuth20Service service;
     private final String lastState;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final Handler handler;
     private OAuth2AccessToken token;
 
-    private WakaTime() {
+    private WakaTime(Context context) {
+        handler = new Handler(context.getMainLooper());
         lastState = new BigInteger(130, new SecureRandom()).toString(32);
-        service = new ServiceBuilder()
-                .apiKey(APP_ID)
+        service = new ServiceBuilder(APP_ID)
                 .apiSecret(APP_SECRET)
                 .callback(CALLBACK)
                 .scope("email,read_stats,read_logged_time,read_teams")
@@ -65,9 +70,8 @@ public class WakaTime {
                 .build(new WakaTimeApi());
     }
 
-    public static WakaTime getInstance() {
-        if (instance == null)
-            instance = new WakaTime();
+    public static WakaTime getInstance(Context context) {
+        if (instance == null) instance = new WakaTime(context);
         return instance;
     }
 
@@ -83,12 +87,10 @@ public class WakaTime {
         out.flush();
     }
 
-    public void refreshToken(final Context context, final IRefreshToken handler) {
-        new Thread(new Runnable() {
+    public void refreshToken(final Context context, final IRefreshToken listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
                 try {
                     String refreshToken = loadRefreshToken(context);
                     if (refreshToken == null || refreshToken.isEmpty())
@@ -96,249 +98,404 @@ public class WakaTime {
 
                     token = service.refreshAccessToken(refreshToken);
                     storeRefreshToken(context, token);
-                    handler.onRefreshed();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onRefreshed(instance);
+                        }
+                    });
                 } catch (IOException | InvalidTokenException | InterruptedException | ExecutionException | OAuth2AccessTokenErrorResponse ex) {
                     if (ex instanceof OAuth2AccessTokenErrorResponse) {
-                        handler.onInvalidToken(ex);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onInvalidToken(ex);
+                            }
+                        });
                     } else {
-                        handler.onException(ex);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(ex);
+                            }
+                        });
                     }
                 }
             }
-        }).start();
+        });
     }
 
     public String getAuthorizationUrl() {
         return service.getAuthorizationUrl();
     }
 
-    public void getCurrentUser(final Context context, final IUser handler) {
-        new Thread(new Runnable() {
+    public void getCurrentUser(final IUser listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current");
+                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current");
 
                     if (response.getCode() == 200) {
-                        handler.onUser(new User(new JSONObject(response.getBody()).getJSONObject("data")));
+                        final User user = new User(new JSONObject(response.getBody()).getJSONObject("data"));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onUser(user);
+                            }
+                        });
                     } else {
-                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                            }
+                        });
                     }
-                } catch (WakaTimeException ex) {
-                    handler.onWakaTimeException(ex);
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeException(ex);
+                        }
+                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.onException(ex);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
                 }
             }
-        }).start();
+        });
     }
 
-    public void getDurationsDetailed(final Context context, final Date day, final Project project, final IDurations handler) {
-        new Thread(new Runnable() {
+    public void getDurationsDetailed(final Date day, final Project project, final IDurations listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/durations?date="
+                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date="
                             + formatter.format(day)
                             + "&project=" + project.name);
 
                     if (response.getCode() == 200) {
                         JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
-                        List<Duration> durations = new ArrayList<>();
+                        final List<Duration> durations = new ArrayList<>();
                         for (int i = 0; i < projectsArray.length(); i++)
                             durations.add(new Duration(projectsArray.getJSONObject(i)));
 
-                        handler.onDurations(durations);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onDurations(durations);
+                            }
+                        });
                     } else {
-                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                            }
+                        });
                     }
-                } catch (WakaTimeException ex) {
-                    handler.onWakaTimeException(ex);
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeException(ex);
+                        }
+                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.onException(ex);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
                 }
-            }
-        }).start();
-    }
-
-    public void getDurations(final Context context, final Date day, final IDurations handler) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/durations?date="
-                            + formatter.format(day));
-
-                    if (response.getCode() == 200) {
-                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
-                        List<Duration> durations = new ArrayList<>();
-                        for (int i = 0; i < projectsArray.length(); i++)
-                            durations.add(new Duration(projectsArray.getJSONObject(i)));
-
-                        handler.onDurations(durations);
-                    } else {
-                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                    }
-                } catch (WakaTimeException ex) {
-                    handler.onWakaTimeException(ex);
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.onException(ex);
-                }
-            }
-        }).start();
-    }
-
-    public void getDurations(final Context context, final Date day, final Project project, final IDurations handler) {
-        getDurations(context, day, new IDurations() {
-            @Override
-            public void onDurations(List<Duration> durations) {
-                handler.onDurations(Duration.filter(durations, project.name));
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                handler.onException(ex);
-            }
-
-            @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                handler.onWakaTimeException(ex);
             }
         });
     }
 
-    public void getProjects(final Context context, final IProjects handler) {
-        new Thread(new Runnable() {
+    public void getDurations(final Date day, final IDurations listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects");
+                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date="
+                            + formatter.format(day));
 
                     if (response.getCode() == 200) {
                         JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
-                        List<Project> projects = new ArrayList<>();
+                        final List<Duration> durations = new ArrayList<>();
+                        for (int i = 0; i < projectsArray.length(); i++)
+                            durations.add(new Duration(projectsArray.getJSONObject(i)));
+
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onDurations(durations);
+                            }
+                        });
+                    } else {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                            }
+                        });
+                    }
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeException(ex);
+                        }
+                    });
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void getDurations(final Date day, final Project project, final IDurations listener) {
+        getDurations(day, new IDurations() {
+            @Override
+            public void onDurations(List<Duration> durations) {
+                listener.onDurations(Duration.filter(durations, project.name));
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                listener.onException(ex);
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                listener.onWakaTimeException(ex);
+            }
+        });
+    }
+
+    public void getProjects(final IProjects listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects");
+
+                    if (response.getCode() == 200) {
+                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
+                        final List<Project> projects = new ArrayList<>();
                         for (int i = 0; i < projectsArray.length(); i++)
                             projects.add(new Project(projectsArray.getJSONObject(i)));
 
-                        handler.onProjects(projects);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onProjects(projects);
+                            }
+                        });
                     } else {
-                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                            }
+                        });
                     }
-                } catch (WakaTimeException ex) {
-                    handler.onWakaTimeException(ex);
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeException(ex);
+                        }
+                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.onException(ex);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
                 }
             }
-        }).start();
+        });
     }
 
-    public void getCommits(final Context context, final Project project, final ICommits handler) {
-        getCommits(context, project, 1, handler);
+    public void getCommits(final Project project, final ICommits listener) {
+        getCommits(project, 1, listener);
     }
 
-    public void getCommits(final Context context, final Project project, final int page, final ICommits handler) {
-        new Thread(new Runnable() {
+    public void getCommits(final Project project, final int page, final ICommits listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/projects/" + project.id + "/commits?page=" + page);
+                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects/" + project.id + "/commits?page=" + page);
 
                     if (response.getCode() == 200) {
-                        handler.onCommits(new Commits(new JSONObject(response.getBody())));
+                        final Commits commits = new Commits(new JSONObject(response.getBody()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onCommits(commits);
+                            }
+                        });
                     } else {
-                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                            }
+                        });
                     }
-                } catch (WakaTimeException ex) {
-                    handler.onWakaTimeException(ex);
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeException(ex);
+                        }
+                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
-                    handler.onException(ex);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
                 }
             }
-        }).start();
+        });
     }
 
-    public void getLeaders(final Context context, final ILeaders handler) {
-        getLeaders(context, null, 1, handler);
+    public void getLeaders(final ILeaders listener) {
+        getLeaders(null, 1, listener);
     }
 
-    public void getLeaders(final Context context, int page, final ILeaders handler) {
-        getLeaders(context, null, page, handler);
+    public void getLeaders(int page, final ILeaders listener) {
+        getLeaders(null, page, listener);
     }
 
-    public void getLeaders(final Context context, String language, final ILeaders handler) {
-        getLeaders(context, language, 1, handler);
+    public void getLeaders(String language, final ILeaders listener) {
+        getLeaders(language, 1, listener);
     }
 
-    public void getLeaders(final Context context, @Nullable final String language, final int page, final ILeaders handler) {
-        new Thread(new Runnable() {
+    public void getLeaders(@Nullable final String language, final int page, final ILeaders listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/leaders" +
+                    final Response response = doRequestSync(Verb.GET, BASE_URL + "leaders" +
                             "?page=" + page +
                             (language != null ? ("&language=" + language) : ""));
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
-                        handler.onLeaders(Leader.fromJSON(obj.getJSONArray("data")), new Leader(obj.getJSONObject("current_user")), obj.getInt("total_pages"));
+                        final List<Leader> leaders = Leader.fromJSON(obj.getJSONArray("data"));
+                        final Leader me = new Leader(obj.getJSONObject("current_user"));
+                        final int pages = obj.getInt("total_pages");
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onLeaders(leaders, me, pages);
+                            }
+                        });
                     } else {
-                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                            }
+                        });
                     }
-                } catch (WakaTimeException ex) {
-                    handler.onWakaTimeException(ex);
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeException(ex);
+                        }
+                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.onException(ex);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
                 }
             }
-        }).start();
+        });
     }
 
-    public void getRangeSummary(Pair<Date, Date> startAndEnd, final ISummary handler) {
-        getRangeSummary(startAndEnd.first, startAndEnd.second, null, handler);
+    public void getRangeSummary(Pair<Date, Date> startAndEnd, final ISummary listener) {
+        getRangeSummary(startAndEnd.first, startAndEnd.second, null, listener);
     }
 
-    public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary handler) {
-        new Thread(new Runnable() {
+    public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 try {
-                    Response response = doRequestSync(Verb.GET, "https://wakatime.com/api/v1/users/current/summaries?start="
+                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/summaries?start="
                             + formatter.format(start)
                             + "&end="
                             + formatter.format(end)
                             + (project != null ? "&project=" + project.name : ""));
 
                     if (response.getCode() == 200) {
-                        handler.onSummary(Summary.fromJSON(response.getBody()),
-                                Summary.createRangeSummary(Summary.fromJSON(response.getBody())));
+                        final List<Summary> summaries = Summary.fromJSON(response.getBody());
+                        final Summary summary = Summary.createRangeSummary(Summary.fromJSON(response.getBody()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onSummary(summaries, summary);
+                            }
+                        });
                     } else if (response.getCode() == 400) {
-                        handler.onException(new WakaTimeException(response.getBody()));
+                        final WakaTimeException ex = new WakaTimeException(response.getBody());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(ex); // That's not an error
+                            }
+                        });
                     } else {
-                        handler.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
+                            }
+                        });
                     }
-                } catch (WakaTimeException ex) {
-                    handler.onWakaTimeException(ex);
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeException(ex);
+                        }
+                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
-                    handler.onException(ex);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
                 }
             }
-        }).start();
+        });
     }
 
     private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, OAuthException, JSONException, WakaTimeException {
@@ -350,26 +507,39 @@ public class WakaTime {
         return service.execute(request);
     }
 
-    public void newAccessToken(final Context context, final String uri, final INewAccessToken handler) {
-        new Thread(new Runnable() {
+    public void newAccessToken(final Context context, final String uri, final INewAccessToken listener) {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(context));
-
                 OAuth2Authorization auth = service.extractAuthorization(uri);
                 if (Objects.equals(auth.getState(), lastState)) {
                     try {
                         token = service.getAccessToken(auth.getCode());
                         storeRefreshToken(context, token);
-                        handler.onTokenAccepted();
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onTokenAccepted();
+                            }
+                        });
                     } catch (InterruptedException | ExecutionException | IOException ex) {
-                        handler.onException(ex);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(ex);
+                            }
+                        });
                     }
                 } else {
-                    handler.onTokenRejected(new InvalidTokenException());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onTokenRejected(new InvalidTokenException());
+                        }
+                    });
                 }
             }
-        }).start();
+        });
     }
 
     public enum Range {
@@ -463,7 +633,7 @@ public class WakaTime {
     }
 
     public interface IRefreshToken {
-        void onRefreshed();
+        void onRefreshed(WakaTime wakaTime);
 
         void onInvalidToken(Exception ex);
 

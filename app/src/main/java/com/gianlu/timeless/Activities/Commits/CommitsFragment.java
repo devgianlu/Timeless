@@ -59,14 +59,16 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
         list = layout.findViewById(R.id.commitsFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
+        final WakaTime wakaTime = WakaTime.getInstance(getContext());
+
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getCommits(getContext(), (Project) getArguments().getSerializable("project"), CommitsFragment.this);
+                wakaTime.getCommits((Project) getArguments().getSerializable("project"), CommitsFragment.this);
             }
         });
 
-        WakaTime.getInstance().getCommits(getContext(), (Project) getArguments().getSerializable("project"), this);
+        wakaTime.getCommits((Project) getArguments().getSerializable("project"), this);
 
         return layout;
     }

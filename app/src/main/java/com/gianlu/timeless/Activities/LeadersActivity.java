@@ -1,10 +1,12 @@
 package com.gianlu.timeless.Activities;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -13,10 +15,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.InfiniteRecyclerView;
+import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
@@ -26,13 +30,24 @@ import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.SquarePieChart;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.android.gms.analytics.HitBuilders;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-public class LeadersActivity extends AppCompatActivity implements WakaTime.ILeaders {
+public class LeadersActivity extends AppCompatActivity implements WakaTime.ILeaders, LeadersAdapter.IAdapter {
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang;
@@ -40,6 +55,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     private Leader me;
     private ProgressDialog pd;
     private SwipeRefreshLayout layout;
+    private WakaTime wakaTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,24 +74,25 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         list = findViewById(R.id.leaders_list);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
+        wakaTime = WakaTime.getInstance(this);
+
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.getInstance().getLeaders(LeadersActivity.this, LeadersActivity.this);
+                wakaTime.getLeaders(LeadersActivity.this);
             }
         });
-
 
         pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        WakaTime.getInstance().getLeaders(this, this);
+        wakaTime.getLeaders(this);
     }
 
     @Override
     public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
         LeadersActivity.this.me = me;
-        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
+        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, this);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -127,11 +144,11 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     private void gatherAndUpdate(@Nullable final String language) {
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(LeadersActivity.this, pd);
-        WakaTime.getInstance().getLeaders(LeadersActivity.this, language, new WakaTime.ILeaders() {
+        wakaTime.getLeaders(language, new WakaTime.ILeaders() {
             @Override
             public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
                 LeadersActivity.this.me = me;
-                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me);
+                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, LeadersActivity.this);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -158,6 +175,54 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         });
     }
 
+    @SuppressLint("InflateParams")
+    private void displayRankDialog(Leader leader) {
+        ScrollView layout = (ScrollView) getLayoutInflater().inflate(R.layout.leader_dialog, null, false);
+
+        SuperTextView rank = layout.findViewById(R.id.leaderDialog_rank);
+        rank.setHtml(R.string.rank, leader.rank);
+
+        SuperTextView weekTotal = layout.findViewById(R.id.leaderDialog_weekTotal);
+        weekTotal.setHtml(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true));
+
+        SuperTextView dailyAverage = layout.findViewById(R.id.leaderDialog_dailyAverage);
+        dailyAverage.setHtml(R.string.dailyTimeSpent, Utils.timeFormatterHours(leader.daily_average, true));
+
+        SquarePieChart chart = layout.findViewById(R.id.leaderDialog_chart);
+        chart.setDescription(null);
+        chart.setDrawEntryLabels(false);
+        chart.setRotationEnabled(false);
+
+        final Legend legend = chart.getLegend();
+        legend.setWordWrapEnabled(true);
+
+        final List<PieEntry> entries = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : leader.languages.entrySet())
+            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
+
+        PieDataSet set = new PieDataSet(entries, null);
+        set.setValueTextSize(15);
+        set.setSliceSpace(0);
+        set.setValueTextColor(ContextCompat.getColor(this, android.R.color.white));
+        set.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                if (value < 10) return "";
+                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
+            }
+        });
+        set.setColors(Utils.getColors(), this);
+        chart.setData(new PieData(set));
+        chart.setUsePercentValues(true);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(leader.user.getDisplayName())
+                .setView(layout)
+                .setPositiveButton(android.R.string.ok, null);
+
+        CommonUtils.showDialog(this, builder);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -165,7 +230,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 onBackPressed();
                 break;
             case R.id.leaders_me:
-                if (me != null && me.rank != -1) LeadersAdapter.displayRankDialog(this, me);
+                if (me != null && me.rank != -1) displayRankDialog(me);
                 else Toaster.show(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND);
 
                 ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
@@ -177,7 +242,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
                 CommonUtils.showDialog(this, pd);
 
-                WakaTime.getInstance().getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.ISummary() {
+                wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.ISummary() {
                     @Override
                     public void onSummary(List<Summary> summaries, Summary summary) {
                         pd.dismiss();
@@ -221,5 +286,10 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onLeaderSelected(Leader leader) {
+        displayRankDialog(leader);
     }
 }

@@ -39,6 +39,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
     private ViewPager pager;
     private Date tmpStart;
     private ProgressDialog pd;
+    private WakaTime wakaTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +81,10 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         if (date != null) currentRange = new Pair<>(date, date);
         else currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
 
-        updateRangeText();
+        wakaTime = WakaTime.getInstance(this);
 
-        WakaTime.getInstance().getProjects(this, this);
+        updateRangeText();
+        wakaTime.getProjects(this);
     }
 
     @Override
@@ -189,7 +191,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
-        WakaTime.getInstance().getProjects(this, new WakaTime.IProjects() {
+        wakaTime.getProjects(new WakaTime.IProjects() {
             @Override
             public void onProjects(List<Project> projects) {
                 final List<Fragment> fragments = new ArrayList<>();
