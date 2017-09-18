@@ -56,7 +56,7 @@ public class LoadingActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (ConnectivityChecker.checkSync(LoadingActivity.this)) {
-                    WakaTime.getInstance(LoadingActivity.this).refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
+                    WakaTime.getInstance().refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
                         @Override
                         public void onRefreshed(WakaTime wakaTime) {
                             wakaTime.getCurrentUser(new WakaTime.IUser() {

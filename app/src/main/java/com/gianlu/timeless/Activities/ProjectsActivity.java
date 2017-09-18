@@ -81,7 +81,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         if (date != null) currentRange = new Pair<>(date, date);
         else currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
 
-        wakaTime = WakaTime.getInstance(this);
+        wakaTime = WakaTime.getInstance();
 
         updateRangeText();
         wakaTime.getProjects(this);

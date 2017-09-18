@@ -165,7 +165,7 @@ public class ProjectFragment extends Fragment implements CardsAdapter.ISaveChart
             return layout;
         }
 
-        wakaTime = WakaTime.getInstance(getContext());
+        wakaTime = WakaTime.getInstance();
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

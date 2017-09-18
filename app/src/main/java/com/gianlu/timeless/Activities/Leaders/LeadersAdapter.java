@@ -30,7 +30,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     public LeadersAdapter(Context context, List<Leader> items, int maxPages, @Nullable Leader me, IAdapter listener) {
         super(context, items, maxPages, -1, false);
         this.listener = listener;
-        this.wakaTime = WakaTime.getInstance(context);
+        this.wakaTime = WakaTime.getInstance();
         this.roboto = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
         if (me != null) this.me = me.user;
         else this.me = null;

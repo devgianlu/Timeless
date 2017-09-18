@@ -87,7 +87,7 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, W
             return layout;
         }
 
-        wakaTime = WakaTime.getInstance(getContext());
+        wakaTime = WakaTime.getInstance();
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

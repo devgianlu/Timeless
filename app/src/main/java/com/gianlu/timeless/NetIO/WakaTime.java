@@ -2,6 +2,7 @@ package com.gianlu.timeless.NetIO;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
@@ -59,8 +60,8 @@ public class WakaTime {
     private final Handler handler;
     private OAuth2AccessToken token;
 
-    private WakaTime(Context context) {
-        handler = new Handler(context.getMainLooper());
+    private WakaTime() {
+        handler = new Handler(Looper.getMainLooper());
         lastState = new BigInteger(130, new SecureRandom()).toString(32);
         service = new ServiceBuilder(APP_ID)
                 .apiSecret(APP_SECRET)
@@ -70,8 +71,8 @@ public class WakaTime {
                 .build(new WakaTimeApi());
     }
 
-    public static WakaTime getInstance(Context context) {
-        if (instance == null) instance = new WakaTime(context);
+    public static WakaTime getInstance() {
+        if (instance == null) instance = new WakaTime();
         return instance;
     }
 

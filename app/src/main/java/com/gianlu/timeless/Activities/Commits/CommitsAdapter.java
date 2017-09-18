@@ -28,7 +28,7 @@ class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter
         super(context, commits.commits, commits.total_pages, ContextCompat.getColor(context, R.color.colorPrimary_shadow), true);
         this.project = commits.project;
         this.handler = handler;
-        this.wakaTime = WakaTime.getInstance(context);
+        this.wakaTime = WakaTime.getInstance();
     }
 
     @Nullable

@@ -59,7 +59,7 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
         list = layout.findViewById(R.id.commitsFragment_list);
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        final WakaTime wakaTime = WakaTime.getInstance(getContext());
+        final WakaTime wakaTime = WakaTime.getInstance();
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

@@ -74,7 +74,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         list = findViewById(R.id.leaders_list);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        wakaTime = WakaTime.getInstance(this);
+        wakaTime = WakaTime.getInstance();
 
         layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

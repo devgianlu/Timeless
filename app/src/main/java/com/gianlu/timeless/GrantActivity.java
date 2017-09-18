@@ -23,7 +23,7 @@ public class GrantActivity extends AppCompatActivity {
         if (intent.getDataString() != null) {
             final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.checkingPermissions);
             CommonUtils.showDialog(this, pd);
-            WakaTime.getInstance(this).newAccessToken(this, intent.getDataString(), new WakaTime.INewAccessToken() {
+            WakaTime.getInstance().newAccessToken(this, intent.getDataString(), new WakaTime.INewAccessToken() {
                 @Override
                 public void onTokenAccepted() {
                     PreferenceManager.getDefaultSharedPreferences(GrantActivity.this).edit().putBoolean("firstRun", false).apply();
@@ -55,7 +55,7 @@ public class GrantActivity extends AppCompatActivity {
         grant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(WakaTime.getInstance(GrantActivity.this).getAuthorizationUrl())));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(WakaTime.getInstance().getAuthorizationUrl())));
             }
         });
     }

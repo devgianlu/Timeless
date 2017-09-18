@@ -221,7 +221,7 @@ public class DailyStatsActivity extends AppCompatActivity implements CardsAdapte
         list = findViewById(R.id.dailyStats_list);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        wakaTime = WakaTime.getInstance(this);
+        wakaTime = WakaTime.getInstance();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
