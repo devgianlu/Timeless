@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -96,23 +95,17 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
                     wakaTime.getDurations(new Date(), new WakaTime.IDurations() {
                         @Override
                         public void onDurations(final List<Duration> durations) {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        layout.setRefreshing(false);
-                                        loading.setVisibility(View.GONE);
-                                        list.setVisibility(View.VISIBLE);
-                                        error.setVisibility(View.GONE);
+                            if (!isAdded()) return;
 
-                                        cards.addDurations(1, R.string.durationsSummary, durations);
-                                        cards.addPercentage(1, R.string.averageImprovement, globalSummary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
+                            layout.setRefreshing(false);
+                            loading.setVisibility(View.GONE);
+                            list.setVisibility(View.VISIBLE);
+                            error.setVisibility(View.GONE);
 
-                                        list.setAdapter(new CardsAdapter(getContext(), cards, MainFragment.this));
-                                    }
-                                });
-                            }
+                            cards.addDurations(1, R.string.durationsSummary, durations);
+                            cards.addPercentage(1, R.string.averageImprovement, globalSummary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
+
+                            list.setAdapter(new CardsAdapter(getContext(), cards, MainFragment.this));
                         }
 
                         @Override
@@ -135,25 +128,18 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
 
                 @Override
                 public void onException(Exception ex) {
-                    onSummary(null, null);
+                    onSummary(null, null); // FIXME: What's this shit (!!)
                 }
             });
         } else {
-            Activity activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        layout.setRefreshing(false);
-                        loading.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-                        error.setVisibility(View.GONE);
+            layout.setRefreshing(false);
+            loading.setVisibility(View.GONE);
+            list.setVisibility(View.VISIBLE);
+            error.setVisibility(View.GONE);
 
-                        list.setAdapter(new CardsAdapter(getContext(), cards
-                                .addProjectsBarChart(1, R.string.periodActivity, summaries), MainFragment.this));
-                    }
-                });
-            }
+            cards.addProjectsBarChart(1, R.string.periodActivity, summaries);
+
+            list.setAdapter(new CardsAdapter(getContext(), cards, MainFragment.this));
         }
     }
 
@@ -166,18 +152,10 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
     @Override
     public void onException(final Exception ex) {
         if (ex instanceof WakaTimeException) {
-            Activity activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        layout.setRefreshing(false);
-                        loading.setVisibility(View.GONE);
-                        error.setText(ex.getMessage());
-                        error.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
+            layout.setRefreshing(false);
+            loading.setVisibility(View.GONE);
+            error.setText(ex.getMessage());
+            error.setVisibility(View.VISIBLE);
         } else {
             if (layout.isRefreshing()) {
                 Toaster.show(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {

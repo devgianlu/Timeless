@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Activities.Commits;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -75,19 +74,12 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
 
     @Override
     public void onCommits(final Commits commits) {
-        final Activity activity = getActivity();
-        if (activity != null) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    layout.setRefreshing(false);
-                    error.setVisibility(View.GONE);
-                    loading.setVisibility(View.GONE);
-                    list.setVisibility(View.VISIBLE);
-                    list.setAdapter(new CommitsAdapter(activity, commits, CommitsFragment.this));
-                }
-            });
-        }
+        if (!isAdded()) return;
+        layout.setRefreshing(false);
+        error.setVisibility(View.GONE);
+        loading.setVisibility(View.GONE);
+        list.setVisibility(View.VISIBLE);
+        list.setAdapter(new CommitsAdapter(getContext(), commits, CommitsFragment.this));
     }
 
     @Override

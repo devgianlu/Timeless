@@ -150,14 +150,10 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
             public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
                 LeadersActivity.this.me = me;
                 LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, LeadersActivity.this);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        currFilter.setText(language == null ? getString(R.string.global_rank) : language);
-                        list.setAdapter(LeadersActivity.this.adapter);
-                        pd.dismiss();
-                    }
-                });
+
+                currFilter.setText(language == null ? getString(R.string.global_rank) : language);
+                list.setAdapter(LeadersActivity.this.adapter);
+                pd.dismiss();
 
                 currLang = language;
             }

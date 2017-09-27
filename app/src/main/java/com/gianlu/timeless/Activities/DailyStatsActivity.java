@@ -66,40 +66,29 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         wakaTime.getDurations(currentDatePair.first, new WakaTime.IDurations() {
             @Override
             public void onDurations(final List<Duration> durations) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (swipeRefreshLayout.isRefreshing())
-                            swipeRefreshLayout.setRefreshing(false);
-                        error.setVisibility(View.GONE);
-                        loading.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-                        list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
-                                .addGlobalSummary(globalSummary)
-                                .addDurations(R.string.durationsSummary, durations)
-                                .addPieChart(R.string.projectsSummary, globalSummary.projects)
-                                .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                                .addPieChart(R.string.editorsSummary, globalSummary.editors)
-                                .addPieChart(R.string.operatingSystemsSummary, globalSummary.operating_systems), DailyStatsActivity.this));
-                    }
-                });
+                swipeRefreshLayout.setRefreshing(false);
+                error.setVisibility(View.GONE);
+                loading.setVisibility(View.GONE);
+                list.setVisibility(View.VISIBLE);
+                list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
+                        .addGlobalSummary(globalSummary)
+                        .addDurations(R.string.durationsSummary, durations)
+                        .addPieChart(R.string.projectsSummary, globalSummary.projects)
+                        .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                        .addPieChart(R.string.editorsSummary, globalSummary.editors)
+                        .addPieChart(R.string.operatingSystemsSummary, globalSummary.operating_systems), DailyStatsActivity.this));
             }
 
             @Override
             public void onException(final Exception ex) {
                 if (ex instanceof WakaTimeException) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (swipeRefreshLayout.isRefreshing()) {
-                                swipeRefreshLayout.setRefreshing(false);
-                            } else {
-                                loading.setVisibility(View.GONE);
-                                error.setText(ex.getMessage());
-                                error.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
+                    if (swipeRefreshLayout.isRefreshing()) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    } else {
+                        loading.setVisibility(View.GONE);
+                        error.setText(ex.getMessage());
+                        error.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     Toaster.show(DailyStatsActivity.this, swipeRefreshLayout.isRefreshing() ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
                         @Override
@@ -132,15 +121,10 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     @Override
     public void onException(final Exception ex) {
         if (ex instanceof WakaTimeException) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    swipeRefreshLayout.setRefreshing(false);
-                    loading.setVisibility(View.GONE);
-                    error.setText(ex.getMessage());
-                    error.setVisibility(View.VISIBLE);
-                }
-            });
+            swipeRefreshLayout.setRefreshing(false);
+            loading.setVisibility(View.GONE);
+            error.setText(ex.getMessage());
+            error.setVisibility(View.VISIBLE);
         } else {
             if (swipeRefreshLayout.isRefreshing()) {
                 Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {

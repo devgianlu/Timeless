@@ -93,19 +93,14 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         for (Project project : projects)
             fragments.add(ProjectFragment.getInstance(project, currentRange));
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
-                if (pd != null) pd.dismiss();
+        pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
+        if (pd != null) pd.dismiss();
 
-                String project_id = getIntent().getStringExtra("project_id");
-                if (project_id != null) {
-                    int pos = projects.indexOf(Project.find(project_id, projects));
-                    if (pos != -1) pager.setCurrentItem(pos, false);
-                }
-            }
-        });
+        String project_id = getIntent().getStringExtra("project_id");
+        if (project_id != null) {
+            int pos = projects.indexOf(Project.find(project_id, projects));
+            if (pos != -1) pager.setCurrentItem(pos, false);
+        }
     }
 
     @Override
@@ -198,15 +193,10 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                 for (Project project : projects)
                     fragments.add(ProjectFragment.getInstance(project, currentRange));
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int sel = pager.getCurrentItem();
-                        pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
-                        pager.setCurrentItem(sel, false);
-                        pd.dismiss();
-                    }
-                });
+                int sel = pager.getCurrentItem();
+                pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
+                pager.setCurrentItem(sel, false);
+                pd.dismiss();
             }
 
             @Override

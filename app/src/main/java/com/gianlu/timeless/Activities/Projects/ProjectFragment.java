@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Activities.Projects;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -120,28 +119,24 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
 
     @Override
     public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary) {
+        if (!isAdded()) return;
+
         if (start.getTime() == end.getTime()) {
             wakaTime.getDurations(start, project, new WakaTime.IDurations() {
                 @Override
                 public void onDurations(final List<Duration> durations) {
-                    final Activity activity = getActivity();
-                    if (activity != null) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                layout.setRefreshing(false);
-                                error.setVisibility(View.GONE);
-                                loading.setVisibility(View.GONE);
-                                list.setVisibility(View.VISIBLE);
+                    if (!isAdded()) return;
 
-                                list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                        .addGlobalSummary(globalSummary)
-                                        .addDurations(R.string.durationsSummary, durations)
-                                        .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                                        .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
-                            }
-                        });
-                    }
+                    layout.setRefreshing(false);
+                    error.setVisibility(View.GONE);
+                    loading.setVisibility(View.GONE);
+                    list.setVisibility(View.VISIBLE);
+
+                    list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                            .addGlobalSummary(globalSummary)
+                            .addDurations(R.string.durationsSummary, durations)
+                            .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                            .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
                 }
 
                 @Override
@@ -155,23 +150,15 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 }
             });
         } else {
-            final Activity activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        error.setVisibility(View.GONE);
-                        loading.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
+            error.setVisibility(View.GONE);
+            loading.setVisibility(View.GONE);
+            list.setVisibility(View.VISIBLE);
 
-                        list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                .addGlobalSummary(globalSummary)
-                                .addLineChart(R.string.periodActivity, summaries)
-                                .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                                .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
-                    }
-                });
-            }
+            list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                    .addGlobalSummary(globalSummary)
+                    .addLineChart(R.string.periodActivity, summaries)
+                    .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                    .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
         }
     }
 
@@ -184,18 +171,10 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
     @Override
     public void onException(final Exception ex) {
         if (ex instanceof WakaTimeException) {
-            Activity activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        layout.setRefreshing(false);
-                        loading.setVisibility(View.GONE);
-                        error.setText(ex.getMessage());
-                        error.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
+            layout.setRefreshing(false);
+            loading.setVisibility(View.GONE);
+            error.setText(ex.getMessage());
+            error.setVisibility(View.VISIBLE);
         } else {
             if (layout.isRefreshing()) {
                 Toaster.show(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
