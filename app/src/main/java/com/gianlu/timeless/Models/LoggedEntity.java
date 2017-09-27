@@ -11,9 +11,15 @@ public class LoggedEntity {
     public final String name;
     public long total_seconds;
 
+    @SuppressWarnings("unused")
     public LoggedEntity(JSONObject obj) throws JSONException {
         name = obj.getString("name");
         total_seconds = obj.getLong("total_seconds");
+    }
+
+    public LoggedEntity(LoggedEntity copy) {
+        this.name = copy.name;
+        this.total_seconds = copy.total_seconds;
     }
 
     public static void sum(List<LoggedEntity> parents, List<LoggedEntity> children) {
@@ -21,7 +27,7 @@ public class LoggedEntity {
             if (parents.contains(child))
                 parents.get(parents.indexOf(child)).total_seconds += child.total_seconds;
             else
-                parents.add(child);
+                parents.add(new LoggedEntity(child));
     }
 
     public static long sumSeconds(List<LoggedEntity> entities) {

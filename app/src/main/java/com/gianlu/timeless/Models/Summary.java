@@ -24,7 +24,7 @@ public class Summary {
     public long date;
     public int sumNumber;
 
-    private Summary() {
+    protected Summary() {
         total_seconds = 0;
         sumNumber = 0;
         date = -1;
@@ -71,22 +71,5 @@ public class Summary {
             summaries.add(new Summary(array.getJSONObject(i)));
 
         return summaries;
-    }
-
-    public static Summary createRangeSummary(List<Summary> summaries) {
-        Summary rangeSummary = new Summary();
-
-        for (Summary summary : summaries) {
-            rangeSummary.total_seconds += summary.total_seconds;
-            LoggedEntity.sum(rangeSummary.editors, summary.editors);
-            LoggedEntity.sum(rangeSummary.languages, summary.languages);
-            LoggedEntity.sum(rangeSummary.projects, summary.projects);
-            LoggedEntity.sum(rangeSummary.operating_systems, summary.operating_systems);
-            LoggedEntity.sum(rangeSummary.entities, summary.entities);
-            rangeSummary.sumNumber++;
-        }
-
-        Collections.sort(rangeSummary.entities, new LoggedEntity.TotalSecondsComparator());
-        return rangeSummary;
     }
 }

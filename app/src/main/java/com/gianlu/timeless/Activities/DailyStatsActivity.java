@@ -21,6 +21,7 @@ import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -61,7 +62,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     }
 
     @Override
-    public void onSummary(List<Summary> summaries, final Summary summary) {
+    public void onSummary(List<Summary> summaries, final GlobalSummary globalSummary) {
         wakaTime.getDurations(currentDatePair.first, new WakaTime.IDurations() {
             @Override
             public void onDurations(final List<Duration> durations) {
@@ -74,12 +75,12 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                         loading.setVisibility(View.GONE);
                         list.setVisibility(View.VISIBLE);
                         list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
-                                .addSummary(summary)
+                                .addGlobalSummary(globalSummary)
                                 .addDurations(getString(R.string.durationsSummary), durations)
-                                .addPieChart(getString(R.string.projectsSummary), summary.projects)
-                                .addPieChart(getString(R.string.languagesSummary), summary.languages)
-                                .addPieChart(getString(R.string.editorsSummary), summary.editors)
-                                .addPieChart(getString(R.string.operatingSystemsSummary), summary.operating_systems), DailyStatsActivity.this));
+                                .addPieChart(getString(R.string.projectsSummary), globalSummary.projects)
+                                .addPieChart(getString(R.string.languagesSummary), globalSummary.languages)
+                                .addPieChart(getString(R.string.editorsSummary), globalSummary.editors)
+                                .addPieChart(getString(R.string.operatingSystemsSummary), globalSummary.operating_systems), DailyStatsActivity.this));
                     }
                 });
             }

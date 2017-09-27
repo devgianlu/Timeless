@@ -23,6 +23,7 @@ import com.gianlu.timeless.Charting.SaveChartFragment;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -118,7 +119,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
     }
 
     @Override
-    public void onSummary(final List<Summary> summaries, final Summary summary) {
+    public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary) {
         if (start.getTime() == end.getTime()) {
             wakaTime.getDurations(start, project, new WakaTime.IDurations() {
                 @Override
@@ -134,10 +135,10 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                                 list.setVisibility(View.VISIBLE);
 
                                 list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                        .addSummary(summary)
+                                        .addGlobalSummary(globalSummary)
                                         .addDurations(activity.getString(R.string.durationsSummary), durations)
-                                        .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
-                                        .addFileList(activity.getString(R.string.filesSummary), summary.entities), ProjectFragment.this));
+                                        .addPieChart(activity.getString(R.string.languagesSummary), globalSummary.languages)
+                                        .addFileList(activity.getString(R.string.filesSummary), globalSummary.entities), ProjectFragment.this));
                             }
                         });
                     }
@@ -164,10 +165,10 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                         list.setVisibility(View.VISIBLE);
 
                         list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                                .addSummary(summary)
+                                .addGlobalSummary(globalSummary)
                                 .addLineChart(activity.getString(R.string.periodActivity), summaries)
-                                .addPieChart(activity.getString(R.string.languagesSummary), summary.languages)
-                                .addFileList(activity.getString(R.string.filesSummary), summary.entities), ProjectFragment.this));
+                                .addPieChart(activity.getString(R.string.languagesSummary), globalSummary.languages)
+                                .addFileList(activity.getString(R.string.filesSummary), globalSummary.entities), ProjectFragment.this));
                     }
                 });
             }

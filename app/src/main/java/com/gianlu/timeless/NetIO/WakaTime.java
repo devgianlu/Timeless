@@ -9,6 +9,7 @@ import android.util.Pair;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summary;
@@ -434,7 +435,6 @@ public class WakaTime {
         getRangeSummary(startAndEnd.first, startAndEnd.second, null, listener);
     }
 
-    // FIXME: Mhhh
     public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary listener) {
         executorService.execute(new Runnable() {
             @Override
@@ -449,11 +449,11 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         final List<Summary> summaries = Summary.fromJSON(response.getBody());
-                        final Summary summary = Summary.createRangeSummary(Summary.fromJSON(response.getBody()));
+                        final GlobalSummary globalSummary = new GlobalSummary(summaries);
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onSummary(summaries, summary);
+                                listener.onSummary(summaries, globalSummary);
                             }
                         });
                     } else if (response.getCode() == 400) {
@@ -600,7 +600,7 @@ public class WakaTime {
     }
 
     public interface ISummary {
-        void onSummary(List<Summary> summaries, Summary summary);
+        void onSummary(List<Summary> summaries, GlobalSummary globalSummary);
 
         void onWakaTimeException(WakaTimeException ex);
 

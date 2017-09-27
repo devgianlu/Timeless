@@ -26,6 +26,7 @@ import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
 import com.gianlu.timeless.Charting.SquarePieChart;
 import com.gianlu.timeless.GrantActivity;
+import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -244,10 +245,10 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
                 wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.ISummary() {
                     @Override
-                    public void onSummary(List<Summary> summaries, Summary summary) {
+                    public void onSummary(List<Summary> summaries, GlobalSummary globalSummary) {
                         pd.dismiss();
 
-                        final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, summary.languages);
+                        final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, globalSummary.languages);
                         AlertDialog.Builder builder = new AlertDialog.Builder(LeadersActivity.this);
                         builder.setTitle(R.string.filterByLanguage)
                                 .setAdapter(adapter, new DialogInterface.OnClickListener() {

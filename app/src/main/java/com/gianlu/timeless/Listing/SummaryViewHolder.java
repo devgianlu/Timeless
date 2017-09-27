@@ -19,7 +19,6 @@ class SummaryViewHolder extends RecyclerView.ViewHolder {
         container = itemView.findViewById(R.id.summaryCard_container);
     }
 
-    @SuppressWarnings("deprecation")
     void bind(Context context, Summary summary) {
         container.removeAllViews();
         container.addView(new SuperTextView(context, R.string.totalTimeSpent, Utils.timeFormatterHours(summary.total_seconds, true)));

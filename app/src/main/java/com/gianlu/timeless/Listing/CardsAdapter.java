@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Charting.ISaveChart;
 import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summary;
 
@@ -113,7 +114,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addSummary(Summary summary) {
+        public CardsList addGlobalSummary(GlobalSummary summary) {
             titles.add(null);
             types.add(TYPE_SUMMARY);
             objs.add(summary);
