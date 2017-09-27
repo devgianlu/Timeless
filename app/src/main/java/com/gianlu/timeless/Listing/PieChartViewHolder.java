@@ -3,6 +3,7 @@ package com.gianlu.timeless.Listing;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -54,7 +55,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
     }
 
     @SuppressWarnings("deprecation")
-    void bind(final Context context, final String title, List<LoggedEntity> entities, final ISaveChart handler) {
+    void bind(final Context context, final @StringRes int title, List<LoggedEntity> entities, final ISaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -90,12 +91,12 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    handler.onSaveRequested(chart, Utils.getFileName(title));
+                    handler.onSaveRequested(chart, Utils.getFileName(context, title));
                 } else {
                     handler.onWritePermissionRequested(new CardsAdapter.IPermissionRequest() {
                         @Override
                         public void onGranted() {
-                            handler.onSaveRequested(chart, Utils.getFileName(title));
+                            handler.onSaveRequested(chart, Utils.getFileName(context, title));
                         }
                     });
                 }

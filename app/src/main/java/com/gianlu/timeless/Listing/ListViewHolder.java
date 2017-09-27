@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Listing;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ class ListViewHolder extends RecyclerView.ViewHolder {
         list = itemView.findViewById(R.id.listCard_list);
     }
 
-    void bind(Context context, String title, List<LoggedEntity> entities) {
+    void bind(Context context, @StringRes int title, List<LoggedEntity> entities) {
         this.title.setText(title);
 
         list.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));

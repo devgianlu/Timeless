@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Listing;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.StringRes;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ class PercentageViewHolder extends RecyclerView.ViewHolder {
     }
 
     @SuppressLint("SetTextI18n")
-    void bind(String title, Pair<Long, Float> values) {
+    void bind(@StringRes int title, Pair<Long, Float> values) {
         this.title.setText(title);
 
         if (values.second != 0) {

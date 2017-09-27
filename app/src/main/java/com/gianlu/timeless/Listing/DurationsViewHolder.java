@@ -1,5 +1,6 @@
 package com.gianlu.timeless.Listing;
 
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ class DurationsViewHolder extends RecyclerView.ViewHolder {
         durationsView = itemView.findViewById(R.id.durationsCard_view);
     }
 
-    void bind(final String title, List<Duration> durations) {
+    void bind(final @StringRes int title, List<Duration> durations) {
         this.title.setText(title);
 
         durationsView.setDurations(durations);

@@ -136,9 +136,9 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
 
                                 list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                                         .addGlobalSummary(globalSummary)
-                                        .addDurations(activity.getString(R.string.durationsSummary), durations)
-                                        .addPieChart(activity.getString(R.string.languagesSummary), globalSummary.languages)
-                                        .addFileList(activity.getString(R.string.filesSummary), globalSummary.entities), ProjectFragment.this));
+                                        .addDurations(R.string.durationsSummary, durations)
+                                        .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                                        .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
                             }
                         });
                     }
@@ -166,9 +166,9 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
 
                         list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                                 .addGlobalSummary(globalSummary)
-                                .addLineChart(activity.getString(R.string.periodActivity), summaries)
-                                .addPieChart(activity.getString(R.string.languagesSummary), globalSummary.languages)
-                                .addFileList(activity.getString(R.string.filesSummary), globalSummary.entities), ProjectFragment.this));
+                                .addLineChart(R.string.periodActivity, summaries)
+                                .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                                .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
                     }
                 });
             }

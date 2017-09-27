@@ -76,11 +76,11 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                         list.setVisibility(View.VISIBLE);
                         list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
                                 .addGlobalSummary(globalSummary)
-                                .addDurations(getString(R.string.durationsSummary), durations)
-                                .addPieChart(getString(R.string.projectsSummary), globalSummary.projects)
-                                .addPieChart(getString(R.string.languagesSummary), globalSummary.languages)
-                                .addPieChart(getString(R.string.editorsSummary), globalSummary.editors)
-                                .addPieChart(getString(R.string.operatingSystemsSummary), globalSummary.operating_systems), DailyStatsActivity.this));
+                                .addDurations(R.string.durationsSummary, durations)
+                                .addPieChart(R.string.projectsSummary, globalSummary.projects)
+                                .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                                .addPieChart(R.string.editorsSummary, globalSummary.editors)
+                                .addPieChart(R.string.operatingSystemsSummary, globalSummary.operating_systems), DailyStatsActivity.this));
                     }
                 });
             }

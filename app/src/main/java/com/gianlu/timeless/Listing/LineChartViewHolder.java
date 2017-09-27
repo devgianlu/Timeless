@@ -3,6 +3,7 @@ package com.gianlu.timeless.Listing;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -43,7 +44,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         save = itemView.findViewById(R.id.lineChartCard_save);
     }
 
-    void bind(final Context context, final String title, final List<Summary> summaries, final ISaveChart handler) {
+    void bind(final Context context, final @StringRes int title, final List<Summary> summaries, final ISaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -96,12 +97,12 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    handler.onSaveRequested(chart, Utils.getFileName(title));
+                    handler.onSaveRequested(chart, Utils.getFileName(context, title));
                 } else {
                     handler.onWritePermissionRequested(new CardsAdapter.IPermissionRequest() {
                         @Override
                         public void onGranted() {
-                            handler.onSaveRequested(chart, Utils.getFileName(title));
+                            handler.onSaveRequested(chart, Utils.getFileName(context, title));
                         }
                     });
                 }

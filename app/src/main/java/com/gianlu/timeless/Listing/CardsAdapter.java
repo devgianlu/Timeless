@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Listing;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -96,7 +97,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public static class CardsList {
-        private final List<String> titles;
+        private final List<Integer> titles;
         private final List<Integer> types;
         private final List<Object> objs;
 
@@ -106,7 +107,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             objs = new ArrayList<>();
         }
 
-        public CardsList addPercentage(int index, String title, long today, float beforeAverage) {
+        public CardsList addPercentage(int index, @StringRes int title, long today, float beforeAverage) {
             titles.add(index, title);
             types.add(index, TYPE_PERCENTAGE);
             objs.add(index, new Pair<>(today, beforeAverage));
@@ -122,7 +123,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addProjectsBarChart(int index, String title, List<Summary> summaries) {
+        public CardsList addProjectsBarChart(int index, @StringRes int title, List<Summary> summaries) {
             titles.add(index, title);
             types.add(index, TYPE_PROJECTS_BAR);
             objs.add(index, summaries);
@@ -130,7 +131,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addFileList(String title, List<LoggedEntity> entities) {
+        public CardsList addFileList(@StringRes int title, List<LoggedEntity> entities) {
             if (entities.size() > 0) {
                 titles.add(title);
                 types.add(TYPE_FILE_LIST);
@@ -140,7 +141,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addPieChart(String title, List<LoggedEntity> entities) {
+        public CardsList addPieChart(@StringRes int title, List<LoggedEntity> entities) {
             titles.add(title);
             types.add(TYPE_PIE);
             objs.add(entities);
@@ -148,7 +149,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addDurations(String title, List<Duration> durations) {
+        public CardsList addDurations(@StringRes int title, List<Duration> durations) {
             titles.add(title);
             types.add(TYPE_DURATIONS);
             objs.add(durations);
@@ -156,7 +157,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addDurations(int index, String title, List<Duration> durations) {
+        public CardsList addDurations(int index, @StringRes int title, List<Duration> durations) {
             titles.add(index, title);
             types.add(index, TYPE_DURATIONS);
             objs.add(index, durations);
@@ -164,7 +165,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addLineChart(String title, List<Summary> summaries) {
+        public CardsList addLineChart(@StringRes int title, List<Summary> summaries) {
             titles.add(title);
             types.add(TYPE_LINE);
             objs.add(summaries);

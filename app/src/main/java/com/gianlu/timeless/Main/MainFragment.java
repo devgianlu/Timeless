@@ -84,10 +84,10 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
 
         final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                 .addGlobalSummary(globalSummary)
-                .addPieChart(getString(R.string.projectsSummary), globalSummary.projects)
-                .addPieChart(getString(R.string.languagesSummary), globalSummary.languages)
-                .addPieChart(getString(R.string.editorsSummary), globalSummary.editors)
-                .addPieChart(getString(R.string.operatingSystemsSummary), globalSummary.operating_systems);
+                .addPieChart(R.string.projectsSummary, globalSummary.projects)
+                .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                .addPieChart(R.string.editorsSummary, globalSummary.editors)
+                .addPieChart(R.string.operatingSystemsSummary, globalSummary.operating_systems);
 
         if (range == WakaTime.Range.TODAY) {
             wakaTime.getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
@@ -106,8 +106,8 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
                                         list.setVisibility(View.VISIBLE);
                                         error.setVisibility(View.GONE);
 
-                                        cards.addDurations(1, getString(R.string.durationsSummary), durations);
-                                        cards.addPercentage(1, getString(R.string.averageImprovement), globalSummary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
+                                        cards.addDurations(1, R.string.durationsSummary, durations);
+                                        cards.addPercentage(1, R.string.averageImprovement, globalSummary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
 
                                         list.setAdapter(new CardsAdapter(getContext(), cards, MainFragment.this));
                                     }
@@ -150,7 +150,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
                         error.setVisibility(View.GONE);
 
                         list.setAdapter(new CardsAdapter(getContext(), cards
-                                .addProjectsBarChart(1, getString(R.string.periodActivity), summaries), MainFragment.this));
+                                .addProjectsBarChart(1, R.string.periodActivity, summaries), MainFragment.this));
                     }
                 });
             }
