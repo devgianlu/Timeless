@@ -4,9 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Leader {
@@ -30,13 +28,5 @@ public class Leader {
             JSONObject lang = languagesArray.getJSONObject(i);
             languages.put(lang.getString("name"), lang.getLong("total_seconds"));
         }
-    }
-
-    public static List<Leader> fromJSON(JSONArray array) throws JSONException {
-        List<Leader> leaders = new ArrayList<>();
-        for (int i = 0; i < array.length(); i++)
-            leaders.add(new Leader(array.getJSONObject(i)));
-
-        return leaders;
     }
 }

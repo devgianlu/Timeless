@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.Leader;
@@ -26,7 +27,6 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,7 +38,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -183,10 +182,7 @@ public class WakaTime {
                             + "&project=" + project.name);
 
                     if (response.getCode() == 200) {
-                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
-                        final List<Duration> durations = new ArrayList<>();
-                        for (int i = 0; i < projectsArray.length(); i++)
-                            durations.add(new Duration(projectsArray.getJSONObject(i)));
+                        final List<Duration> durations = CommonUtils.toTList(new JSONObject(response.getBody()).getJSONArray("data"), Duration.class);
 
                         handler.post(new Runnable() {
                             @Override
@@ -231,10 +227,7 @@ public class WakaTime {
                             + formatter.format(day));
 
                     if (response.getCode() == 200) {
-                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
-                        final List<Duration> durations = new ArrayList<>();
-                        for (int i = 0; i < projectsArray.length(); i++)
-                            durations.add(new Duration(projectsArray.getJSONObject(i)));
+                        final List<Duration> durations = CommonUtils.toTList(new JSONObject(response.getBody()).getJSONArray("data"), Duration.class);
 
                         handler.post(new Runnable() {
                             @Override
@@ -296,10 +289,7 @@ public class WakaTime {
                     final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects");
 
                     if (response.getCode() == 200) {
-                        JSONArray projectsArray = new JSONObject(response.getBody()).getJSONArray("data");
-                        final List<Project> projects = new ArrayList<>();
-                        for (int i = 0; i < projectsArray.length(); i++)
-                            projects.add(new Project(projectsArray.getJSONObject(i)));
+                        final List<Project> projects = CommonUtils.toTList(new JSONObject(response.getBody()).getJSONArray("data"), Project.class);
 
                         handler.post(new Runnable() {
                             @Override
@@ -403,9 +393,10 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
-                        final List<Leader> leaders = Leader.fromJSON(obj.getJSONArray("data"));
+                        final List<Leader> leaders = CommonUtils.toTList(obj.getJSONArray("data"), Leader.class);
                         final Leader me = new Leader(obj.getJSONObject("current_user"));
                         final int pages = obj.getInt("total_pages");
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -443,6 +434,7 @@ public class WakaTime {
         getRangeSummary(startAndEnd.first, startAndEnd.second, null, listener);
     }
 
+    // FIXME: Mhhh
     public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary listener) {
         executorService.execute(new Runnable() {
             @Override
@@ -500,9 +492,7 @@ public class WakaTime {
     }
 
     private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, OAuthException, JSONException, WakaTimeException {
-        if (token == null)
-            throw new WakaTimeException("OAuth2AccessToken is null");
-
+        if (token == null) throw new WakaTimeException("OAuth2AccessToken is null");
         final OAuthRequest request = new OAuthRequest(verb, url);
         service.signRequest(token, request);
         return service.execute(request);

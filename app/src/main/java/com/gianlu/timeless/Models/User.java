@@ -41,17 +41,17 @@ public class User implements Serializable, BaseDrawerProfile {
             return "??";
 
         if (full_name != null) {
-            String letters = "";
+            StringBuilder letters = new StringBuilder();
             boolean getNext = false;
             for (int i = 0; i < full_name.length(); i++) {
                 if (i == 0 || getNext) {
-                    letters += full_name.charAt(i);
+                    letters.append(full_name.charAt(i));
                     getNext = false;
                 } else if (full_name.charAt(i) == ' ') {
                     getNext = true;
                 }
             }
-            return letters;
+            return letters.toString();
         } else if (username != null) {
             return username.substring(0, 2);
         } else {

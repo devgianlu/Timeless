@@ -1,11 +1,11 @@
 package com.gianlu.timeless.Models;
 
-import org.json.JSONArray;
+import com.gianlu.commonutils.CommonUtils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Commits {
@@ -17,10 +17,7 @@ public class Commits {
     public int next_page;
 
     public Commits(JSONObject obj) throws JSONException, ParseException {
-        JSONArray commitsArray = obj.getJSONArray("commits");
-        commits = new ArrayList<>();
-        for (int i = 0; i < commitsArray.length(); i++)
-            commits.add(new Commit(commitsArray.getJSONObject(i)));
+        commits = CommonUtils.toTList(obj.getJSONArray("commits"), Commit.class);
 
         project = new Project(obj.getJSONObject("project"));
 

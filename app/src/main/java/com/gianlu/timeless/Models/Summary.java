@@ -1,5 +1,7 @@
 package com.gianlu.timeless.Models;
 
+import com.gianlu.commonutils.CommonUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,32 +40,16 @@ public class Summary {
 
         date = parser.parse(obj.getJSONObject("range").getString("date")).getTime();
 
-        projects = new ArrayList<>();
         if (obj.has("projects")) {
-            JSONArray projectsArray = obj.getJSONArray("projects");
-            for (int i = 0; i < projectsArray.length(); i++)
-                projects.add(new LoggedEntity(projectsArray.getJSONObject(i)));
+            projects = CommonUtils.toTList(obj.getJSONArray("projects"), LoggedEntity.class);
+        } else {
+            projects = new ArrayList<>();
         }
 
-        JSONArray languagesArray = obj.getJSONArray("languages");
-        languages = new ArrayList<>();
-        for (int i = 0; i < languagesArray.length(); i++)
-            languages.add(new LoggedEntity(languagesArray.getJSONObject(i)));
-
-        JSONArray editorsArray = obj.getJSONArray("editors");
-        editors = new ArrayList<>();
-        for (int i = 0; i < editorsArray.length(); i++)
-            editors.add(new LoggedEntity(editorsArray.getJSONObject(i)));
-
-        JSONArray operatingSystemsArray = obj.getJSONArray("operating_systems");
-        operating_systems = new ArrayList<>();
-        for (int i = 0; i < operatingSystemsArray.length(); i++)
-            operating_systems.add(new LoggedEntity(operatingSystemsArray.getJSONObject(i)));
-
-        JSONArray entitiesArray = obj.getJSONArray("entities");
-        entities = new ArrayList<>();
-        for (int i = 0; i < entitiesArray.length(); i++)
-            entities.add(new LoggedEntity(entitiesArray.getJSONObject(i)));
+        languages = CommonUtils.toTList(obj.getJSONArray("languages"), LoggedEntity.class);
+        editors = CommonUtils.toTList(obj.getJSONArray("editors"), LoggedEntity.class);
+        operating_systems = CommonUtils.toTList(obj.getJSONArray("operating_systems"), LoggedEntity.class);
+        entities = CommonUtils.toTList(obj.getJSONArray("entities"), LoggedEntity.class);
 
         Collections.sort(entities, new LoggedEntity.TotalSecondsComparator());
     }

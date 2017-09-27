@@ -79,7 +79,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
 
     @Override
     public void onSummary(final List<Summary> summaries, final Summary summary) {
-        if (isDetached() || getContext() == null) return;
+        if (!isAdded()) return;
 
         final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                 .addSummary(summary)
