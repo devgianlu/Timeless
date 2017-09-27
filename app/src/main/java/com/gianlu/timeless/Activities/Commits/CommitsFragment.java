@@ -119,7 +119,8 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
         layout.addView(new SuperTextView(getContext(), R.string.commitAuthor, commit.getAuthor()));
         layout.addView(new SuperTextView(getContext(), R.string.commitDate, Utils.getDateTimeFormatter().format(new Date(commit.committer_date))));
         layout.addView(new SuperTextView(getContext(), R.string.commitHash, commit.hash));
-        layout.addView(new SuperTextView(getContext(), R.string.commitReference, commit.ref));
+        if (commit.ref != null)
+            layout.addView(new SuperTextView(getContext(), R.string.commitReference, commit.ref));
         layout.addView(new SuperTextView(getContext(), R.string.commitTimeSpent, CommonUtils.timeFormatter(commit.total_seconds)));
 
         CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getContext())

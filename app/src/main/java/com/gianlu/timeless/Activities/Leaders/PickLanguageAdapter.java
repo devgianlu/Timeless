@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gianlu.timeless.Models.LoggedEntity;
@@ -46,10 +45,12 @@ public class PickLanguageAdapter extends BaseAdapter {
 
     @Override
     @SuppressLint("ViewHolder")
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View view, ViewGroup parent) {
         String name = getItem(position).name;
-        LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.pick_language_item, parent, false);
-        TextView language = (TextView) layout.getChildAt(0);
+        if (view == null)
+            view = inflater.inflate(R.layout.pick_language_item, parent, false);
+
+        TextView language = (TextView) ((ViewGroup) view).getChildAt(0);
         language.setText(name);
 
         if (Objects.equals(name, selectedLang)) {
@@ -57,6 +58,6 @@ public class PickLanguageAdapter extends BaseAdapter {
             language.setTypeface(Typeface.DEFAULT_BOLD);
         }
 
-        return layout;
+        return view;
     }
 }

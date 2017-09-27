@@ -48,6 +48,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// TODO: Should implement some king of very-short time cache? (which can be disabled)
 public class WakaTime {
     public static final String BASE_URL = "https://wakatime.com/api/v1/";
     private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
