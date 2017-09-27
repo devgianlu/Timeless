@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.gianlu.timeless.SquarePieChart
+        <com.gianlu.timeless.Charting.SquarePieChart
             android:id="@+id/leaderDialog_chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

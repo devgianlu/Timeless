@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.gianlu.timeless.DurationsView;
+import com.gianlu.timeless.Charting.DurationsView;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.R;
 

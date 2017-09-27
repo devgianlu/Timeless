@@ -1,20 +1,20 @@
-package com.gianlu.timeless;
+package com.gianlu.timeless.Charting;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.PieChart;
 
-public class SquareLineChart extends LineChart {
-    public SquareLineChart(Context context) {
+public class SquarePieChart extends PieChart {
+    public SquarePieChart(Context context) {
         super(context);
     }
 
-    public SquareLineChart(Context context, AttributeSet attrs) {
+    public SquarePieChart(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareLineChart(Context context, AttributeSet attrs, int defStyle) {
+    public SquarePieChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

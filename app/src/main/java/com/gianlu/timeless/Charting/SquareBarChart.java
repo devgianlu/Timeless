@@ -1,20 +1,20 @@
-package com.gianlu.timeless;
+package com.gianlu.timeless.Charting;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.github.mikephil.charting.charts.BubbleChart;
+import com.github.mikephil.charting.charts.BarChart;
 
-public class SquareBubbleChart extends BubbleChart {
-    public SquareBubbleChart(Context context) {
+public class SquareBarChart extends BarChart {
+    public SquareBarChart(Context context) {
         super(context);
     }
 
-    public SquareBubbleChart(Context context, AttributeSet attrs) {
+    public SquareBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareBubbleChart(Context context, AttributeSet attrs, int defStyle) {
+    public SquareBarChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

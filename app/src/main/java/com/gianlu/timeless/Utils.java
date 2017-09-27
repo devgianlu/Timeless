@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.Toaster;
+import com.gianlu.timeless.Models.Project;
 
 import org.json.JSONObject;
 
@@ -41,12 +42,12 @@ public class Utils {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static File getImageDirectory(@Nullable String project) {
+    public static File getImageDirectory(@Nullable Project project) {
         File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Timeless");
         dir.mkdir();
 
         if (project != null) {
-            File subDir = new File(dir, project.replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
+            File subDir = new File(dir, project.name.replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
             subDir.mkdir();
             return subDir;
         } else {

@@ -50,7 +50,7 @@
                     android:src="@drawable/ic_save_black_48dp" />
             </LinearLayout>
 
-            <com.gianlu.timeless.SquarePieChart
+            <com.gianlu.timeless.Charting.SquarePieChart
                 android:id="@+id/pieChartCard_chart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

@@ -25,7 +25,7 @@
             android:textColor="@android:color/black"
             android:textSize="24sp" />
 
-        <com.gianlu.timeless.DurationsView
+        <com.gianlu.timeless.Charting.DurationsView
             android:id="@+id/durationsCard_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

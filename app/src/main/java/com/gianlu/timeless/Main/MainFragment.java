@@ -1,19 +1,11 @@
 package com.gianlu.timeless.Main;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,31 +13,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Toaster;
+import com.gianlu.timeless.Charting.SaveChartFragment;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
-import com.google.android.gms.analytics.HitBuilders;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, WakaTime.ISummary {
-    private static final int REQUEST_CODE = 1;
-    private CardsAdapter.IPermissionRequest handler;
+public class MainFragment extends SaveChartFragment implements WakaTime.ISummary {
     private WakaTime.Range range;
     private SwipeRefreshLayout layout;
     private ProgressBar loading;
@@ -60,14 +44,6 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, W
         args.putSerializable("range", range);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (handler != null && requestCode == REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
-            else Toaster.show(getActivity(), Utils.ToastMessages.WRITE_DENIED);
-        }
     }
 
     @Nullable
@@ -222,41 +198,9 @@ public class MainFragment extends Fragment implements CardsAdapter.ISaveChart, W
         }
     }
 
+    @Nullable
     @Override
-    public void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
-        this.handler = handler;
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.writeExternalStorageRequest_title)
-                    .setMessage(R.string.writeExternalStorageRequest_message)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
-                        }
-                    }));
-        } else {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onSaveRequested(View chart, String name) {
-        File dest = new File(Utils.getImageDirectory(null), name + ".png");
-        try (OutputStream out = new FileOutputStream(dest)) {
-            Bitmap bitmap = Utils.createBitmap(chart);
-
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-
-            Toaster.show(getActivity(), getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);
-        } catch (IOException ex) {
-            Toaster.show(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
-        }
-
-        ThisApplication.sendAnalytics(getContext(), new HitBuilders.EventBuilder()
-                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                .setAction(ThisApplication.ACTION_SAVED_CHART)
-                .build());
+    public Project getProject() {
+        return null;
     }
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.SuperTextView;
+import com.gianlu.timeless.Charting.ISaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
@@ -53,7 +54,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
     }
 
     @SuppressWarnings("deprecation")
-    void bind(final Context context, final String title, List<LoggedEntity> entities, final CardsAdapter.ISaveChart handler) {
+    void bind(final Context context, final String title, List<LoggedEntity> entities, final ISaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);

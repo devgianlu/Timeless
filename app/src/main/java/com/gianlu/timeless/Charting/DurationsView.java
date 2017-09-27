@@ -1,4 +1,4 @@
-package com.gianlu.timeless;
+package com.gianlu.timeless.Charting;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.R;
+import com.gianlu.timeless.Utils;
 
 import java.util.ArrayList;
 import java.util.Calendar;

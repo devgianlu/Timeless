@@ -4,10 +4,10 @@ import android.content.Context;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Charting.ISaveChart;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summary;
@@ -88,12 +88,6 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
         return objs.objs.size();
-    }
-
-    public interface ISaveChart {
-        void onWritePermissionRequested(IPermissionRequest handler);
-
-        void onSaveRequested(View chart, String name);
     }
 
     public interface IPermissionRequest {

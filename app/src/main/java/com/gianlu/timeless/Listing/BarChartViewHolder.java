@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.gianlu.timeless.Charting.ISaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
@@ -48,7 +49,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         save = itemView.findViewById(R.id.barChartCard_save);
     }
 
-    void bind(final Context context, final String title, final List<Summary> summaries, final CardsAdapter.ISaveChart handler) {
+    void bind(final Context context, final String title, final List<Summary> summaries, final ISaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);
