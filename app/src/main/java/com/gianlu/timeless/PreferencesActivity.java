@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -16,7 +17,6 @@ import com.gianlu.commonutils.AppCompatPreferenceFragment;
 import com.gianlu.commonutils.BaseAboutFragment;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.LogsActivity;
-import com.google.android.gms.analytics.HitBuilders;
 
 import java.util.List;
 
@@ -132,12 +132,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             return R.string.app_name;
         }
 
+        @NonNull
         @Override
-        protected void sendAnalytics() {
-            ThisApplication.sendAnalytics(getActivity(), new HitBuilders.EventBuilder()
-                    .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                    .setAction(ThisApplication.ACTION_DONATE_OPEN)
-                    .build());
+        protected String getPackageName() {
+            return "com.gianlu.timeless";
         }
 
         @Override

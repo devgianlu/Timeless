@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        CommonUtils.setDebug(BuildConfig.DEBUG);
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         final ViewPager pager = findViewById(R.id.main_pager);

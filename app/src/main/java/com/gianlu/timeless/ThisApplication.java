@@ -8,17 +8,21 @@ import android.support.annotation.Nullable;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.ConnectivityChecker;
+import com.gianlu.commonutils.UncaughtExceptionActivity;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-public class ThisApplication extends Application {
+public class ThisApplication extends Application implements Thread.UncaughtExceptionHandler {
     public static final String CATEGORY_USER_INPUT = "User input";
     public static final String ACTION_DATE_RANGE = "Changed date range";
     public static final String ACTION_SAVED_CHART = "Chart saved as image";
@@ -52,9 +56,9 @@ public class ThisApplication extends Application {
         CommonUtils.setDebug(BuildConfig.DEBUG);
 
         FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
-        tracker = getTracker(this);
+        if (!BuildConfig.DEBUG) tracker = getTracker(this);
 
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(getApplicationContext()));
+        Thread.setDefaultUncaughtExceptionHandler(this);
 
         ConnectivityChecker.setUserAgent("Timeless, a Wakatime client");
         ConnectivityChecker.setProvider(new ConnectivityChecker.URLProvider() {
@@ -68,5 +72,22 @@ public class ThisApplication extends Application {
                 return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
             }
         });
+    }
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable throwable) {
+        if (BuildConfig.DEBUG) {
+            throwable.printStackTrace();
+        } else {
+            StringWriter writer = new StringWriter();
+            throwable.printStackTrace(new PrintWriter(writer));
+
+            ThisApplication.sendAnalytics(getApplicationContext(), new HitBuilders.ExceptionBuilder()
+                    .setDescription(writer.toString())
+                    .setFatal(true)
+                    .build());
+
+            UncaughtExceptionActivity.startActivity(getApplicationContext(), getApplicationContext().getString(R.string.app_name), throwable);
+        }
     }
 }
