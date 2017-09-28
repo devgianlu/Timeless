@@ -72,4 +72,7 @@
     <string name="failedSavingImage">Failed saving the chart image!</string>
     <string name="cannotGoFuture">You cannot go into the future!</string>
     <string name="noWritePermission">You have denied the write permission.</string>
+    <string name="network">Network</string>
+    <string name="enableCache">Enable cache</string>
+    <string name="enableCacheSummary">Short term cache (to save data)</string>
 </resources>

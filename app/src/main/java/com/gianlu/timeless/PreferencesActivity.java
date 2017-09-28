@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +18,7 @@ import com.gianlu.commonutils.AppCompatPreferenceFragment;
 import com.gianlu.commonutils.BaseAboutFragment;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.LogsActivity;
+import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.List;
 
@@ -63,8 +65,33 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
+                || NetworkFragment.class.getName().equals(fragmentName)
                 || ThirdPartFragment.class.getName().equals(fragmentName)
                 || AboutFragment.class.getName().equals(fragmentName);
+    }
+
+    public static class NetworkFragment extends AppCompatPreferenceFragment {
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.network_pref);
+            getActivity().setTitle(R.string.network);
+            setHasOptionsMenu(true);
+
+            findPreference("cacheEnabled").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    WakaTime.getInstance().setCacheEnabled((Boolean) newValue);
+                    return true;
+                }
+            });
+        }
+
+        @Override
+        protected Class getParent() {
+            return PreferencesActivity.class;
+        }
     }
 
     public static class ThirdPartFragment extends AppCompatPreferenceFragment {

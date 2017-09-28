@@ -3,7 +3,9 @@ package com.gianlu.timeless.NetIO;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.LruCache;
 import android.util.Pair;
 
 import com.gianlu.commonutils.CommonUtils;
@@ -47,19 +49,23 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-// TODO: Should implement some king of very-short time cache? (which can be disabled)
 public class WakaTime {
-    public static final String BASE_URL = "https://wakatime.com/api/v1/";
+    private static final String BASE_URL = "https://wakatime.com/api/v1/";
     private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
     private static final String APP_SECRET = "sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs";
     private static final String CALLBACK = "timeless://grantActivity/";
+    private static final long MAX_CACHE_AGE = TimeUnit.MINUTES.toMillis(10);
+    private static final int MAX_CACHE_SIZE = 20;
     private static WakaTime instance;
     private final OAuth20Service service;
     private final String lastState;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler handler;
+    private final LruCache<String, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
     private OAuth2AccessToken token;
+    private boolean cacheEnabled = true;
 
     private WakaTime() {
         handler = new Handler(Looper.getMainLooper());
@@ -89,6 +95,15 @@ public class WakaTime {
         out.flush();
     }
 
+    public void setCacheEnabled(boolean enabled) {
+        this.cacheEnabled = enabled;
+        if (enabled) memoryCache.resize(MAX_CACHE_SIZE);
+        else memoryCache.trimToSize(-1);
+    }
+
+    /**
+     * Also refreshes the {@link WakaTime#cacheEnabled} value
+     */
     public void refreshToken(final Context context, final IRefreshToken listener) {
         executorService.execute(new Runnable() {
             @Override
@@ -106,6 +121,8 @@ public class WakaTime {
                             listener.onRefreshed(instance);
                         }
                     });
+
+                    cacheEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("cacheEnabled", true);
                 } catch (IOException | InvalidTokenException | InterruptedException | ExecutionException | OAuth2AccessTokenErrorResponse ex) {
                     if (ex instanceof OAuth2AccessTokenErrorResponse) {
                         handler.post(new Runnable() {
@@ -493,10 +510,30 @@ public class WakaTime {
     }
 
     private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, OAuthException, JSONException, WakaTimeException {
-        if (token == null) throw new WakaTimeException("OAuth2AccessToken is null");
-        final OAuthRequest request = new OAuthRequest(verb, url);
-        service.signRequest(token, request);
-        return service.execute(request);
+        CachedResponse cachedResponse;
+        if (verb == Verb.GET && cacheEnabled) cachedResponse = getFromCache(url);
+        else cachedResponse = null;
+
+        if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
+            if (token == null) throw new WakaTimeException("OAuth2AccessToken is null");
+            final OAuthRequest request = new OAuthRequest(verb, url);
+            service.signRequest(token, request);
+            Response resp = service.execute(request);
+            synchronized (memoryCache) {
+                memoryCache.put(url, new CachedResponse(resp));
+            }
+
+            return resp;
+        } else {
+            return cachedResponse.response;
+        }
+    }
+
+    @Nullable
+    private CachedResponse getFromCache(String url) {
+        synchronized (memoryCache) {
+            return memoryCache.get(url);
+        }
     }
 
     public void newAccessToken(final Context context, final String uri, final INewAccessToken listener) {
@@ -646,6 +683,16 @@ public class WakaTime {
         void onTokenRejected(InvalidTokenException ex);
 
         void onException(Exception ex);
+    }
+
+    private static class CachedResponse {
+        private final Response response;
+        private final long timestamp;
+
+        CachedResponse(Response response) {
+            this.response = response;
+            this.timestamp = System.currentTimeMillis();
+        }
     }
 
     private class WakaTimeApi implements BaseApi<OAuth20Service> {
