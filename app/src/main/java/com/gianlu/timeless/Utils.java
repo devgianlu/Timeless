@@ -49,7 +49,7 @@ public class Utils {
         dir.mkdir();
 
         if (project != null) {
-            File subDir = new File(dir, project.name.replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
+            File subDir = new File(dir, project.name.replaceAll("[^a-zA-Z0-9.\\-]", "_"));
             subDir.mkdir();
             return subDir;
         } else {

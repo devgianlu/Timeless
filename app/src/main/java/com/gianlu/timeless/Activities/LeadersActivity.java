@@ -87,7 +87,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     @Override
     public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
         LeadersActivity.this.me = me;
-        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, this);
+        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, currLang, this);
         recyclerViewLayout.loadListData(adapter);
     }
 
@@ -118,7 +118,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
             @Override
             public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
                 LeadersActivity.this.me = me;
-                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, LeadersActivity.this);
+                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, language, LeadersActivity.this);
 
                 currFilter.setText(language == null ? getString(R.string.global_rank) : language);
                 recyclerViewLayout.loadListData(LeadersActivity.this.adapter);

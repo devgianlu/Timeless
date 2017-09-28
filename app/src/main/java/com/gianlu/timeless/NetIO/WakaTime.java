@@ -377,7 +377,7 @@ public class WakaTime {
                             listener.onWakaTimeException(ex);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -391,10 +391,6 @@ public class WakaTime {
 
     public void getLeaders(final ILeaders listener) {
         getLeaders(null, 1, listener);
-    }
-
-    public void getLeaders(int page, final ILeaders listener) {
-        getLeaders(null, page, listener);
     }
 
     public void getLeaders(String language, final ILeaders listener) {
@@ -413,7 +409,7 @@ public class WakaTime {
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
                         final List<Leader> leaders = CommonUtils.toTList(obj.getJSONArray("data"), Leader.class);
-                        final Leader me = new Leader(obj.getJSONObject("current_user"));
+                        final Leader me = new Leader(obj.getJSONObject("current_user")); // TODO: Looks like that's not updated with the language
                         final int pages = obj.getInt("total_pages");
 
                         handler.post(new Runnable() {

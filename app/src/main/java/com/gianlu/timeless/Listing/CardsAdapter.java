@@ -96,6 +96,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         void onGranted();
     }
 
+    @SuppressWarnings({"SameParameterValue", "UnusedReturnValue"})
     public static class CardsList {
         private final List<Integer> titles;
         private final List<Integer> types;

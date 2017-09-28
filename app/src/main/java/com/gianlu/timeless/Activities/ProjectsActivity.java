@@ -1,5 +1,6 @@
 package com.gianlu.timeless.Activities;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -119,6 +120,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
+    @SuppressLint("SetTextI18n")
     public void updateRangeText() {
         runOnUiThread(new Runnable() {
             @Override

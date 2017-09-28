@@ -5,7 +5,6 @@ import com.gianlu.commonutils.CommonUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.List;
 
 public class Commits {
@@ -16,7 +15,7 @@ public class Commits {
     public int page;
     public int next_page;
 
-    public Commits(JSONObject obj) throws JSONException, ParseException {
+    public Commits(JSONObject obj) throws JSONException {
         commits = CommonUtils.toTList(obj.getJSONArray("commits"), Commit.class);
 
         project = new Project(obj.getJSONObject("project"));

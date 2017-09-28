@@ -57,7 +57,8 @@
                 <data
                     android:host="grantActivity"
                     android:pathPattern=".*"
-                    android:scheme="timeless" />
+                    android:scheme="timeless"
+                    tools:ignore="AppLinkUrlError" />
             </intent-filter>
         </activity>
 

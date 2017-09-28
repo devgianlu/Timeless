@@ -22,13 +22,15 @@ import java.util.List;
 import java.util.Objects;
 
 public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<LeadersAdapter.ViewHolder, Leader> {
+    private final String language;
     private final IAdapter listener;
     private final User me;
     private final Typeface roboto;
     private final WakaTime wakaTime;
 
-    public LeadersAdapter(Context context, List<Leader> items, int maxPages, @Nullable Leader me, IAdapter listener) {
+    public LeadersAdapter(Context context, List<Leader> items, int maxPages, @Nullable Leader me, @Nullable String language, IAdapter listener) {
         super(context, items, maxPages, -1, false);
+        this.language = language;
         this.listener = listener;
         this.wakaTime = WakaTime.getInstance();
         this.roboto = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
@@ -73,7 +75,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
 
     @Override
     protected void moreContent(final int page, final IContentProvider<Leader> provider) {
-        wakaTime.getLeaders(page, new WakaTime.ILeaders() {
+        wakaTime.getLeaders(language, page, new WakaTime.ILeaders() {
             @Override
             public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
                 provider.onMoreContent(leaders);
