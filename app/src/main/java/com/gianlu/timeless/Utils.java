@@ -171,6 +171,12 @@ public class Utils {
         }
     }
 
+    public static SimpleDateFormat getVerbalDateFormatter() {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd/MM/yyyy", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getDefault());
+        return sdf;
+    }
+
     @SuppressWarnings("WeakerAccess")
     public static class ToastMessages {
         public static final Toaster.Message CANT_CHECK_GRANT = new Toaster.Message(R.string.failedCheckingPermissions, true);

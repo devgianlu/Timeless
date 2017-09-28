@@ -6,16 +6,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
 import com.gianlu.timeless.GrantActivity;
@@ -35,28 +34,21 @@ import java.util.Date;
 import java.util.List;
 
 public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.ISummary {
-    private RecyclerView list;
     private TextView currDay;
     private Pair<Date, Date> currentDatePair;
-    private ProgressBar loading;
-    private TextView error;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private WakaTime wakaTime;
+    private RecyclerViewLayout recyclerViewLayout;
 
-    private void updatePage(Date newDate, @Nullable final SwipeRefreshLayout swipeRefresh) {
+    private void updatePage(Date newDate) {
         if (newDate.after(new Date())) {
             Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
             return;
         }
 
         currentDatePair = new Pair<>(newDate, newDate);
-        currDay.setText(Utils.getOnlyDateFormatter().format(newDate));
+        currDay.setText(Utils.getVerbalDateFormatter().format(newDate));
 
-        if (swipeRefresh == null) {
-            loading.setVisibility(View.VISIBLE);
-            error.setVisibility(View.GONE);
-            list.setVisibility(View.GONE);
-        }
+        recyclerViewLayout.startLoading();
 
         wakaTime.getRangeSummary(currentDatePair, this);
     }
@@ -66,11 +58,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         wakaTime.getDurations(currentDatePair.first, new WakaTime.IDurations() {
             @Override
             public void onDurations(final List<Duration> durations) {
-                swipeRefreshLayout.setRefreshing(false);
-                error.setVisibility(View.GONE);
-                loading.setVisibility(View.GONE);
-                list.setVisibility(View.VISIBLE);
-                list.setAdapter(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
+                recyclerViewLayout.loadListData(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
                         .addGlobalSummary(globalSummary)
                         .addDurations(R.string.durationsSummary, durations)
                         .addPieChart(R.string.projectsSummary, globalSummary.projects)
@@ -81,33 +69,12 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
 
             @Override
             public void onException(final Exception ex) {
-                if (ex instanceof WakaTimeException) {
-                    if (swipeRefreshLayout.isRefreshing()) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    } else {
-                        loading.setVisibility(View.GONE);
-                        error.setText(ex.getMessage());
-                        error.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    Toaster.show(DailyStatsActivity.this, swipeRefreshLayout.isRefreshing() ? Utils.ToastMessages.FAILED_LOADING : Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                        @Override
-                        public void run() {
-                            if (swipeRefreshLayout.isRefreshing()) {
-                                swipeRefreshLayout.setRefreshing(false);
-                            } else {
-                                loading.setVisibility(View.GONE);
-                                error.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-                }
+                DailyStatsActivity.this.onException(ex);
             }
 
             @Override
             public void onWakaTimeException(WakaTimeException ex) {
-                Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                DailyStatsActivity.this.onWakaTimeException(ex);
             }
         });
     }
@@ -121,27 +88,9 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     @Override
     public void onException(final Exception ex) {
         if (ex instanceof WakaTimeException) {
-            swipeRefreshLayout.setRefreshing(false);
-            loading.setVisibility(View.GONE);
-            error.setText(ex.getMessage());
-            error.setVisibility(View.VISIBLE);
+            recyclerViewLayout.showMessage(ex.getMessage(), false);
         } else {
-            if (swipeRefreshLayout.isRefreshing()) {
-                Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
-            } else {
-                Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.setVisibility(View.GONE);
-                        error.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
+            recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
         }
     }
 
@@ -180,22 +129,19 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        swipeRefreshLayout = findViewById(R.id.dailyStats_swipeRefresh);
-        swipeRefreshLayout.setColorSchemeResources(Utils.getColors());
-        loading = findViewById(R.id.dailyStats_loading);
-        error = findViewById(R.id.dailyStats_error);
+        recyclerViewLayout = findViewById(R.id.dailyStats_recyclerViewLayout);
+        recyclerViewLayout.enableSwipeRefresh(Utils.getColors());
+        recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         final ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
         final ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
         currDay = findViewById(R.id.dailyStats_day);
-        list = findViewById(R.id.dailyStats_list);
-        list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         wakaTime = WakaTime.getInstance();
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        recyclerViewLayout.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updatePage(currentDatePair.first, swipeRefreshLayout);
+                updatePage(currentDatePair.first);
             }
         });
 
@@ -208,7 +154,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 cal.setTime(currentDatePair.first);
                 cal.add(Calendar.DATE, 1);
 
-                updatePage(cal.getTime(), null);
+                updatePage(cal.getTime());
             }
         });
 
@@ -221,11 +167,11 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 cal.setTime(currentDatePair.first);
                 cal.add(Calendar.DATE, -1);
 
-                updatePage(cal.getTime(), null);
+                updatePage(cal.getTime());
             }
         });
 
-        updatePage(new Date(), null);
+        updatePage(new Date());
     }
 
     @Nullable
@@ -242,6 +188,6 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         cal.set(Calendar.MONTH, monthOfYear);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-        updatePage(cal.getTime(), null);
+        updatePage(cal.getTime());
     }
 }
