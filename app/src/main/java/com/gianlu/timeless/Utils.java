@@ -1,6 +1,7 @@
 package com.gianlu.timeless;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.Project;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 
 import org.json.JSONObject;
 
@@ -55,6 +57,11 @@ public class Utils {
         } else {
             return dir;
         }
+    }
+
+    public static void invalidToken(Context context, WakaTimeException ex) {
+        Toaster.show(context, Utils.ToastMessages.INVALID_TOKEN, ex);
+        context.startActivity(new Intent(context, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
     public static Bitmap createBitmap(View view) {

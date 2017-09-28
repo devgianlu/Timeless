@@ -71,7 +71,7 @@ class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter
             }
 
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
+            public void onInvalidToken(WakaTimeException ex) {
                 provider.onFailed(ex);
             }
         });

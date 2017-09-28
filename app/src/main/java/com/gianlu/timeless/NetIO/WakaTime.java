@@ -175,7 +175,7 @@ public class WakaTime {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onWakaTimeException(ex);
+                            listener.onInvalidToken(ex);
                         }
                     });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
@@ -221,7 +221,7 @@ public class WakaTime {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onWakaTimeException(ex);
+                            listener.onInvalidToken(ex);
                         }
                     });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
@@ -266,7 +266,7 @@ public class WakaTime {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onWakaTimeException(ex);
+                            listener.onInvalidToken(ex);
                         }
                     });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
@@ -294,8 +294,8 @@ public class WakaTime {
             }
 
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                listener.onWakaTimeException(ex);
+            public void onInvalidToken(WakaTimeException ex) {
+                listener.onInvalidToken(ex);
             }
         });
     }
@@ -328,7 +328,7 @@ public class WakaTime {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onWakaTimeException(ex);
+                            listener.onInvalidToken(ex);
                         }
                     });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
@@ -374,7 +374,7 @@ public class WakaTime {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onWakaTimeException(ex);
+                            listener.onInvalidToken(ex);
                         }
                     });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
@@ -430,7 +430,7 @@ public class WakaTime {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onWakaTimeException(ex);
+                            listener.onInvalidToken(ex);
                         }
                     });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
@@ -490,7 +490,7 @@ public class WakaTime {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onWakaTimeException(ex);
+                            listener.onInvalidToken(ex);
                         }
                     });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
@@ -622,7 +622,7 @@ public class WakaTime {
 
         void onException(Exception ex);
 
-        void onWakaTimeException(WakaTimeException ex);
+        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface ILeaders {
@@ -630,13 +630,13 @@ public class WakaTime {
 
         void onException(Exception ex);
 
-        void onWakaTimeException(WakaTimeException ex);
+        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface ISummary {
         void onSummary(List<Summary> summaries, GlobalSummary globalSummary);
 
-        void onWakaTimeException(WakaTimeException ex);
+        void onInvalidToken(WakaTimeException ex);
 
         void onException(Exception ex);
     }
@@ -646,7 +646,7 @@ public class WakaTime {
 
         void onException(Exception ex);
 
-        void onWakaTimeException(WakaTimeException ex);
+        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface ICommits {
@@ -654,7 +654,7 @@ public class WakaTime {
 
         void onException(Exception ex);
 
-        void onWakaTimeException(WakaTimeException ex);
+        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface IRefreshToken {
@@ -670,7 +670,7 @@ public class WakaTime {
 
         void onException(Exception ex);
 
-        void onWakaTimeException(WakaTimeException ex);
+        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface INewAccessToken {

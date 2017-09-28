@@ -2,7 +2,6 @@ package com.gianlu.timeless.Activities;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Projects.ProjectFragment;
-import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -115,9 +113,8 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
     }
 
     @Override
-    public void onWakaTimeException(WakaTimeException ex) {
-        Toaster.show(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-        startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    public void onInvalidToken(WakaTimeException ex) {
+        Utils.invalidToken(ProjectsActivity.this, ex);
     }
 
     @SuppressLint("SetTextI18n")
@@ -212,9 +209,8 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
             }
 
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                Toaster.show(ProjectsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                startActivity(new Intent(ProjectsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            public void onInvalidToken(WakaTimeException ex) {
+                Utils.invalidToken(ProjectsActivity.this, ex);
             }
         });
 

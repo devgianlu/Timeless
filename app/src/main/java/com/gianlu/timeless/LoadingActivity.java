@@ -72,9 +72,8 @@ public class LoadingActivity extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void onWakaTimeException(WakaTimeException ex) {
-                                    Toaster.show(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                                    startActivity(new Intent(LoadingActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                public void onInvalidToken(WakaTimeException ex) {
+                                    Utils.invalidToken(LoadingActivity.this, ex);
                                 }
                             });
                         }

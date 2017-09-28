@@ -3,7 +3,6 @@ package com.gianlu.timeless.Activities;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -25,7 +24,6 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
 import com.gianlu.timeless.Charting.SquarePieChart;
-import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.Summary;
@@ -101,9 +99,8 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     }
 
     @Override
-    public void onWakaTimeException(WakaTimeException ex) {
-        Toaster.show(this, Utils.ToastMessages.INVALID_TOKEN, ex);
-        startActivity(new Intent(this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    public void onInvalidToken(WakaTimeException ex) {
+        Utils.invalidToken(this, ex);
     }
 
     @Override
@@ -132,8 +129,8 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
             }
 
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                LeadersActivity.this.onWakaTimeException(ex);
+            public void onInvalidToken(WakaTimeException ex) {
+                LeadersActivity.this.onInvalidToken(ex);
             }
         });
     }
@@ -242,9 +239,9 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
             }
 
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
+            public void onInvalidToken(WakaTimeException ex) {
                 pd.dismiss();
-                LeadersActivity.this.onWakaTimeException(ex);
+                LeadersActivity.this.onInvalidToken(ex);
             }
 
             @Override

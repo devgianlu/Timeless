@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
-import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.GlobalSummary;
@@ -73,16 +71,15 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
             }
 
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
-                DailyStatsActivity.this.onWakaTimeException(ex);
+            public void onInvalidToken(WakaTimeException ex) {
+                DailyStatsActivity.this.onInvalidToken(ex);
             }
         });
     }
 
     @Override
-    public void onWakaTimeException(WakaTimeException ex) {
-        Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-        startActivity(new Intent(DailyStatsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    public void onInvalidToken(WakaTimeException ex) {
+        Utils.invalidToken(this, ex);
     }
 
     @Override

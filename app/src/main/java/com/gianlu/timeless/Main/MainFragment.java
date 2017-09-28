@@ -1,7 +1,6 @@
 package com.gianlu.timeless.Main;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gianlu.commonutils.RecyclerViewLayout;
-import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.SaveChartFragment;
-import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.GlobalSummary;
@@ -91,15 +88,15 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
                         }
 
                         @Override
-                        public void onWakaTimeException(WakaTimeException ex) {
-                            MainFragment.this.onWakaTimeException(ex);
+                        public void onInvalidToken(WakaTimeException ex) {
+                            MainFragment.this.onInvalidToken(ex);
                         }
                     });
                 }
 
                 @Override
-                public void onWakaTimeException(WakaTimeException ex) {
-                    MainFragment.this.onWakaTimeException(ex);
+                public void onInvalidToken(WakaTimeException ex) {
+                    MainFragment.this.onInvalidToken(ex);
                 }
 
                 @Override
@@ -114,9 +111,8 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
     }
 
     @Override
-    public void onWakaTimeException(WakaTimeException ex) {
-        Toaster.show(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-        startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    public void onInvalidToken(WakaTimeException ex) {
+        Utils.invalidToken(getContext(), ex);
     }
 
     @Override

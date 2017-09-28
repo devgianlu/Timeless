@@ -87,7 +87,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
             }
 
             @Override
-            public void onWakaTimeException(WakaTimeException ex) {
+            public void onInvalidToken(WakaTimeException ex) {
                 provider.onFailed(ex);
             }
         });

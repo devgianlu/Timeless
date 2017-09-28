@@ -1,7 +1,6 @@
 package com.gianlu.timeless.Activities;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Commits.CommitsFragment;
-import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -95,8 +93,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
     }
 
     @Override
-    public void onWakaTimeException(WakaTimeException ex) {
-        Toaster.show(CommitsActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-        startActivity(new Intent(CommitsActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    public void onInvalidToken(WakaTimeException ex) {
+        Utils.invalidToken(this, ex);
     }
 }
