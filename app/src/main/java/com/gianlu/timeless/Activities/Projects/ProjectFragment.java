@@ -3,9 +3,7 @@ package com.gianlu.timeless.Activities.Projects;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,9 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Charting.SaveChartFragment;
@@ -37,10 +34,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
     private Date start;
     private Date end;
     private Project project;
-    private SwipeRefreshLayout layout;
-    private ProgressBar loading;
-    private TextView error;
-    private RecyclerView list;
+    private RecyclerViewLayout layout;
     private WakaTime wakaTime;
 
     public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
@@ -86,32 +80,20 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
-        layout = (SwipeRefreshLayout) inflater.inflate(R.layout.project_fragment, container, false);
-        layout.setColorSchemeResources(Utils.getColors());
-        loading = layout.findViewById(R.id.projectFragment_loading);
-        error = layout.findViewById(R.id.projectFragment_error);
-        list = layout.findViewById(R.id.projectFragment_list);
-        list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        layout = new RecyclerViewLayout(inflater);
+        layout.disableSwipeRefresh();
+        layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         project = (Project) getArguments().getSerializable("project");
         start = (Date) getArguments().getSerializable("start");
         end = (Date) getArguments().getSerializable("end");
 
         if (project == null || start == null || end == null) {
-            loading.setEnabled(false);
-            error.setVisibility(View.VISIBLE);
+            layout.showMessage(R.string.errorMessage, true);
             return layout;
         }
 
         wakaTime = WakaTime.getInstance();
-
-        layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                wakaTime.getRangeSummary(start, end, project, ProjectFragment.this);
-            }
-        });
-
         wakaTime.getRangeSummary(start, end, project, this);
 
         return layout;
@@ -127,12 +109,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 public void onDurations(final List<Duration> durations) {
                     if (!isAdded()) return;
 
-                    layout.setRefreshing(false);
-                    error.setVisibility(View.GONE);
-                    loading.setVisibility(View.GONE);
-                    list.setVisibility(View.VISIBLE);
-
-                    list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                    layout.loadListData(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                             .addGlobalSummary(globalSummary)
                             .addDurations(R.string.durationsSummary, durations)
                             .addPieChart(R.string.languagesSummary, globalSummary.languages)
@@ -150,11 +127,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 }
             });
         } else {
-            error.setVisibility(View.GONE);
-            loading.setVisibility(View.GONE);
-            list.setVisibility(View.VISIBLE);
-
-            list.setAdapter(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+            layout.loadListData(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
                     .addGlobalSummary(globalSummary)
                     .addLineChart(R.string.periodActivity, summaries)
                     .addPieChart(R.string.languagesSummary, globalSummary.languages)
@@ -171,27 +144,9 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
     @Override
     public void onException(final Exception ex) {
         if (ex instanceof WakaTimeException) {
-            layout.setRefreshing(false);
-            loading.setVisibility(View.GONE);
-            error.setText(ex.getMessage());
-            error.setVisibility(View.VISIBLE);
+            layout.showMessage(ex.getMessage(), false);
         } else {
-            if (layout.isRefreshing()) {
-                Toaster.show(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        layout.setRefreshing(false);
-                    }
-                });
-            } else {
-                Toaster.show(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.setVisibility(View.GONE);
-                        error.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
+            layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
         }
     }
 }

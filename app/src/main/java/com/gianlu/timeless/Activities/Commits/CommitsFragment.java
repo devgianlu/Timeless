@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.TypedValue;
@@ -14,11 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.InfiniteRecyclerView;
+import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.GrantActivity;
@@ -33,10 +30,7 @@ import com.gianlu.timeless.Utils;
 import java.util.Date;
 
 public class CommitsFragment extends Fragment implements WakaTime.ICommits, CommitsAdapter.IAdapter {
-    private ProgressBar loading;
-    private TextView error;
-    private InfiniteRecyclerView list;
-    private SwipeRefreshLayout layout;
+    private RecyclerViewLayout layout;
 
     public static CommitsFragment getInstance(Project project) {
         CommitsFragment fragment = new CommitsFragment();
@@ -50,23 +44,11 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        layout = (SwipeRefreshLayout) inflater.inflate(R.layout.commits_fragment, container, false);
-        layout.setColorSchemeResources(Utils.getColors());
+        layout = new RecyclerViewLayout(inflater);
+        layout.disableSwipeRefresh();
+        layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        loading = layout.findViewById(R.id.commitsFragment_loading);
-        error = layout.findViewById(R.id.commitsFragment_error);
-        list = layout.findViewById(R.id.commitsFragment_list);
-        list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-
-        final WakaTime wakaTime = WakaTime.getInstance();
-
-        layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                wakaTime.getCommits((Project) getArguments().getSerializable("project"), CommitsFragment.this);
-            }
-        });
-
+        WakaTime wakaTime = WakaTime.getInstance();
         wakaTime.getCommits((Project) getArguments().getSerializable("project"), this);
 
         return layout;
@@ -75,31 +57,15 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
     @Override
     public void onCommits(final Commits commits) {
         if (!isAdded()) return;
-        layout.setRefreshing(false);
-        error.setVisibility(View.GONE);
-        loading.setVisibility(View.GONE);
-        list.setVisibility(View.VISIBLE);
-        list.setAdapter(new CommitsAdapter(getContext(), commits, CommitsFragment.this));
+        layout.loadListData(new CommitsAdapter(getContext(), commits, CommitsFragment.this));
     }
 
     @Override
     public void onException(Exception ex) {
-        if (layout.isRefreshing()) {
-            Toaster.show(getActivity(), Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                @Override
-                public void run() {
-                    layout.setRefreshing(false);
-                }
-            });
+        if (ex instanceof WakaTimeException) {
+            layout.showMessage(ex.getMessage(), false);
         } else {
-            Toaster.show(getActivity(), Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                @Override
-                public void run() {
-                    loading.setVisibility(View.GONE);
-                    layout.setRefreshing(false);
-                    error.setVisibility(View.VISIBLE);
-                }
-            });
+            layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
         }
     }
 
