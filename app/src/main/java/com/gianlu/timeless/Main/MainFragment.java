@@ -99,13 +99,12 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
 
                 @Override
                 public void onWakaTimeException(WakaTimeException ex) {
-                    Toaster.show(getActivity(), Utils.ToastMessages.INVALID_TOKEN, ex);
-                    startActivity(new Intent(getContext(), GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    MainFragment.this.onWakaTimeException(ex);
                 }
 
                 @Override
                 public void onException(Exception ex) {
-                    onSummary(null, null); // FIXME: What's this shit (!!)
+                    MainFragment.this.onException(ex);
                 }
             });
         } else {

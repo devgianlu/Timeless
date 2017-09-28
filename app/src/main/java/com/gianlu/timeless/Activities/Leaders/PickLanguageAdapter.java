@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.Utils;
 
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +57,9 @@ public class PickLanguageAdapter extends BaseAdapter {
         if (Objects.equals(name, selectedLang)) {
             language.setTextColor(ContextCompat.getColor(inflater.getContext(), R.color.colorAccent));
             language.setTypeface(Typeface.DEFAULT_BOLD);
+        } else {
+            language.setTextColor(Utils.getTextViewDefaultColor(view.getContext()));
+            language.setTypeface(Typeface.DEFAULT);
         }
 
         return view;

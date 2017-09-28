@@ -19,7 +19,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.InfiniteRecyclerView;
+import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
@@ -52,11 +52,9 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang;
-    private InfiniteRecyclerView list;
     private Leader me;
-    private ProgressDialog pd;
-    private SwipeRefreshLayout layout;
     private WakaTime wakaTime;
+    private RecyclerViewLayout recyclerViewLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,23 +67,19 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        layout = findViewById(R.id.leaders_swipeRefresh);
-        layout.setColorSchemeResources(Utils.getColors());
+        recyclerViewLayout = findViewById(R.id.leaders_recyclerViewLayout);
+        recyclerViewLayout.enableSwipeRefresh(Utils.getColors());
+        recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         currFilter = findViewById(R.id.leaders_rankingText);
-        list = findViewById(R.id.leaders_list);
-        list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         wakaTime = WakaTime.getInstance();
 
-        layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        recyclerViewLayout.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 wakaTime.getLeaders(LeadersActivity.this);
             }
         });
-
-        pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
-        CommonUtils.showDialog(this, pd);
 
         wakaTime.getLeaders(this);
     }
@@ -94,46 +88,22 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
         LeadersActivity.this.me = me;
         adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, this);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                list.setAdapter(adapter);
-                layout.setRefreshing(false);
-                pd.dismiss();
-            }
-        });
+        recyclerViewLayout.loadListData(adapter);
     }
 
     @Override
     public void onException(Exception ex) {
-        if (layout.isRefreshing()) {
-            Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_REFRESHING, ex, new Runnable() {
-                @Override
-                public void run() {
-                    layout.setRefreshing(false);
-                }
-            });
+        if (ex instanceof WakaTimeException) {
+            recyclerViewLayout.showMessage(ex.getMessage(), false);
         } else {
-            Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
-                @Override
-                public void run() {
-                    pd.dismiss();
-                    onBackPressed();
-                }
-            });
+            recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
         }
     }
 
     @Override
     public void onWakaTimeException(WakaTimeException ex) {
-        Toaster.show(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex, new Runnable() {
-            @Override
-            public void run() {
-                pd.dismiss();
-                layout.setRefreshing(false);
-                startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            }
-        });
+        Toaster.show(this, Utils.ToastMessages.INVALID_TOKEN, ex);
+        startActivity(new Intent(this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
     @Override
@@ -143,8 +113,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     }
 
     private void gatherAndUpdate(@Nullable final String language) {
-        final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
-        CommonUtils.showDialog(LeadersActivity.this, pd);
+        recyclerViewLayout.startLoading();
         wakaTime.getLeaders(language, new WakaTime.ILeaders() {
             @Override
             public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
@@ -152,22 +121,19 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, LeadersActivity.this);
 
                 currFilter.setText(language == null ? getString(R.string.global_rank) : language);
-                list.setAdapter(LeadersActivity.this.adapter);
-                pd.dismiss();
+                recyclerViewLayout.loadListData(LeadersActivity.this.adapter);
 
                 currLang = language;
             }
 
             @Override
             public void onException(Exception ex) {
-                Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
-                pd.dismiss();
+                LeadersActivity.this.onException(ex);
             }
 
             @Override
             public void onWakaTimeException(WakaTimeException ex) {
-                Toaster.show(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                LeadersActivity.this.onWakaTimeException(ex);
             }
         });
     }
@@ -236,53 +202,57 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                         .build());
                 break;
             case R.id.leaders_filter:
-                final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
-                CommonUtils.showDialog(this, pd);
-
-                wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.ISummary() {
-                    @Override
-                    public void onSummary(List<Summary> summaries, GlobalSummary globalSummary) {
-                        pd.dismiss();
-
-                        final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, globalSummary.languages);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(LeadersActivity.this);
-                        builder.setTitle(R.string.filterByLanguage)
-                                .setAdapter(adapter, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        gatherAndUpdate(adapter.getItem(which).name);
-
-                                        ThisApplication.sendAnalytics(LeadersActivity.this, new HitBuilders.EventBuilder()
-                                                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                                                .setAction(ThisApplication.ACTION_FILTER_LEADERS)
-                                                .build());
-                                    }
-                                })
-                                .setNeutralButton(R.string.unsetFilter, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        gatherAndUpdate(null);
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.cancel, null);
-                        CommonUtils.showDialog(LeadersActivity.this, builder);
-                    }
-
-                    @Override
-                    public void onWakaTimeException(WakaTimeException ex) {
-                        Toaster.show(LeadersActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
-                        startActivity(new Intent(LeadersActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                    }
-
-                    @Override
-                    public void onException(Exception ex) {
-                        Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
-                        pd.dismiss();
-                    }
-                });
+                showFilterDialog();
                 break;
         }
         return true;
+    }
+
+    private void showFilterDialog() {
+        final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
+        CommonUtils.showDialog(this, pd);
+
+        wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.ISummary() {
+            @Override
+            public void onSummary(List<Summary> summaries, GlobalSummary globalSummary) {
+                final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, globalSummary.languages);
+                AlertDialog.Builder builder = new AlertDialog.Builder(LeadersActivity.this);
+                builder.setTitle(R.string.filterByLanguage)
+                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                gatherAndUpdate(adapter.getItem(which).name);
+
+                                ThisApplication.sendAnalytics(LeadersActivity.this, new HitBuilders.EventBuilder()
+                                        .setCategory(ThisApplication.CATEGORY_USER_INPUT)
+                                        .setAction(ThisApplication.ACTION_FILTER_LEADERS)
+                                        .build());
+                            }
+                        })
+                        .setNeutralButton(R.string.unsetFilter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                gatherAndUpdate(null);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null);
+
+                CommonUtils.showDialog(LeadersActivity.this, builder);
+                pd.dismiss();
+            }
+
+            @Override
+            public void onWakaTimeException(WakaTimeException ex) {
+                pd.dismiss();
+                LeadersActivity.this.onWakaTimeException(ex);
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                pd.dismiss();
+            }
+        });
     }
 
     @Override
