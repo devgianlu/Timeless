@@ -61,15 +61,18 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
                 .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        selectedBranches.clear();
+                        List<String> selectedBranchesTemp = new ArrayList<>();
                         for (int i = 0; i < selectedBranchesBoolean.length; i++)
                             if (selectedBranchesBoolean[i])
-                                selectedBranches.add(allBranches.get(i));
+                                selectedBranchesTemp.add(allBranches.get(i));
 
-                        if (selectedBranches.isEmpty()) {
+                        if (selectedBranchesTemp.isEmpty()) {
                             Toaster.show(context, Utils.Messages.NO_BRANCHES_SELECTED);
                             return;
                         }
+
+                        selectedBranches.clear();
+                        selectedBranches.addAll(selectedBranchesTemp);
 
                         if (listener != null)
                             listener.onBranchesChanged(selectedBranches);
