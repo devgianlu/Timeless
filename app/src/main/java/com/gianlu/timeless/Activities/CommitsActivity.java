@@ -21,7 +21,6 @@ import com.gianlu.timeless.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Support for branches
 public class CommitsActivity extends AppCompatActivity implements WakaTime.IProjects {
     private final List<Fragment> fragments = new ArrayList<>();
     private ViewPager pager;
@@ -84,7 +83,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
 
     @Override
     public void onException(Exception ex) {
-        Toaster.show(CommitsActivity.this, Utils.ToastMessages.FAILED_LOADING, ex, new Runnable() {
+        Toaster.show(CommitsActivity.this, Utils.Messages.FAILED_LOADING, ex, new Runnable() {
             @Override
             public void run() {
                 onBackPressed();

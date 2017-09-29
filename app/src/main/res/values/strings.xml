@@ -76,4 +76,9 @@
     <string name="enableCache">Enable cache</string>
     <string name="enableCacheSummary">Short term cache (to save data)</string>
     <string name="failedLoading_reason">Failed loading: %s</string>
+    <string name="selectedBranches"><![CDATA[<b>Selected branches:</b>]]> %s</string>
+    <string name="selectBranches">Select branches</string>
+    <string name="apply">Apply</string>
+    <string name="noBranchesSelected">Selected at least one branch!</string>
+    <string name="branchesSummary">Percentage of time spent on each branch</string>
 </resources>

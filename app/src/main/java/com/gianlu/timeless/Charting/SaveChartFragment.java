@@ -46,7 +46,7 @@ public abstract class SaveChartFragment extends Fragment implements ISaveChart {
             File dest = SaveChartUtils.save(getContext(), chart, getProject(), name);
             Toaster.show(getActivity(), getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);
         } catch (IOException ex) {
-            Toaster.show(getActivity(), Utils.ToastMessages.FAILED_SAVING_CHART, ex);
+            Toaster.show(getActivity(), Utils.Messages.FAILED_SAVING_CHART, ex);
         }
     }
 
@@ -54,7 +54,7 @@ public abstract class SaveChartFragment extends Fragment implements ISaveChart {
     public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (handler != null && requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
-            else Toaster.show(getActivity(), Utils.ToastMessages.WRITE_DENIED);
+            else Toaster.show(getActivity(), Utils.Messages.WRITE_DENIED);
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }

@@ -60,7 +60,7 @@ public class Utils {
     }
 
     public static void invalidToken(Context context, WakaTimeException ex) {
-        Toaster.show(context, Utils.ToastMessages.INVALID_TOKEN, ex);
+        Toaster.show(context, Messages.INVALID_TOKEN, ex);
         context.startActivity(new Intent(context, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
@@ -185,9 +185,8 @@ public class Utils {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static class ToastMessages {
+    public static class Messages {
         public static final Toaster.Message CANT_CHECK_GRANT = new Toaster.Message(R.string.failedCheckingPermissions, true);
-        public static final Toaster.Message FAILED_REFRESHING = new Toaster.Message(R.string.failedRefreshing, true);
         public static final Toaster.Message FAILED_LOADING = new Toaster.Message(R.string.failedLoading, true);
         public static final Toaster.Message TOKEN_REJECTED = new Toaster.Message(R.string.tokenRejected, false);
         public static final Toaster.Message CANT_REFRESH_TOKEN = new Toaster.Message(R.string.failedRefreshingToken, true);
@@ -196,5 +195,6 @@ public class Utils {
         public static final Toaster.Message FAILED_SAVING_CHART = new Toaster.Message(R.string.failedSavingImage, true);
         public static final Toaster.Message WRITE_DENIED = new Toaster.Message(R.string.noWritePermission, false);
         public static final Toaster.Message FUTURE_DATE = new Toaster.Message(R.string.cannotGoFuture, false);
+        public static final Toaster.Message NO_BRANCHES_SELECTED = new Toaster.Message(R.string.noBranchesSelected, false);
     }
 }

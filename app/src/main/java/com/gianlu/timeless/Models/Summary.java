@@ -2,7 +2,6 @@ package com.gianlu.timeless.Models;
 
 import com.gianlu.commonutils.CommonUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +19,7 @@ public class Summary {
     public final List<LoggedEntity> editors;
     public final List<LoggedEntity> operating_systems;
     public final List<LoggedEntity> entities;
+    public final List<LoggedEntity> branches;
     public long total_seconds;
     public long date;
     public int sumNumber;
@@ -33,6 +33,7 @@ public class Summary {
         editors = new ArrayList<>();
         operating_systems = new ArrayList<>();
         entities = new ArrayList<>();
+        branches = new ArrayList<>();
     }
 
     public Summary(JSONObject obj) throws JSONException, ParseException {
@@ -40,11 +41,13 @@ public class Summary {
 
         date = parser.parse(obj.getJSONObject("range").getString("date")).getTime();
 
-        if (obj.has("projects")) {
+        if (obj.has("projects"))
             projects = CommonUtils.toTList(obj.getJSONArray("projects"), LoggedEntity.class);
-        } else {
-            projects = new ArrayList<>();
-        }
+        else projects = new ArrayList<>();
+
+        if (obj.has("branches"))
+            branches = CommonUtils.toTList(obj.getJSONArray("branches"), LoggedEntity.class);
+        else branches = new ArrayList<>();
 
         languages = CommonUtils.toTList(obj.getJSONArray("languages"), LoggedEntity.class);
         editors = CommonUtils.toTList(obj.getJSONArray("editors"), LoggedEntity.class);
@@ -61,15 +64,5 @@ public class Summary {
             sum += summary.total_seconds;
 
         return (float) sum / (float) summaries.size();
-    }
-
-    public static List<Summary> fromJSON(String json) throws JSONException, ParseException {
-        JSONArray array = new JSONObject(json).getJSONArray("data");
-
-        List<Summary> summaries = new ArrayList<>();
-        for (int i = 0; i < array.length(); i++)
-            summaries.add(new Summary(array.getJSONObject(i)));
-
-        return summaries;
     }
 }

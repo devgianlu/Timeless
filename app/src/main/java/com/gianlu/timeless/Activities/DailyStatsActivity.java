@@ -39,7 +39,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
 
     private void updatePage(Date newDate) {
         if (newDate.after(new Date())) {
-            Toaster.show(DailyStatsActivity.this, Utils.ToastMessages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
+            Toaster.show(DailyStatsActivity.this, Utils.Messages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
             return;
         }
 
@@ -52,10 +52,10 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     }
 
     @Override
-    public void onSummary(List<Summary> summaries, final GlobalSummary globalSummary) {
-        wakaTime.getDurations(currentDatePair.first, new WakaTime.IDurations() {
+    public void onSummary(List<Summary> summaries, final GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable final List<String> selectedBranches) {
+        wakaTime.getDurations(currentDatePair.first, null, new WakaTime.IDurations() {
             @Override
-            public void onDurations(final List<Duration> durations) {
+            public void onDurations(final List<Duration> durations, List<String> branches) {
                 recyclerViewLayout.loadListData(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
                         .addGlobalSummary(globalSummary)
                         .addDurations(R.string.durationsSummary, durations)

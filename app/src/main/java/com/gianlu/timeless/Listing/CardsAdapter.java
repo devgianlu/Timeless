@@ -25,6 +25,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_FILE_LIST = 4;
     private static final int TYPE_DURATIONS = 5;
     private static final int TYPE_PERCENTAGE = 6;
+    private static final int TYPE_BRANCH_SELECTOR = 7;
     private final Context context;
     private final LayoutInflater inflater;
     private final ISaveChart handler;
@@ -55,6 +56,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 return new DurationsViewHolder(inflater, parent);
             case TYPE_PERCENTAGE:
                 return new PercentageViewHolder(inflater, parent);
+            case TYPE_BRANCH_SELECTOR:
+                return new BranchSelectorViewHolder(inflater, parent);
             default:
                 return null;
         }
@@ -82,9 +85,12 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((DurationsViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
         } else if (holder instanceof PercentageViewHolder) {
             ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Pair<Long, Float>) objs.objs.get(position));
+        } else if (holder instanceof BranchSelectorViewHolder) {
+            ((BranchSelectorViewHolder) holder).bind(context, (BranchSelectorViewHolder.Config) objs.objs.get(position));
         }
 
-        CommonUtils.setCardTopMargin(context, holder);
+        if (!(holder instanceof BranchSelectorViewHolder))
+            CommonUtils.setCardTopMargin(context, holder);
     }
 
     @Override
@@ -94,6 +100,10 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface IPermissionRequest {
         void onGranted();
+    }
+
+    public interface IBranches {
+        void onBranchesChanged(List<String> branches);
     }
 
     @SuppressWarnings({"SameParameterValue", "UnusedReturnValue"})
@@ -106,6 +116,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             titles = new ArrayList<>();
             types = new ArrayList<>();
             objs = new ArrayList<>();
+        }
+
+        public CardsList addBranchSelector(List<String> branches, List<String> selectedBranches, IBranches listener) {
+            titles.add(null);
+            types.add(TYPE_BRANCH_SELECTOR);
+            objs.add(new BranchSelectorViewHolder.Config(branches, selectedBranches, listener));
+
+            return this;
         }
 
         public CardsList addPercentage(int index, @StringRes int title, long today, float beforeAverage) {

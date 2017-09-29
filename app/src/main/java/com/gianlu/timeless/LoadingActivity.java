@@ -67,7 +67,7 @@ public class LoadingActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onException(Exception ex) {
-                                    Toaster.show(LoadingActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                                    Toaster.show(LoadingActivity.this, Utils.Messages.FAILED_LOADING, ex);
                                     finish();
                                 }
 
@@ -80,14 +80,14 @@ public class LoadingActivity extends AppCompatActivity {
 
                         @Override
                         public void onInvalidToken(Exception ex) {
-                            Toaster.show(LoadingActivity.this, Utils.ToastMessages.INVALID_TOKEN, ex);
+                            Toaster.show(LoadingActivity.this, Utils.Messages.INVALID_TOKEN, ex);
                             deleteFile("token");
                             goTo(GrantActivity.class, null);
                         }
 
                         @Override
                         public void onException(Exception ex) {
-                            Toaster.show(LoadingActivity.this, Utils.ToastMessages.CANT_REFRESH_TOKEN, ex);
+                            Toaster.show(LoadingActivity.this, Utils.Messages.CANT_REFRESH_TOKEN, ex);
                             goTo(GrantActivity.class, null);
                         }
                     });

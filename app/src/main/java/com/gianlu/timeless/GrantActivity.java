@@ -34,13 +34,13 @@ public class GrantActivity extends AppCompatActivity {
                 @Override
                 public void onTokenRejected(InvalidTokenException ex) {
                     pd.dismiss();
-                    Toaster.show(GrantActivity.this, Utils.ToastMessages.TOKEN_REJECTED, ex);
+                    Toaster.show(GrantActivity.this, Utils.Messages.TOKEN_REJECTED, ex);
                 }
 
                 @Override
                 public void onException(Exception ex) {
                     pd.dismiss();
-                    Toaster.show(GrantActivity.this, Utils.ToastMessages.CANT_CHECK_GRANT, ex);
+                    Toaster.show(GrantActivity.this, Utils.Messages.CANT_CHECK_GRANT, ex);
                 }
             });
         }

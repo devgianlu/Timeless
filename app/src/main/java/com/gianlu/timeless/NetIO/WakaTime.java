@@ -39,7 +39,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -190,7 +189,7 @@ public class WakaTime {
         });
     }
 
-    public void getDurationsDetailed(final Date day, final Project project, final IDurations listener) {
+    public void getDurations(final Date day, @Nullable final List<String> branches, final IDurations listener) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -198,15 +197,17 @@ public class WakaTime {
                 try {
                     final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date="
                             + formatter.format(day)
-                            + "&project=" + project.name);
+                            + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
 
                     if (response.getCode() == 200) {
-                        final List<Duration> durations = CommonUtils.toTList(new JSONObject(response.getBody()).getJSONArray("data"), Duration.class);
+                        JSONObject obj = new JSONObject(response.getBody());
+                        final List<String> responseBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"));
+                        final List<Duration> durations = CommonUtils.toTList(obj.getJSONArray("data"), Duration.class);
 
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onDurations(durations);
+                                listener.onDurations(durations, responseBranches);
                             }
                         });
                     } else {
@@ -236,56 +237,11 @@ public class WakaTime {
         });
     }
 
-    public void getDurations(final Date day, final IDurations listener) {
-        executorService.execute(new Runnable() {
+    public void getDurations(final Date day, final Project project, @Nullable List<String> branches, final IDurations listener) {
+        getDurations(day, branches, new IDurations() {
             @Override
-            public void run() {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                try {
-                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date="
-                            + formatter.format(day));
-
-                    if (response.getCode() == 200) {
-                        final List<Duration> durations = CommonUtils.toTList(new JSONObject(response.getBody()).getJSONArray("data"), Duration.class);
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onDurations(durations);
-                            }
-                        });
-                    } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                            }
-                        });
-                    }
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onInvalidToken(ex);
-                        }
-                    });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public void getDurations(final Date day, final Project project, final IDurations listener) {
-        getDurations(day, new IDurations() {
-            @Override
-            public void onDurations(List<Duration> durations) {
-                listener.onDurations(Duration.filter(durations, project.name));
+            public void onDurations(List<Duration> durations, List<String> branches) {
+                listener.onDurations(Duration.filter(durations, project.name), branches);
             }
 
             @Override
@@ -446,10 +402,10 @@ public class WakaTime {
     }
 
     public void getRangeSummary(Pair<Date, Date> startAndEnd, final ISummary listener) {
-        getRangeSummary(startAndEnd.first, startAndEnd.second, null, listener);
+        getRangeSummary(startAndEnd.first, startAndEnd.second, null, null, listener);
     }
 
-    public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, final ISummary listener) {
+    public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, @Nullable final List<String> branches, final ISummary listener) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -459,15 +415,27 @@ public class WakaTime {
                             + formatter.format(start)
                             + "&end="
                             + formatter.format(end)
-                            + (project != null ? "&project=" + project.name : ""));
+                            + (project != null ? ("&project=" + project.name) : "")
+                            + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
 
                     if (response.getCode() == 200) {
-                        final List<Summary> summaries = Summary.fromJSON(response.getBody());
+                        JSONObject obj = new JSONObject(response.getBody());
+                        final List<Summary> summaries = CommonUtils.toTList(obj.getJSONArray("data"), Summary.class);
                         final GlobalSummary globalSummary = new GlobalSummary(summaries);
+                        final List<String> availableBranches;
+                        if (obj.has("available_branches"))
+                            availableBranches = CommonUtils.toStringsList(obj.getJSONArray("available_branches"));
+                        else availableBranches = null;
+
+                        final List<String> selectedBranches;
+                        if (obj.has("branches"))
+                            selectedBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"));
+                        else selectedBranches = null;
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onSummary(summaries, globalSummary);
+                                listener.onSummary(summaries, globalSummary, availableBranches, selectedBranches);
                             }
                         });
                     } else if (response.getCode() == 400) {
@@ -493,7 +461,7 @@ public class WakaTime {
                             listener.onInvalidToken(ex);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | ParseException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -618,7 +586,7 @@ public class WakaTime {
     }
 
     public interface IDurations {
-        void onDurations(List<Duration> durations);
+        void onDurations(List<Duration> durations, List<String> branches);
 
         void onException(Exception ex);
 
@@ -634,7 +602,7 @@ public class WakaTime {
     }
 
     public interface ISummary {
-        void onSummary(List<Summary> summaries, GlobalSummary globalSummary);
+        void onSummary(List<Summary> summaries, GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable List<String> selectedBranches);
 
         void onInvalidToken(WakaTimeException ex);
 

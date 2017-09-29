@@ -191,7 +191,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 break;
             case R.id.leaders_me:
                 if (me != null && me.rank != -1) displayRankDialog(me);
-                else Toaster.show(LeadersActivity.this, Utils.ToastMessages.USER_NOT_FOUND);
+                else Toaster.show(LeadersActivity.this, Utils.Messages.USER_NOT_FOUND);
 
                 ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
                         .setCategory(ThisApplication.CATEGORY_USER_INPUT)
@@ -211,7 +211,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
         wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.ISummary() {
             @Override
-            public void onSummary(List<Summary> summaries, GlobalSummary globalSummary) {
+            public void onSummary(List<Summary> summaries, GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable final List<String> selectedBranches) {
                 final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, globalSummary.languages);
                 AlertDialog.Builder builder = new AlertDialog.Builder(LeadersActivity.this);
                 builder.setTitle(R.string.filterByLanguage)
@@ -246,7 +246,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
             @Override
             public void onException(Exception ex) {
-                Toaster.show(LeadersActivity.this, Utils.ToastMessages.FAILED_LOADING, ex);
+                Toaster.show(LeadersActivity.this, Utils.Messages.FAILED_LOADING, ex);
                 pd.dismiss();
             }
         });

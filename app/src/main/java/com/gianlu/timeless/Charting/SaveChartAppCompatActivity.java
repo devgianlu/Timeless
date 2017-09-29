@@ -45,7 +45,7 @@ public abstract class SaveChartAppCompatActivity extends AppCompatActivity imple
     public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (handler != null && requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
-            else Toaster.show(this, Utils.ToastMessages.WRITE_DENIED);
+            else Toaster.show(this, Utils.Messages.WRITE_DENIED);
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
@@ -57,7 +57,7 @@ public abstract class SaveChartAppCompatActivity extends AppCompatActivity imple
             File dest = SaveChartUtils.save(this, chart, getProject(), name);
             Toaster.show(this, getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);
         } catch (IOException ex) {
-            Toaster.show(this, Utils.ToastMessages.FAILED_SAVING_CHART, ex);
+            Toaster.show(this, Utils.Messages.FAILED_SAVING_CHART, ex);
         }
     }
 }

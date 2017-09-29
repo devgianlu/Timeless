@@ -28,7 +28,7 @@ import com.gianlu.timeless.Utils;
 import java.util.Date;
 import java.util.List;
 
-public class ProjectFragment extends SaveChartFragment implements WakaTime.ISummary {
+public class ProjectFragment extends SaveChartFragment implements WakaTime.ISummary, CardsAdapter.IBranches {
     private Date start;
     private Date end;
     private Project project;
@@ -92,25 +92,27 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
         }
 
         wakaTime = WakaTime.getInstance();
-        wakaTime.getRangeSummary(start, end, project, this);
+        wakaTime.getRangeSummary(start, end, project, null, this);
 
         return layout;
     }
 
     @Override
-    public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary) {
+    public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary, @Nullable final List<String> branches, @Nullable final List<String> selectedBranches) {
         if (!isAdded()) return;
 
         if (start.getTime() == end.getTime()) {
-            wakaTime.getDurations(start, project, new WakaTime.IDurations() {
+            wakaTime.getDurations(start, project, branches, new WakaTime.IDurations() {
                 @Override
-                public void onDurations(final List<Duration> durations) {
+                public void onDurations(final List<Duration> durations, List<String> branches) {
                     if (!isAdded()) return;
 
                     layout.loadListData(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                            .addBranchSelector(branches, selectedBranches, ProjectFragment.this)
                             .addGlobalSummary(globalSummary)
                             .addDurations(R.string.durationsSummary, durations)
                             .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                            .addPieChart(R.string.branchesSummary, globalSummary.branches)
                             .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
                 }
 
@@ -126,9 +128,11 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
             });
         } else {
             layout.loadListData(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
+                    .addBranchSelector(branches, selectedBranches, this)
                     .addGlobalSummary(globalSummary)
                     .addLineChart(R.string.periodActivity, summaries)
                     .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                    .addPieChart(R.string.branchesSummary, globalSummary.branches)
                     .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
         }
     }
@@ -145,5 +149,11 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
         } else {
             layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
         }
+    }
+
+    @Override
+    public void onBranchesChanged(List<String> branches) {
+        layout.startLoading();
+        wakaTime.getRangeSummary(start, end, project, branches, this);
     }
 }

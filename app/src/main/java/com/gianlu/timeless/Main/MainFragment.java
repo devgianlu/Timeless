@@ -57,7 +57,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
     }
 
     @Override
-    public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary) {
+    public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable final List<String> selectedBranches) {
         if (!isAdded()) return;
 
         final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
@@ -70,10 +70,10 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
         if (range == WakaTime.Range.TODAY) {
             wakaTime.getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
                 @Override
-                public void onSummary(final List<Summary> beforeSummaries, final GlobalSummary beforeGlobalSummary) {
-                    wakaTime.getDurations(new Date(), new WakaTime.IDurations() {
+                public void onSummary(final List<Summary> beforeSummaries, final GlobalSummary beforeGlobalSummary, @Nullable List<String> branches, @Nullable final List<String> selectedBranches) {
+                    wakaTime.getDurations(new Date(), null, new WakaTime.IDurations() {
                         @Override
-                        public void onDurations(final List<Duration> durations) {
+                        public void onDurations(final List<Duration> durations, List<String> branches) {
                             if (!isAdded()) return;
 
                             cards.addDurations(1, R.string.durationsSummary, durations);

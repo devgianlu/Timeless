@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
 
         User user = (User) getIntent().getSerializableExtra("user");
         if (user == null) {
-            Toaster.show(this, Utils.ToastMessages.FAILED_LOADING, new NullPointerException("user is null!"));
+            Toaster.show(this, Utils.Messages.FAILED_LOADING, new NullPointerException("user is null!"));
             onBackPressed();
             return;
         }
