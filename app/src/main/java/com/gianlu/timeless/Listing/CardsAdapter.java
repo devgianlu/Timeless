@@ -106,7 +106,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         void onBranchesChanged(List<String> branches);
     }
 
-    @SuppressWarnings({"SameParameterValue", "UnusedReturnValue"})
+    @SuppressWarnings({"SameParameterValue", "UnusedReturnValue", "unused", "WeakerAccess"})
     public static class CardsList {
         private final List<Integer> titles;
         private final List<Integer> types;
@@ -118,12 +118,21 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             objs = new ArrayList<>();
         }
 
+        /**
+         * Always on top
+         */
         public CardsList addBranchSelector(List<String> branches, List<String> selectedBranches, IBranches listener) {
-            titles.add(null);
-            types.add(TYPE_BRANCH_SELECTOR);
-            objs.add(new BranchSelectorViewHolder.Config(branches, selectedBranches, listener));
+            if (!branches.isEmpty()) {
+                titles.add(0, null);
+                types.add(0, TYPE_BRANCH_SELECTOR);
+                objs.add(0, new BranchSelectorViewHolder.Config(branches, selectedBranches, listener));
+            }
 
             return this;
+        }
+
+        public CardsList addPercentage(@StringRes int title, long today, float beforeAverage) {
+            return addPercentage(titles.size(), title, today, beforeAverage);
         }
 
         public CardsList addPercentage(int index, @StringRes int title, long today, float beforeAverage) {
@@ -135,11 +144,19 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         public CardsList addGlobalSummary(GlobalSummary summary) {
-            titles.add(null);
-            types.add(TYPE_SUMMARY);
-            objs.add(summary);
+            return addGlobalSummary(titles.size(), summary);
+        }
+
+        public CardsList addGlobalSummary(int index, GlobalSummary summary) {
+            titles.add(index, null);
+            types.add(index, TYPE_SUMMARY);
+            objs.add(index, summary);
 
             return this;
+        }
+
+        public CardsList addProjectsBarChart(@StringRes int title, List<Summary> summaries) {
+            return addProjectsBarChart(titles.size(), title, summaries);
         }
 
         public CardsList addProjectsBarChart(int index, @StringRes int title, List<Summary> summaries) {
@@ -151,29 +168,33 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         public CardsList addFileList(@StringRes int title, List<LoggedEntity> entities) {
+            return addFileList(titles.size(), title, entities);
+        }
+
+        public CardsList addFileList(int index, @StringRes int title, List<LoggedEntity> entities) {
             if (entities.size() > 0) {
-                titles.add(title);
-                types.add(TYPE_FILE_LIST);
-                objs.add(entities);
+                titles.add(index, title);
+                types.add(index, TYPE_FILE_LIST);
+                objs.add(index, entities);
             }
 
             return this;
         }
 
         public CardsList addPieChart(@StringRes int title, List<LoggedEntity> entities) {
-            titles.add(title);
-            types.add(TYPE_PIE);
-            objs.add(entities);
+            return addPieChart(titles.size(), title, entities);
+        }
+
+        public CardsList addPieChart(int index, @StringRes int title, List<LoggedEntity> entities) {
+            titles.add(index, title);
+            types.add(index, TYPE_PIE);
+            objs.add(index, entities);
 
             return this;
         }
 
         public CardsList addDurations(@StringRes int title, List<Duration> durations) {
-            titles.add(title);
-            types.add(TYPE_DURATIONS);
-            objs.add(durations);
-
-            return this;
+            return addDurations(titles.size(), title, durations);
         }
 
         public CardsList addDurations(int index, @StringRes int title, List<Duration> durations) {
@@ -185,9 +206,13 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         public CardsList addLineChart(@StringRes int title, List<Summary> summaries) {
-            titles.add(title);
-            types.add(TYPE_LINE);
-            objs.add(summaries);
+            return addLineChart(titles.size(), title, summaries);
+        }
+
+        public CardsList addLineChart(int index, @StringRes int title, List<Summary> summaries) {
+            titles.add(index, title);
+            types.add(index, TYPE_LINE);
+            objs.add(index, summaries);
 
             return this;
         }

@@ -101,19 +101,21 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
     public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary, @Nullable final List<String> branches, @Nullable final List<String> selectedBranches) {
         if (!isAdded()) return;
 
+        final CardsAdapter.CardsList cards = new CardsAdapter.CardsList();
+        cards.addBranchSelector(branches, selectedBranches, this)
+                .addGlobalSummary(globalSummary)
+                .addPieChart(R.string.languagesSummary, globalSummary.languages)
+                .addPieChart(R.string.branchesSummary, globalSummary.branches)
+                .addFileList(R.string.filesSummary, globalSummary.entities);
+
         if (start.getTime() == end.getTime()) {
             wakaTime.getDurations(start, project, branches, new WakaTime.IDurations() {
                 @Override
                 public void onDurations(final List<Duration> durations, List<String> branches) {
                     if (!isAdded()) return;
 
-                    layout.loadListData(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                            .addBranchSelector(branches, selectedBranches, ProjectFragment.this)
-                            .addGlobalSummary(globalSummary)
-                            .addDurations(R.string.durationsSummary, durations)
-                            .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                            .addPieChart(R.string.branchesSummary, globalSummary.branches)
-                            .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
+                    cards.addDurations(2, R.string.durationsSummary, durations);
+                    layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
                 }
 
                 @Override
@@ -127,13 +129,8 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 }
             });
         } else {
-            layout.loadListData(new CardsAdapter(getContext(), new CardsAdapter.CardsList()
-                    .addBranchSelector(branches, selectedBranches, this)
-                    .addGlobalSummary(globalSummary)
-                    .addLineChart(R.string.periodActivity, summaries)
-                    .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                    .addPieChart(R.string.branchesSummary, globalSummary.branches)
-                    .addFileList(R.string.filesSummary, globalSummary.entities), ProjectFragment.this));
+            cards.addLineChart(2, R.string.periodActivity, summaries);
+            layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
         }
     }
 

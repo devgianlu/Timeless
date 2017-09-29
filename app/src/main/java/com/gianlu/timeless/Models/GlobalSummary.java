@@ -15,6 +15,7 @@ public class GlobalSummary extends Summary {
             LoggedEntity.sum(projects, summary.projects);
             LoggedEntity.sum(operating_systems, summary.operating_systems);
             LoggedEntity.sum(entities, summary.entities);
+            LoggedEntity.sum(branches, summary.branches);
             sumNumber++;
         }
 

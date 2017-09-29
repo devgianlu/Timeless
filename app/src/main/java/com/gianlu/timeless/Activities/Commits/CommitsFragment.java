@@ -46,8 +46,14 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
         layout.disableSwipeRefresh();
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
+        Project project = (Project) getArguments().getSerializable("project");
+        if (project == null) {
+            layout.showMessage(R.string.errorMessage, true);
+            return layout;
+        }
+
         WakaTime wakaTime = WakaTime.getInstance();
-        wakaTime.getCommits((Project) getArguments().getSerializable("project"), this);
+        wakaTime.getCommits(project, this);
 
         return layout;
     }
