@@ -2,7 +2,6 @@ package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -127,20 +126,13 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         recyclerViewLayout = findViewById(R.id.dailyStats_recyclerViewLayout);
-        recyclerViewLayout.enableSwipeRefresh(Utils.getColors());
+        recyclerViewLayout.disableSwipeRefresh();
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         final ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
         final ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
         currDay = findViewById(R.id.dailyStats_day);
 
         wakaTime = WakaTime.getInstance();
-
-        recyclerViewLayout.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                updatePage(currentDatePair.first);
-            }
-        });
 
         nextDay.setOnClickListener(new View.OnClickListener() {
             @Override

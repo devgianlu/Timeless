@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -66,19 +65,11 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         recyclerViewLayout = findViewById(R.id.leaders_recyclerViewLayout);
-        recyclerViewLayout.enableSwipeRefresh(Utils.getColors());
+        recyclerViewLayout.disableSwipeRefresh();
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         currFilter = findViewById(R.id.leaders_rankingText);
 
         wakaTime = WakaTime.getInstance();
-
-        recyclerViewLayout.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                wakaTime.getLeaders(LeadersActivity.this);
-            }
-        });
-
         wakaTime.getLeaders(this);
     }
 
