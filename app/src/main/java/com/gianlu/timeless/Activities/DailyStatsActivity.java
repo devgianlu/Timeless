@@ -57,11 +57,11 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
             public void onDurations(final List<Duration> durations, List<String> branches) {
                 recyclerViewLayout.loadListData(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
                         .addGlobalSummary(globalSummary)
-                        .addDurations(R.string.durationsSummary, durations)
-                        .addPieChart(R.string.projectsSummary, globalSummary.projects)
-                        .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                        .addPieChart(R.string.editorsSummary, globalSummary.editors)
-                        .addPieChart(R.string.operatingSystemsSummary, globalSummary.operating_systems), DailyStatsActivity.this));
+                        .addDurations(R.string.durations, durations)
+                        .addPieChart(R.string.projects, globalSummary.projects)
+                        .addPieChart(R.string.languages, globalSummary.languages)
+                        .addPieChart(R.string.editors, globalSummary.editors)
+                        .addPieChart(R.string.operatingSystems, globalSummary.operating_systems), DailyStatsActivity.this));
             }
 
             @Override

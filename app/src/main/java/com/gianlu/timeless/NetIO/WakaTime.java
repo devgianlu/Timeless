@@ -201,7 +201,7 @@ public class WakaTime {
 
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
-                        final List<String> responseBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"));
+                        final List<String> responseBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
                         final List<Duration> durations = CommonUtils.toTList(obj.getJSONArray("data"), Duration.class);
 
                         handler.post(new Runnable() {
@@ -424,12 +424,12 @@ public class WakaTime {
                         final GlobalSummary globalSummary = new GlobalSummary(summaries);
                         final List<String> availableBranches;
                         if (obj.has("available_branches"))
-                            availableBranches = CommonUtils.toStringsList(obj.getJSONArray("available_branches"));
+                            availableBranches = CommonUtils.toStringsList(obj.getJSONArray("available_branches"), true);
                         else availableBranches = null;
 
                         final List<String> selectedBranches;
                         if (obj.has("branches"))
-                            selectedBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"));
+                            selectedBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
                         else selectedBranches = null;
 
                         handler.post(new Runnable() {

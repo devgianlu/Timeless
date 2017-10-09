@@ -104,9 +104,9 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
         final CardsAdapter.CardsList cards = new CardsAdapter.CardsList();
         cards.addBranchSelector(branches, selectedBranches, this)
                 .addGlobalSummary(globalSummary)
-                .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                .addPieChart(R.string.branchesSummary, globalSummary.branches)
-                .addFileList(R.string.filesSummary, globalSummary.entities);
+                .addPieChart(R.string.languages, globalSummary.languages)
+                .addPieChart(R.string.branches, globalSummary.branches)
+                .addFileList(R.string.files, globalSummary.entities);
 
         if (start.getTime() == end.getTime()) {
             wakaTime.getDurations(start, project, branches, new WakaTime.IDurations() {
@@ -114,7 +114,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 public void onDurations(final List<Duration> durations, List<String> branches) {
                     if (!isAdded()) return;
 
-                    cards.addDurations(2, R.string.durationsSummary, durations);
+                    cards.addDurations(2, R.string.durations, durations);
                     layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
                 }
 

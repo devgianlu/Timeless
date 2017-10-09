@@ -12,7 +12,7 @@
 
     <Preference
         android:key="scribejava"
-        android:summary="@string/scribejava"
+        android:summary="@string/mitLicense"
         android:title="ScribeJava" />
 
     <Preference

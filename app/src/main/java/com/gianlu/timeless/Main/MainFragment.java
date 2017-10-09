@@ -62,10 +62,10 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
 
         final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                 .addGlobalSummary(globalSummary)
-                .addPieChart(R.string.projectsSummary, globalSummary.projects)
-                .addPieChart(R.string.languagesSummary, globalSummary.languages)
-                .addPieChart(R.string.editorsSummary, globalSummary.editors)
-                .addPieChart(R.string.operatingSystemsSummary, globalSummary.operating_systems);
+                .addPieChart(R.string.projects, globalSummary.projects)
+                .addPieChart(R.string.languages, globalSummary.languages)
+                .addPieChart(R.string.editors, globalSummary.editors)
+                .addPieChart(R.string.operatingSystems, globalSummary.operating_systems);
 
         if (range == WakaTime.Range.TODAY) {
             wakaTime.getRangeSummary(range.getWeekBefore(), new WakaTime.ISummary() {
@@ -76,7 +76,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
                         public void onDurations(final List<Duration> durations, List<String> branches) {
                             if (!isAdded()) return;
 
-                            cards.addDurations(1, R.string.durationsSummary, durations);
+                            cards.addDurations(1, R.string.durations, durations);
                             cards.addPercentage(1, R.string.averageImprovement, globalSummary.total_seconds, Summary.doTotalSecondsAverage(beforeSummaries));
 
                             layout.loadListData(new CardsAdapter(getContext(), cards, MainFragment.this));
