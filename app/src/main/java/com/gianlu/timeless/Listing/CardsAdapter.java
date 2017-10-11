@@ -118,6 +118,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             objs = new ArrayList<>();
         }
 
+        public boolean hasBranchSelector() {
+            for (int type : types)
+                if (type == TYPE_BRANCH_SELECTOR)
+                    return true;
+
+            return false;
+        }
+
         /**
          * Always on top
          */

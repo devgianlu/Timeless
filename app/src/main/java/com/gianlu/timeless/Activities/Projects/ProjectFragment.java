@@ -114,7 +114,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 public void onDurations(final List<Duration> durations, List<String> branches) {
                     if (!isAdded()) return;
 
-                    cards.addDurations(2, R.string.durations, durations);
+                    cards.addDurations(cards.hasBranchSelector() ? 2 : 1, R.string.durations, durations);
                     layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
                 }
 
@@ -129,7 +129,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 }
             });
         } else {
-            cards.addLineChart(2, R.string.periodActivity, summaries);
+            cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries);
             layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
         }
     }

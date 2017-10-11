@@ -365,7 +365,7 @@ public class WakaTime {
                     if (response.getCode() == 200) {
                         JSONObject obj = new JSONObject(response.getBody());
                         final List<Leader> leaders = CommonUtils.toTList(obj.getJSONArray("data"), Leader.class);
-                        final Leader me = new Leader(obj.getJSONObject("current_user")); // TODO: Looks like that's not updated with the language
+                        final Leader me = new Leader(obj.getJSONObject("current_user"));
                         final int pages = obj.getInt("total_pages");
 
                         handler.post(new Runnable() {
