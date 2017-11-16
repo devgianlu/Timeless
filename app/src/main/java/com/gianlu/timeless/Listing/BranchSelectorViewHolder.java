@@ -16,7 +16,6 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
-import com.google.android.gms.analytics.HitBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +82,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
                 .setNegativeButton(android.R.string.cancel, null);
 
         CommonUtils.showDialog(context, builder);
-
-        ThisApplication.sendAnalytics(context, new HitBuilders.EventBuilder()
-                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                .setAction(ThisApplication.ACTION_CHANGE_SELECTED_BRANCHES)
-                .build());
+        ThisApplication.sendAnalytics(context, Utils.ACTION_CHANGE_SELECTED_BRANCHES);
     }
 
     static class Config {

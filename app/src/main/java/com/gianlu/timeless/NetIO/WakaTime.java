@@ -473,7 +473,7 @@ public class WakaTime {
         });
     }
 
-    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, OAuthException, JSONException, WakaTimeException {
+    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
         CachedResponse cachedResponse;
         if (verb == Verb.GET && cacheEnabled) cachedResponse = getFromCache(url);
         else cachedResponse = null;
@@ -482,7 +482,13 @@ public class WakaTime {
             if (token == null) throw new WakaTimeException("OAuth2AccessToken is null");
             final OAuthRequest request = new OAuthRequest(verb, url);
             service.signRequest(token, request);
-            Response resp = service.execute(request);
+            Response resp;
+            try {
+                resp = service.execute(request);
+            } catch (OAuthException ex) {
+                throw new IOException("Just a wrapper", ex);
+            }
+
             synchronized (memoryCache) {
                 memoryCache.put(url, new CachedResponse(resp));
             }

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.AnalyticsApplication;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.SuperTextView;
@@ -38,7 +39,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
-import com.google.android.gms.analytics.HitBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,11 +183,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
             case R.id.leaders_me:
                 if (me != null && me.rank != -1) displayRankDialog(me);
                 else Toaster.show(LeadersActivity.this, Utils.Messages.USER_NOT_FOUND);
-
-                ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
-                        .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                        .setAction(ThisApplication.ACTION_SHOW_ME_LEADER)
-                        .build());
+                AnalyticsApplication.sendAnalytics(this, Utils.ACTION_SHOW_ME_LEADER);
                 break;
             case R.id.leaders_filter:
                 showFilterDialog();
@@ -210,11 +206,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 gatherAndUpdate(adapter.getItem(which).name);
-
-                                ThisApplication.sendAnalytics(LeadersActivity.this, new HitBuilders.EventBuilder()
-                                        .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                                        .setAction(ThisApplication.ACTION_FILTER_LEADERS)
-                                        .build());
+                                ThisApplication.sendAnalytics(LeadersActivity.this, Utils.ACTION_FILTER_LEADERS);
                             }
                         })
                         .setNeutralButton(R.string.unsetFilter, new DialogInterface.OnClickListener() {

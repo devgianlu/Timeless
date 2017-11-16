@@ -9,7 +9,6 @@ import android.view.View;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
-import com.google.android.gms.analytics.HitBuilders;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,11 +27,7 @@ class SaveChartUtils {
             out.flush();
         }
 
-        ThisApplication.sendAnalytics(context, new HitBuilders.EventBuilder()
-                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                .setAction(ThisApplication.ACTION_SAVED_CHART)
-                .build());
-
+        ThisApplication.sendAnalytics(context, Utils.ACTION_SAVED_CHART);
         return dest;
     }
 }

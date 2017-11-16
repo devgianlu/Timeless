@@ -22,7 +22,6 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
-import com.google.android.gms.analytics.HitBuilders;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.SimpleDateFormat;
@@ -214,10 +213,6 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
             }
         });
 
-        ThisApplication.sendAnalytics(this, new HitBuilders.EventBuilder()
-                .setCategory(ThisApplication.CATEGORY_USER_INPUT)
-                .setAction(ThisApplication.ACTION_DATE_RANGE)
-                .build());
+        ThisApplication.sendAnalytics(this, Utils.ACTION_DATE_RANGE);
     }
-
 }

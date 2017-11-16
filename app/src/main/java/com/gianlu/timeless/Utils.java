@@ -34,6 +34,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
+    public static final String ACTION_DATE_RANGE = "changed_date_range";
+    public static final String ACTION_SAVED_CHART = "saved_chart_as_image";
+    public static final String ACTION_CHANGE_SELECTED_BRANCHES = "changed_selected_branches";
+    public static final String ACTION_FILTER_LEADERS = "filtered_leaderboards";
+    public static final String ACTION_SHOW_ME_LEADER = "show_me_in_leaderboards";
     private static final int[] COLORS = new int[]{R.color.red, R.color.pink, R.color.purple, R.color.deepPurple, R.color.indigo, R.color.blue, R.color.lightBlue, R.color.cyan, R.color.teal, R.color.green, R.color.lightGreen, R.color.lime, R.color.yellow, R.color.amber, R.color.orange, R.color.deepOrange, R.color.brown};
     private static ColorStateList textViewDefaultColor;
 

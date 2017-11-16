@@ -1,35 +1,51 @@
 {
   "project_info": {
-    "project_number": "59795410814",
-    "project_id": "timeless-ae23e"
+    "project_number": "786419592820",
+    "firebase_url": "https://fir-timeless.firebaseio.com",
+    "project_id": "firebase-timeless",
+    "storage_bucket": "firebase-timeless.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:59795410814:android:a4e707586231c2c6",
+        "mobilesdk_app_id": "1:786419592820:android:a4e707586231c2c6",
         "android_client_info": {
           "package_name": "com.gianlu.timeless"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "786419592820-aj1j88iek10de17dn5s46qaieu257o69.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gianlu.timeless",
+            "certificate_hash": "712dbb7dc3d903aa43d243554e76b663d4de174e"
+          }
+        },
+        {
+          "client_id": "786419592820-90pqj50a58cpd63bthick6atmotlbjkv.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "786419592820-sr3nlptpbdqj1jecjvshp6leekuco8b7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDPMVvwY8ugwbNs-tyv-LGEh3GdOo86bOI"
+          "current_key": "AIzaSyBBij2LK5olrgdPQRt8B6qTi2UzHJfilyA"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-78508159-9"
-          }
+          "status": 1
         },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }
