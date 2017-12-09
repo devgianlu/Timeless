@@ -3,6 +3,7 @@ package com.gianlu.timeless.Listing;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -39,9 +40,9 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
     private final ImageButton save;
     private final PieChart chart;
-    private final LinearLayout container;
     private final ImageButton expand;
     private final LinearLayout details;
+    private final int colorAccent;
 
     PieChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
         super(inflater.inflate(R.layout.pie_chart_card, parent, false));
@@ -49,12 +50,11 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         title = itemView.findViewById(R.id.pieChartCard_title);
         save = itemView.findViewById(R.id.pieChartCard_save);
         chart = itemView.findViewById(R.id.pieChartCard_chart);
-        container = itemView.findViewById(R.id.pieChartCard_container);
         expand = itemView.findViewById(R.id.pieChartCard_expand);
         details = itemView.findViewById(R.id.pieChartCard_details);
+        colorAccent = ContextCompat.getColor(parent.getContext(), R.color.colorAccent);
     }
 
-    @SuppressWarnings("deprecation")
     void bind(final Context context, final @StringRes int title, List<LoggedEntity> entities, final ISaveChart handler) {
         this.title.setText(title);
 
@@ -77,10 +77,8 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         set.setValueFormatter(new IValueFormatter() {
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                if (value < 10)
-                    return "";
-                else
-                    return String.format(Locale.getDefault(), "%.2f", value) + "%";
+                if (value < 10) return "";
+                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
         set.setColors(Utils.getColors(), context);
@@ -106,12 +104,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonUtils.animateCollapsingArrowBellows(expand, CommonUtils.isExpanded(container));
-
-                if (CommonUtils.isExpanded(container))
-                    CommonUtils.collapse(container);
-                else
-                    CommonUtils.expand(container);
+                CommonUtils.handleCollapseClick(expand, details);
             }
         });
 
@@ -125,35 +118,35 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
                             "%.2f",
                             ((float) entity.total_seconds) / ((float) total_seconds) * 100));
             text.setTag(entity.name);
+            text.setTextColor(Color.WHITE);
             details.addView(text);
         }
 
         chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                if (!CommonUtils.isExpanded(container))
+                if (!CommonUtils.isExpanded(details))
                     expand.callOnClick();
 
                 for (int i = 0; i < details.getChildCount(); i++) {
                     View view = details.getChildAt(i);
                     if (view instanceof TextView) {
                         if (Objects.equals(view.getTag(), ((PieEntry) e).getLabel()))
-                            ((TextView) view).setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+                            ((TextView) view).setTextColor(colorAccent);
                         else
-                            ((TextView) view).setTextColor(Utils.getTextViewDefaultColor(context));
+                            ((TextView) view).setTextColor(Color.WHITE);
                     }
                 }
             }
 
             @Override
             public void onNothingSelected() {
-                if (CommonUtils.isExpanded(container))
+                if (CommonUtils.isExpanded(details))
                     expand.callOnClick();
 
                 for (int i = 0; i < details.getChildCount(); i++) {
                     View view = details.getChildAt(i);
-                    if (view instanceof TextView)
-                        ((TextView) view).setTextColor(Utils.getTextViewDefaultColor(context));
+                    if (view instanceof TextView) ((TextView) view).setTextColor(Color.WHITE);
                 }
             }
         });

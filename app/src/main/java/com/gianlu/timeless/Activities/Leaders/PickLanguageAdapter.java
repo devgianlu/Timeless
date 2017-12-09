@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
 
 import java.util.List;
 import java.util.Objects;
@@ -48,8 +47,7 @@ public class PickLanguageAdapter extends BaseAdapter {
     @SuppressLint("ViewHolder")
     public View getView(int position, View view, ViewGroup parent) {
         String name = getItem(position).name;
-        if (view == null)
-            view = inflater.inflate(R.layout.pick_language_item, parent, false);
+        view = inflater.inflate(R.layout.pick_language_item, parent, false);
 
         TextView language = (TextView) ((ViewGroup) view).getChildAt(0);
         language.setText(name);
@@ -57,9 +55,6 @@ public class PickLanguageAdapter extends BaseAdapter {
         if (Objects.equals(name, selectedLang)) {
             language.setTextColor(ContextCompat.getColor(inflater.getContext(), R.color.colorAccent));
             language.setTypeface(Typeface.DEFAULT_BOLD);
-        } else {
-            language.setTextColor(Utils.getTextViewDefaultColor(view.getContext()));
-            language.setTypeface(Typeface.DEFAULT);
         }
 
         return view;

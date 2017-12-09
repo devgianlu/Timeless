@@ -15,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.TextView;
 
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.Project;
@@ -108,13 +107,6 @@ public class Utils {
 
     public static String getFileName(@NonNull Context context, @StringRes int title) {
         return context.getString(title) + " (" + new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault()).format(new Date()) + ")";
-    }
-
-    public static ColorStateList getTextViewDefaultColor(Context context) {
-        if (textViewDefaultColor == null)
-            textViewDefaultColor = new TextView(context).getTextColors();
-
-        return textViewDefaultColor;
     }
 
     public static SimpleDateFormat getDateTimeFormatter() {
