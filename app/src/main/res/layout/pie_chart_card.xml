@@ -45,7 +45,7 @@
                     android:layout_gravity="top"
                     android:adjustViewBounds="true"
                     android:alpha="0.54"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_save_black_48dp" />
             </LinearLayout>
@@ -62,7 +62,7 @@
                 android:layout_gravity="end"
                 android:adjustViewBounds="true"
                 android:alpha="0.54"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_keyboard_arrow_down_black_48dp" />
         </LinearLayout>
