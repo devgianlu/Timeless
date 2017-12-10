@@ -68,24 +68,13 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/pieChartCard_container"
+            android:id="@+id/pieChartCard_details"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/colorAccent_shadow"
+            android:background="@color/colorPrimary"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:padding="16dp"
+            android:visibility="gone" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@drawable/material_drawer_shadow_bottom" />
-
-            <LinearLayout
-                android:id="@+id/pieChartCard_details"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp" />
-        </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>
