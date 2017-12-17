@@ -2,7 +2,6 @@ package com.gianlu.timeless;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -27,9 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
 import java.util.TimeZone;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
@@ -38,16 +35,6 @@ public class Utils {
     public static final String ACTION_CHANGE_SELECTED_BRANCHES = "changed_selected_branches";
     public static final String ACTION_FILTER_LEADERS = "filtered_leaderboards";
     public static final String ACTION_SHOW_ME_LEADER = "show_me_in_leaderboards";
-    private static final int[] COLORS = new int[]{R.color.red, R.color.pink, R.color.purple, R.color.deepPurple, R.color.indigo, R.color.blue, R.color.lightBlue, R.color.cyan, R.color.teal, R.color.green, R.color.lightGreen, R.color.lime, R.color.yellow, R.color.amber, R.color.orange, R.color.deepOrange, R.color.brown};
-    private static ColorStateList textViewDefaultColor;
-
-    public static int getColor(int pos) {
-        int i = pos;
-        while (i >= COLORS.length)
-            i = i - COLORS.length;
-
-        return COLORS[i];
-    }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File getImageDirectory(@Nullable Project project) {
@@ -134,11 +121,6 @@ public class Utils {
         else return value;
     }
 
-    public static int[] getColors() {
-        shuffleArray(COLORS);
-        return COLORS;
-    }
-
     public static String timeFormatterHours(long sec, boolean seconds) {
         long hours = TimeUnit.SECONDS.toHours(sec);
         long minute = TimeUnit.SECONDS.toMinutes(sec) - TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(sec));
@@ -162,16 +144,6 @@ public class Utils {
                     return "0s";
                 }
             }
-        }
-    }
-
-    private static void shuffleArray(int[] ar) {
-        Random rnd = ThreadLocalRandom.current();
-        for (int i = ar.length - 1; i > 0; i--) {
-            int index = rnd.nextInt(i + 1);
-            int a = ar[index];
-            ar[index] = ar[i];
-            ar[i] = a;
         }
     }
 

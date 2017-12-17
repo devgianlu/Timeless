@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.AnalyticsApplication;
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.commonutils.Toaster;
@@ -162,7 +163,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 else return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
-        set.setColors(Utils.getColors(), this);
+        set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), this);
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
 

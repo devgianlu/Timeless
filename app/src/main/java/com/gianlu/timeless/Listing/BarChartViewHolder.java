@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.ISaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summary;
@@ -89,6 +90,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         final List<Integer> colors = new ArrayList<>();
         List<LegendEntry> legendEntries = new ArrayList<>();
         int colorCount = 0;
+        MaterialColors materialColors = MaterialColors.getShuffledInstance();
         for (int i = 0; i < summaries.size(); i++) {
             Summary summary = summaries.get(i);
             float[] array = new float[summary.projects.size()];
@@ -98,7 +100,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
                 if (colorsMap.containsKey(entity.name)) {
                     colors.add(colorsMap.get(entity.name));
                 } else {
-                    int color = ContextCompat.getColor(context, Utils.getColor(colorCount));
+                    int color = ContextCompat.getColor(context, materialColors.getColor(colorCount));
                     colors.add(color);
                     colorsMap.put(entity.name, color);
 

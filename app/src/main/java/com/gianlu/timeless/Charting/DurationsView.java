@@ -13,9 +13,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,9 +50,9 @@ public class DurationsView extends LinearLayout {
                 projects.add(duration.project);
 
         removeAllViews();
-        Utils.getColors();
+        MaterialColors colors = MaterialColors.getShuffledInstance();
         for (int i = 0; i < projects.size(); i++)
-            addView(new ChartView(getContext(), projects.get(i), Duration.filter(durations, projects.get(i)), ContextCompat.getColor(getContext(), Utils.getColor(i)), projects.size() <= 1));
+            addView(new ChartView(getContext(), projects.get(i), Duration.filter(durations, projects.get(i)), ContextCompat.getColor(getContext(), colors.getColor(i)), projects.size() <= 1));
 
         if (projects.isEmpty())
             addView(new ChartView(getContext(), "", Collections.<Duration>emptyList(), 0, true));

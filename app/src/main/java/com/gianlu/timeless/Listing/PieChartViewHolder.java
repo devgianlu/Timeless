@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Charting.ISaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
@@ -81,7 +82,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
                 else return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
-        set.setColors(Utils.getColors(), context);
+        set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), context);
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
 
