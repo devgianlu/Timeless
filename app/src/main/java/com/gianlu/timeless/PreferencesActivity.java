@@ -5,13 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.view.MenuItem;
 
 import com.gianlu.commonutils.AppCompatPreferenceActivity;
 import com.gianlu.commonutils.AppCompatPreferenceFragment;
@@ -23,25 +19,6 @@ import com.gianlu.timeless.NetIO.WakaTime;
 import java.util.List;
 
 public class PreferencesActivity extends AppCompatPreferenceActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle(R.string.preferences);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
-    }
-
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item))
-                NavUtils.navigateUpFromSameTask(this);
-            return true;
-        }
-        return super.onMenuItemSelected(featureId, item);
-    }
 
     @Override
     public void onHeaderClick(Header header, int position) {
@@ -54,20 +31,8 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     }
 
     @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    @Override
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.pref_headers, target);
-    }
-
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || NetworkFragment.class.getName().equals(fragmentName)
-                || ThirdPartFragment.class.getName().equals(fragmentName)
-                || AboutFragment.class.getName().equals(fragmentName);
     }
 
     public static class NetworkFragment extends AppCompatPreferenceFragment {
