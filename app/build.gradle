@@ -8,8 +8,8 @@ android {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 25
-        versionName "1.5.3"
+        versionCode 26
+        versionName "1.5.4"
     }
 
     buildTypes {
@@ -22,11 +22,12 @@ android {
 
 dependencies {
     api project(':CommonUtils')
+    //noinspection GradleDependency: 5.0.0 and newer requires minSdkVersion >= 26
     api 'com.github.scribejava:scribejava-apis:4.2.0'
     api 'com.android.support:cardview-v7:27.0.2'
     api 'com.android.support:support-v13:27.0.2'
     api 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-    api 'com.wdullaer:materialdatetimepicker:3.4.0'
+    api 'com.wdullaer:materialdatetimepicker:3.5.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
