@@ -94,6 +94,10 @@ public class WakaTime {
         out.flush();
     }
 
+    private static SimpleDateFormat getAPIFormatter() {
+        return new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+    }
+
     public void setCacheEnabled(boolean enabled) {
         this.cacheEnabled = enabled;
         if (enabled) memoryCache.resize(MAX_CACHE_SIZE);
@@ -193,7 +197,7 @@ public class WakaTime {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat formatter = getAPIFormatter();
                 try {
                     final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date="
                             + formatter.format(day)
@@ -409,7 +413,7 @@ public class WakaTime {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat formatter = getAPIFormatter();
                 try {
                     final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/summaries?start="
                             + formatter.format(start)

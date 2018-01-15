@@ -9,11 +9,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 
-import com.gianlu.commonutils.AppCompatPreferenceActivity;
-import com.gianlu.commonutils.AppCompatPreferenceFragment;
-import com.gianlu.commonutils.BaseAboutFragment;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.LogsActivity;
+import com.gianlu.commonutils.Preferences.AppCompatPreferenceActivity;
+import com.gianlu.commonutils.Preferences.AppCompatPreferenceFragment;
+import com.gianlu.commonutils.Preferences.BaseAboutFragment;
 import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.List;
