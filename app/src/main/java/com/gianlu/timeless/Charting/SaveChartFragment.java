@@ -24,6 +24,8 @@ public abstract class SaveChartFragment extends Fragment implements ISaveChart {
 
     @Override
     public final void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
+        if (getActivity() == null) return;
+
         this.handler = handler;
         if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())

@@ -1,5 +1,6 @@
 package com.gianlu.timeless.Main;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,6 +25,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return fragments[position].getArguments().getString("title");
+        Bundle args = fragments[position].getArguments();
+        return args == null ? null : args.getString("title");
     }
 }

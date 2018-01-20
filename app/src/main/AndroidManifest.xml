@@ -95,20 +95,5 @@
             android:name="com.gianlu.commonutils.LogsActivity"
             android:parentActivityName=".PreferencesActivity"
             android:screenOrientation="portrait" />
-
-        <!-- Google Analytics -->
-        <receiver
-            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-            android:enabled="true"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name="com.google.android.gms.analytics.AnalyticsService"
-            android:enabled="true"
-            android:exported="false" />
     </application>
 </manifest>

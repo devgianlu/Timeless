@@ -2,6 +2,7 @@ package com.gianlu.timeless.Activities.Projects;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Pair;
@@ -72,21 +73,22 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
     @Nullable
     @Override
     public Project getProject() {
-        return (Project) getArguments().getSerializable("project");
+        Bundle args = getArguments();
+        return args == null ? null : (Project) args.getSerializable("project");
     }
 
     @Nullable
     @Override
-    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(inflater);
         layout.disableSwipeRefresh();
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        project = (Project) getArguments().getSerializable("project");
-        start = (Date) getArguments().getSerializable("start");
-        end = (Date) getArguments().getSerializable("end");
-
-        if (project == null || start == null || end == null) {
+        Bundle args = getArguments();
+        if (args == null
+                || (project = (Project) args.getSerializable("project")) == null
+                || (start = (Date) args.getSerializable("start")) == null
+                || (end = (Date) args.getSerializable("end")) == null) {
             layout.showMessage(R.string.errorMessage, true);
             return layout;
         }

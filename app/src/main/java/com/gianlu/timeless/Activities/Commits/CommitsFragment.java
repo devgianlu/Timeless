@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -41,13 +42,14 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(inflater);
         layout.disableSwipeRefresh();
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        Project project = (Project) getArguments().getSerializable("project");
-        if (project == null) {
+        Project project;
+        Bundle args = getArguments();
+        if (args == null || (project = (Project) args.getSerializable("project")) == null) {
             layout.showMessage(R.string.errorMessage, true);
             return layout;
         }
@@ -80,6 +82,8 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
 
     @Override
     public void onCommitSelected(Project project, final Commit commit) {
+        if (getContext() == null) return;
+
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
         int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources().getDisplayMetrics());

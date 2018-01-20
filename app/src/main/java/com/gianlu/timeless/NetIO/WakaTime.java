@@ -1,5 +1,6 @@
 package com.gianlu.timeless.NetIO;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -43,7 +44,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -94,8 +94,9 @@ public class WakaTime {
         out.flush();
     }
 
+    @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat getAPIFormatter() {
-        return new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        return new SimpleDateFormat("dd-MM-yyyy");
     }
 
     public void setCacheEnabled(boolean enabled) {

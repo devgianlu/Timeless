@@ -2,6 +2,7 @@ package com.gianlu.timeless.Main;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -39,13 +40,13 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
 
     @Nullable
     @Override
-    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(inflater);
         layout.disableSwipeRefresh();
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        range = (WakaTime.Range) getArguments().getSerializable("range");
-        if (range == null) {
+        Bundle args = getArguments();
+        if (args == null || (range = (WakaTime.Range) args.getSerializable("range")) == null) {
             layout.showMessage(R.string.errorMessage, true);
             return layout;
         }

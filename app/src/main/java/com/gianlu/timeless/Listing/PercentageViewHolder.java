@@ -31,6 +31,8 @@ class PercentageViewHolder extends RecyclerView.ViewHolder {
     void bind(@StringRes int title, Pair<Long, Float> values) {
         this.title.setText(title);
 
+        if (values.first == null || values.second == null) return;
+
         if (values.second != 0) {
             BigDecimal bd = new BigDecimal(values.first);
             bd = bd.divide(new BigDecimal(values.second), 10, BigDecimal.ROUND_HALF_UP);
