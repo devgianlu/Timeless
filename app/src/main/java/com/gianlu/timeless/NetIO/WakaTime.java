@@ -10,6 +10,7 @@ import android.util.LruCache;
 import android.util.Pair;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Logging;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.GlobalSummary;
@@ -485,8 +486,11 @@ public class WakaTime {
 
         if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
             if (token == null) throw new WakaTimeException("OAuth2AccessToken is null");
-            final OAuthRequest request = new OAuthRequest(verb, url);
+            OAuthRequest request = new OAuthRequest(verb, url);
             service.signRequest(token, request);
+
+            Logging.log(request.toString(), false);
+
             Response resp;
             try {
                 resp = service.execute(request);
