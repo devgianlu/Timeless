@@ -97,7 +97,7 @@ public class WakaTime {
 
     @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat getAPIFormatter() {
-        return new SimpleDateFormat("dd-MM-yyyy");
+        return new SimpleDateFormat("yyyy-MM-dd");
     }
 
     public void setCacheEnabled(boolean enabled) {
