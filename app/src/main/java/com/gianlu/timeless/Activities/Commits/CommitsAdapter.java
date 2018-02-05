@@ -13,7 +13,6 @@ import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
-import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
@@ -28,7 +27,7 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
         super(context, commits.commits, commits.total_pages, ContextCompat.getColor(context, R.color.colorPrimary_shadow), true);
         this.project = commits.project;
         this.handler = handler;
-        this.wakaTime = WakaTime.getInstance();
+        this.wakaTime = WakaTime.get();
     }
 
     @Nullable
@@ -67,11 +66,6 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
 
             @Override
             public void onException(Exception ex) {
-                provider.onFailed(ex);
-            }
-
-            @Override
-            public void onInvalidToken(WakaTimeException ex) {
                 provider.onFailed(ex);
             }
         });

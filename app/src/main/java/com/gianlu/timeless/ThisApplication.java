@@ -1,7 +1,10 @@
 package com.gianlu.timeless;
 
+import android.content.Intent;
+
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
 import com.gianlu.commonutils.ConnectivityChecker;
+import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -26,6 +29,17 @@ public class ThisApplication extends AnalyticsApplication {
                 return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
             }
         });
+    }
+
+    @Override
+    protected boolean uncaughtNotDebug(Thread thread, Throwable throwable) {
+        if (throwable instanceof WakaTime.ShouldGetAccessToken) {
+            startActivity(new Intent(this, GrantActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            return false;
+        }
+
+        return true;
     }
 
     @Override

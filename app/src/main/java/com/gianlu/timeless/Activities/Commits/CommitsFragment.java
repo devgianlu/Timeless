@@ -17,7 +17,6 @@ import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
 
 public class CommitsFragment extends Fragment implements WakaTime.ICommits, CommitsAdapter.IAdapter {
     private RecyclerViewLayout recyclerViewLayout;
@@ -58,7 +57,7 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
             return layout;
         }
 
-        WakaTime.getInstance().getCommits(project, this);
+        WakaTime.get().getCommits(project, this);
 
         return layout;
     }
@@ -76,11 +75,6 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
         } else {
             recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
         }
-    }
-
-    @Override
-    public void onInvalidToken(WakaTimeException ex) {
-        Utils.invalidToken(getContext(), ex);
     }
 
     @Override

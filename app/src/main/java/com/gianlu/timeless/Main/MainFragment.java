@@ -19,7 +19,6 @@ import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
 
 import java.util.Date;
 import java.util.List;
@@ -51,7 +50,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
             return layout;
         }
 
-        wakaTime = WakaTime.getInstance();
+        wakaTime = WakaTime.get();
         wakaTime.getRangeSummary(range.getStartAndEnd(), this);
 
         return layout;
@@ -87,17 +86,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
                         public void onException(final Exception ex) {
                             MainFragment.this.onException(ex);
                         }
-
-                        @Override
-                        public void onInvalidToken(WakaTimeException ex) {
-                            MainFragment.this.onInvalidToken(ex);
-                        }
                     });
-                }
-
-                @Override
-                public void onInvalidToken(WakaTimeException ex) {
-                    MainFragment.this.onInvalidToken(ex);
                 }
 
                 @Override
@@ -109,11 +98,6 @@ public class MainFragment extends SaveChartFragment implements WakaTime.ISummary
             cards.addProjectsBarChart(1, R.string.periodActivity, summaries);
             layout.loadListData(new CardsAdapter(getContext(), cards, MainFragment.this));
         }
-    }
-
-    @Override
-    public void onInvalidToken(WakaTimeException ex) {
-        Utils.invalidToken(getContext(), ex);
     }
 
     @Override

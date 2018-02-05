@@ -18,7 +18,6 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Projects.ProjectFragment;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
-import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
@@ -79,7 +78,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
         if (date != null) currentRange = new Pair<>(date, date);
         else currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
 
-        wakaTime = WakaTime.getInstance();
+        wakaTime = WakaTime.get();
 
         updateRangeText();
         wakaTime.getProjects(this);
@@ -109,11 +108,6 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                 onBackPressed();
             }
         });
-    }
-
-    @Override
-    public void onInvalidToken(WakaTimeException ex) {
-        Utils.invalidToken(ProjectsActivity.this, ex);
     }
 
     @SuppressLint("SetTextI18n")
@@ -205,11 +199,6 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
                         onBackPressed();
                     }
                 });
-            }
-
-            @Override
-            public void onInvalidToken(WakaTimeException ex) {
-                Utils.invalidToken(ProjectsActivity.this, ex);
             }
         });
 

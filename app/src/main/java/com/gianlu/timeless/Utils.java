@@ -1,7 +1,6 @@
 package com.gianlu.timeless;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,7 +16,6 @@ import android.view.View;
 
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.Project;
-import com.gianlu.timeless.NetIO.WakaTimeException;
 
 import org.json.JSONObject;
 
@@ -48,11 +46,6 @@ public class Utils {
         } else {
             return dir;
         }
-    }
-
-    public static void invalidToken(Context context, WakaTimeException ex) {
-        Toaster.show(context, Messages.INVALID_TOKEN, ex);
-        context.startActivity(new Intent(context, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
     public static Bitmap createBitmap(View view) {
@@ -157,10 +150,8 @@ public class Utils {
     public static class Messages {
         public static final Toaster.Message CANT_CHECK_GRANT = new Toaster.Message(R.string.failedCheckingPermissions, true);
         public static final Toaster.Message FAILED_LOADING = new Toaster.Message(R.string.failedLoading, true);
-        public static final Toaster.Message TOKEN_REJECTED = new Toaster.Message(R.string.tokenRejected, false);
         public static final Toaster.Message CANT_REFRESH_TOKEN = new Toaster.Message(R.string.failedRefreshingToken, true);
         public static final Toaster.Message USER_NOT_FOUND = new Toaster.Message(R.string.userNotFound, false);
-        public static final Toaster.Message INVALID_TOKEN = new Toaster.Message(R.string.grantAccessAgain, false);
         public static final Toaster.Message FAILED_SAVING_CHART = new Toaster.Message(R.string.failedSavingImage, true);
         public static final Toaster.Message WRITE_DENIED = new Toaster.Message(R.string.noWritePermission, false);
         public static final Toaster.Message FUTURE_DATE = new Toaster.Message(R.string.cannotGoFuture, false);

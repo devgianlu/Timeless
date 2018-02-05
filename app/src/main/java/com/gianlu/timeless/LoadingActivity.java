@@ -3,7 +3,6 @@ package com.gianlu.timeless;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,10 +10,10 @@ import android.view.View;
 
 import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Logging;
+import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
-import com.gianlu.timeless.NetIO.WakaTimeException;
 
 public class LoadingActivity extends AppCompatActivity {
     private Intent goTo;
@@ -24,8 +23,9 @@ public class LoadingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun", true)) {
-            startActivity(new Intent(this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        if (Prefs.getBoolean(this, PKeys.FIRST_RUN, true)) {
+            startActivity(new Intent(this, GrantActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
             return;
         }
@@ -52,55 +52,45 @@ public class LoadingActivity extends AppCompatActivity {
 
         Logging.clearLogs(this);
 
-        new Thread(new Runnable() {
+        ConnectivityChecker.checkAsync(new ConnectivityChecker.OnCheck() {
             @Override
-            public void run() {
-                if (ConnectivityChecker.checkSync(LoadingActivity.this)) {
-                    WakaTime.getInstance().refreshToken(LoadingActivity.this, new WakaTime.IRefreshToken() {
-                        @Override
-                        public void onRefreshed(WakaTime wakaTime) {
-                            wakaTime.getCurrentUser(new WakaTime.IUser() {
-                                @Override
-                                public void onUser(User user) {
-                                    goTo(MainActivity.class, user);
-                                }
+            public void goodToGo() {
+                WakaTime.refreshToken(LoadingActivity.this, new WakaTime.OnAccessToken() {
+                    @Override
+                    public void onTokenAccepted() {
+                        WakaTime.get().getCurrentUser(new WakaTime.IUser() {
+                            @Override
+                            public void onUser(User user) {
+                                goTo(MainActivity.class, user);
+                            }
 
-                                @Override
-                                public void onException(Exception ex) {
-                                    Toaster.show(LoadingActivity.this, Utils.Messages.FAILED_LOADING, ex);
-                                    finish();
-                                }
+                            @Override
+                            public void onException(Exception ex) {
+                                Toaster.show(LoadingActivity.this, Utils.Messages.FAILED_LOADING, ex);
+                                finish();
+                            }
+                        });
+                    }
 
-                                @Override
-                                public void onInvalidToken(WakaTimeException ex) {
-                                    Utils.invalidToken(LoadingActivity.this, ex);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onInvalidToken(Exception ex) {
-                            Toaster.show(LoadingActivity.this, Utils.Messages.INVALID_TOKEN, ex);
-                            deleteFile("token");
-                            goTo(GrantActivity.class, null);
-                        }
-
-                        @Override
-                        public void onException(Exception ex) {
-                            Toaster.show(LoadingActivity.this, Utils.Messages.CANT_REFRESH_TOKEN, ex);
-                            goTo(GrantActivity.class, null);
-                        }
-                    });
-                } else {
-                    Toaster.show(LoadingActivity.this, Toaster.Message.OFFLINE, new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    });
-                }
+                    @Override
+                    public void onException(Throwable ex) {
+                        Toaster.show(LoadingActivity.this, Utils.Messages.CANT_REFRESH_TOKEN, ex);
+                        deleteFile("token");
+                        goTo(GrantActivity.class, null);
+                    }
+                });
             }
-        }).start();
+
+            @Override
+            public void offline() {
+                Toaster.show(LoadingActivity.this, Toaster.Message.OFFLINE, new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
+            }
+        });
     }
 
     private void goTo(Class goTo, @Nullable User user) {

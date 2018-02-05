@@ -68,17 +68,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
             public void onException(final Exception ex) {
                 DailyStatsActivity.this.onException(ex);
             }
-
-            @Override
-            public void onInvalidToken(WakaTimeException ex) {
-                DailyStatsActivity.this.onInvalidToken(ex);
-            }
         });
-    }
-
-    @Override
-    public void onInvalidToken(WakaTimeException ex) {
-        Utils.invalidToken(this, ex);
     }
 
     @Override
@@ -132,7 +122,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         final ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
         currDay = findViewById(R.id.dailyStats_day);
 
-        wakaTime = WakaTime.getInstance();
+        wakaTime = WakaTime.get();
 
         nextDay.setOnClickListener(new View.OnClickListener() {
             @Override

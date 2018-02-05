@@ -13,7 +13,6 @@ import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
-import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
@@ -32,7 +31,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
         super(context, items, maxPages, -1, false);
         this.language = language;
         this.listener = listener;
-        this.wakaTime = WakaTime.getInstance();
+        this.wakaTime = WakaTime.get();
         this.roboto = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
         if (me != null) this.me = me.user;
         else this.me = null;
@@ -83,11 +82,6 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
 
             @Override
             public void onException(Exception ex) {
-                provider.onFailed(ex);
-            }
-
-            @Override
-            public void onInvalidToken(WakaTimeException ex) {
                 provider.onFailed(ex);
             }
         });

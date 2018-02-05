@@ -58,7 +58,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         currFilter = findViewById(R.id.leaders_rankingText);
         sheet = new LeaderSheet((ViewGroup) findViewById(R.id.leaders));
 
-        wakaTime = WakaTime.getInstance();
+        wakaTime = WakaTime.get();
         wakaTime.getLeaders(this);
     }
 
@@ -76,11 +76,6 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         } else {
             recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
         }
-    }
-
-    @Override
-    public void onInvalidToken(WakaTimeException ex) {
-        Utils.invalidToken(this, ex);
     }
 
     @Override
@@ -106,11 +101,6 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
             @Override
             public void onException(Exception ex) {
                 LeadersActivity.this.onException(ex);
-            }
-
-            @Override
-            public void onInvalidToken(WakaTimeException ex) {
-                LeadersActivity.this.onInvalidToken(ex);
             }
         });
     }
@@ -174,12 +164,6 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
                 CommonUtils.showDialog(LeadersActivity.this, builder);
                 pd.dismiss();
-            }
-
-            @Override
-            public void onInvalidToken(WakaTimeException ex) {
-                pd.dismiss();
-                LeadersActivity.this.onInvalidToken(ex);
             }
 
             @Override

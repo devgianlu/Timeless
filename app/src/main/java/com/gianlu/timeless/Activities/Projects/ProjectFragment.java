@@ -24,7 +24,6 @@ import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
 
 import java.util.Date;
 import java.util.List;
@@ -93,7 +92,7 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
             return layout;
         }
 
-        wakaTime = WakaTime.getInstance();
+        wakaTime = WakaTime.get();
         wakaTime.getRangeSummary(start, end, project, null, this);
 
         return layout;
@@ -124,21 +123,11 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
                 public void onException(final Exception ex) {
                     ProjectFragment.this.onException(ex);
                 }
-
-                @Override
-                public void onInvalidToken(WakaTimeException ex) {
-                    ProjectFragment.this.onInvalidToken(ex);
-                }
             });
         } else {
             cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries);
             layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
         }
-    }
-
-    @Override
-    public void onInvalidToken(WakaTimeException ex) {
-        Utils.invalidToken(getContext(), ex);
     }
 
     @Override

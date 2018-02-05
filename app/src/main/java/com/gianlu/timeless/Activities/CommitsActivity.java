@@ -13,7 +13,6 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Commits.CommitsFragment;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.NetIO.WakaTime;
-import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
@@ -60,7 +59,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
         pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        WakaTime.getInstance().getProjects(this);
+        WakaTime.get().getProjects(this);
     }
 
     @Override
@@ -94,10 +93,5 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
                 onBackPressed();
             }
         });
-    }
-
-    @Override
-    public void onInvalidToken(WakaTimeException ex) {
-        Utils.invalidToken(this, ex);
     }
 }

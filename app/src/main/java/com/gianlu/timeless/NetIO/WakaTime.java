@@ -2,15 +2,19 @@ package com.gianlu.timeless.NetIO;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.LruCache;
 import android.util.Pair;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Logging;
+import com.gianlu.commonutils.Preferences.Prefs;
+import com.gianlu.timeless.BuildConfig;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.GlobalSummary;
@@ -18,14 +22,15 @@ import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.Models.User;
+import com.gianlu.timeless.PKeys;
 import com.gianlu.timeless.R;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
+import com.github.scribejava.core.model.OAuthAsyncRequestCallback;
 import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
@@ -35,17 +40,11 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,85 +57,58 @@ public class WakaTime {
     private static final String CALLBACK = "timeless://grantActivity/";
     private static final long MAX_CACHE_AGE = TimeUnit.MINUTES.toMillis(10);
     private static final int MAX_CACHE_SIZE = 20;
+    private static final OAuth20Service SERVICE;
     private static WakaTime instance;
-    private final OAuth20Service service;
-    private final String lastState;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private final Handler handler;
-    private final LruCache<String, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
-    private OAuth2AccessToken token;
-    private boolean cacheEnabled = true;
 
-    private WakaTime() {
-        handler = new Handler(Looper.getMainLooper());
-        lastState = new BigInteger(130, new SecureRandom()).toString(32);
-        service = new ServiceBuilder(APP_ID)
+    static {
+        ServiceBuilder builder = new ServiceBuilder(APP_ID)
                 .apiSecret(APP_SECRET)
                 .callback(CALLBACK)
-                .scope("email,read_stats,read_logged_time,read_teams")
-                .state(lastState)
-                .build(new WakaTimeApi());
+                .scope("email,read_stats,read_logged_time,read_teams");
+
+        if (BuildConfig.DEBUG) builder.debug();
+
+        SERVICE = builder.build(new WakaTimeApi());
     }
 
-    public static WakaTime getInstance() {
-        if (instance == null) instance = new WakaTime();
-        return instance;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final Handler handler;
+    private final LruCache<String, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
+    private final OAuth2AccessToken token;
+    private final SharedPreferences prefs;
+
+    private WakaTime(Context context, @Nullable OAuth2AccessToken token) {
+        this(PreferenceManager.getDefaultSharedPreferences(context), token);
     }
 
-    @Nullable
-    private static String loadRefreshToken(Context context) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(context.openFileInput("token")));
-        return reader.readLine();
+    private WakaTime(SharedPreferences prefs, @Nullable OAuth2AccessToken token) {
+        this.token = token;
+        this.prefs = prefs;
+        handler = new Handler(Looper.getMainLooper());
     }
 
-    private static void storeRefreshToken(Context context, OAuth2AccessToken token) throws IOException {
-        OutputStream out = context.openFileOutput("token", Context.MODE_PRIVATE);
-        out.write(token.getRefreshToken().getBytes());
-        out.flush();
-    }
+    public static void accessToken(final Context context, String uri, final OnAccessToken listener) {
+        final Handler handler = new Handler(context.getMainLooper());
+        final OAuth2Authorization auth = SERVICE.extractAuthorization(uri);
 
-    @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat getAPIFormatter() {
-        return new SimpleDateFormat("yyyy-MM-dd");
-    }
-
-    public void setCacheEnabled(boolean enabled) {
-        this.cacheEnabled = enabled;
-        if (enabled) memoryCache.resize(MAX_CACHE_SIZE);
-        else memoryCache.trimToSize(-1);
-    }
-
-    /**
-     * Also refreshes the {@link WakaTime#cacheEnabled} value
-     */
-    public void refreshToken(final Context context, final IRefreshToken listener) {
-        executorService.execute(new Runnable() {
+        new Thread() {
             @Override
             public void run() {
-                try {
-                    String refreshToken = loadRefreshToken(context);
-                    if (refreshToken == null || refreshToken.isEmpty())
-                        throw new InvalidTokenException();
-
-                    token = service.refreshAccessToken(refreshToken);
-                    storeRefreshToken(context, token);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onRefreshed(instance);
-                        }
-                    });
-
-                    cacheEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("cacheEnabled", true);
-                } catch (IOException | InvalidTokenException | InterruptedException | ExecutionException | OAuth2AccessTokenErrorResponse ex) {
-                    if (ex instanceof OAuth2AccessTokenErrorResponse) {
+                SERVICE.getAccessToken(auth.getCode(), new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
+                    @Override
+                    public void onCompleted(OAuth2AccessToken response) {
+                        storeRefreshToken(context, response);
+                        instance = new WakaTime(context, response);
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onInvalidToken(ex);
+                                listener.onTokenAccepted();
                             }
                         });
-                    } else {
+                    }
+
+                    @Override
+                    public void onThrowable(final Throwable ex) {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -144,13 +116,100 @@ public class WakaTime {
                             }
                         });
                     }
-                }
+                });
             }
-        });
+        }.start();
     }
 
-    public String getAuthorizationUrl() {
-        return service.getAuthorizationUrl();
+    public static void refreshToken(final Context context, final OnAccessToken listener) {
+        final Handler handler = new Handler(context.getMainLooper());
+
+        final String refreshToken = loadRefreshToken(context);
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            listener.onException(new ShouldGetAccessToken());
+            return;
+        }
+
+        new Thread() {
+            @Override
+            public void run() {
+                SERVICE.refreshAccessToken(refreshToken, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
+                    @Override
+                    public void onCompleted(OAuth2AccessToken response) {
+                        storeRefreshToken(context, response);
+                        instance = new WakaTime(context, response);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onTokenAccepted();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onThrowable(final Throwable ex) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(ex);
+                            }
+                        });
+                    }
+                });
+            }
+        }.start();
+    }
+
+    private static void refreshTokenSync(SharedPreferences prefs) throws ShouldGetAccessToken, InterruptedException, ExecutionException, IOException {
+        String refreshToken = loadRefreshToken(prefs);
+        if (refreshToken == null || refreshToken.isEmpty())
+            throw new ShouldGetAccessToken(); // Handled by ThisApplication
+
+        OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
+        storeRefreshToken(prefs, token);
+        instance = new WakaTime(instance.prefs, token);
+    }
+
+    @NonNull
+    public static WakaTime get() {
+        if (instance == null) throw new ShouldGetAccessToken();
+        return instance;
+    }
+
+    @Nullable
+    private static String loadRefreshToken(SharedPreferences prefs) {
+        return Prefs.getString(prefs, PKeys.TOKEN, null);
+    }
+
+    @Nullable
+    private static String loadRefreshToken(Context context) {
+        return loadRefreshToken(PreferenceManager.getDefaultSharedPreferences(context));
+    }
+
+    private static void storeRefreshToken(Context context, OAuth2AccessToken token) {
+        storeRefreshToken(PreferenceManager.getDefaultSharedPreferences(context), token);
+    }
+
+    private static void storeRefreshToken(SharedPreferences prefs, OAuth2AccessToken token) {
+        Prefs.putString(prefs, PKeys.TOKEN, token.getRefreshToken());
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private static SimpleDateFormat getAPIFormatter() {
+        return new SimpleDateFormat("yyyy-MM-dd");
+    }
+
+    public static String authorizationUrl() {
+        return SERVICE.getAuthorizationUrl();
+    }
+
+    public void cacheEnabledChanged() {
+        if (cacheEnabled()) memoryCache.resize(MAX_CACHE_SIZE);
+        else memoryCache.trimToSize(-1);
+    }
+
+    private boolean cacheEnabled() {
+        return Prefs.getBoolean(prefs, PKeys.CACHE_ENABLED, true);
     }
 
     public void getCurrentUser(final IUser listener) {
@@ -176,13 +235,6 @@ public class WakaTime {
                             }
                         });
                     }
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onInvalidToken(ex);
-                        }
-                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
@@ -224,13 +276,6 @@ public class WakaTime {
                             }
                         });
                     }
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onInvalidToken(ex);
-                        }
-                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
@@ -253,11 +298,6 @@ public class WakaTime {
             @Override
             public void onException(Exception ex) {
                 listener.onException(ex);
-            }
-
-            @Override
-            public void onInvalidToken(WakaTimeException ex) {
-                listener.onInvalidToken(ex);
             }
         });
     }
@@ -286,13 +326,6 @@ public class WakaTime {
                             }
                         });
                     }
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onInvalidToken(ex);
-                        }
-                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
@@ -332,13 +365,6 @@ public class WakaTime {
                             }
                         });
                     }
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onInvalidToken(ex);
-                        }
-                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
@@ -388,13 +414,6 @@ public class WakaTime {
                             }
                         });
                     }
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onInvalidToken(ex);
-                        }
-                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
@@ -460,13 +479,6 @@ public class WakaTime {
                             }
                         });
                     }
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onInvalidToken(ex);
-                        }
-                    });
                 } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
                     handler.post(new Runnable() {
                         @Override
@@ -479,21 +491,26 @@ public class WakaTime {
         });
     }
 
-    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
+    @NonNull
+    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException {
         CachedResponse cachedResponse;
-        if (verb == Verb.GET && cacheEnabled) cachedResponse = getFromCache(url);
+        if (verb == Verb.GET && cacheEnabled()) cachedResponse = getFromCache(url);
         else cachedResponse = null;
 
         if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
-            if (token == null) throw new WakaTimeException("OAuth2AccessToken is null");
-            OAuthRequest request = new OAuthRequest(verb, url);
-            service.signRequest(token, request);
+            if (token == null) {
+                refreshTokenSync(prefs);
+                return instance.doRequestSync(verb, url);
+            }
 
-            Logging.log(request.toString(), false);
+            OAuthRequest request = new OAuthRequest(verb, url);
+            SERVICE.signRequest(token, request);
+
+            if (BuildConfig.DEBUG) Logging.log(request.toString(), false);
 
             Response resp;
             try {
-                resp = service.execute(request);
+                resp = SERVICE.execute(request);
             } catch (OAuthException ex) {
                 throw new IOException("Just a wrapper", ex);
             }
@@ -513,41 +530,6 @@ public class WakaTime {
         synchronized (memoryCache) {
             return memoryCache.get(url);
         }
-    }
-
-    public void newAccessToken(final Context context, final String uri, final INewAccessToken listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                OAuth2Authorization auth = service.extractAuthorization(uri);
-                if (Objects.equals(auth.getState(), lastState)) {
-                    try {
-                        token = service.getAccessToken(auth.getCode());
-                        storeRefreshToken(context, token);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onTokenAccepted();
-                            }
-                        });
-                    } catch (InterruptedException | ExecutionException | IOException ex) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(ex);
-                            }
-                        });
-                    }
-                } else {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onTokenRejected(new InvalidTokenException());
-                        }
-                    });
-                }
-            }
-        });
     }
 
     public enum Range {
@@ -604,22 +586,16 @@ public class WakaTime {
         void onDurations(List<Duration> durations, List<String> branches);
 
         void onException(Exception ex);
-
-        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface ILeaders {
         void onLeaders(List<Leader> leaders, Leader me, int maxPages);
 
         void onException(Exception ex);
-
-        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface ISummary {
         void onSummary(List<Summary> summaries, GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable List<String> selectedBranches);
-
-        void onInvalidToken(WakaTimeException ex);
 
         void onException(Exception ex);
     }
@@ -628,22 +604,10 @@ public class WakaTime {
         void onProjects(List<Project> projects);
 
         void onException(Exception ex);
-
-        void onInvalidToken(WakaTimeException ex);
     }
 
     public interface ICommits {
         void onCommits(Commits commits);
-
-        void onException(Exception ex);
-
-        void onInvalidToken(WakaTimeException ex);
-    }
-
-    public interface IRefreshToken {
-        void onRefreshed(WakaTime wakaTime);
-
-        void onInvalidToken(Exception ex);
 
         void onException(Exception ex);
     }
@@ -652,16 +616,15 @@ public class WakaTime {
         void onUser(User user);
 
         void onException(Exception ex);
-
-        void onInvalidToken(WakaTimeException ex);
     }
 
-    public interface INewAccessToken {
+    public interface OnAccessToken {
         void onTokenAccepted();
 
-        void onTokenRejected(InvalidTokenException ex);
+        void onException(Throwable ex);
+    }
 
-        void onException(Exception ex);
+    public static class ShouldGetAccessToken extends RuntimeException {
     }
 
     private static class CachedResponse {
@@ -674,7 +637,7 @@ public class WakaTime {
         }
     }
 
-    private class WakaTimeApi implements BaseApi<OAuth20Service> {
+    private static class WakaTimeApi implements BaseApi<OAuth20Service> {
 
         @Override
         public OAuth20Service createService(OAuthConfig oAuthConfig) {
