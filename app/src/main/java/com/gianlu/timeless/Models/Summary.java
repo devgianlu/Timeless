@@ -1,5 +1,7 @@
 package com.gianlu.timeless.Models;
 
+import android.support.annotation.Keep;
+
 import com.gianlu.commonutils.CommonUtils;
 
 import org.json.JSONException;
@@ -36,6 +38,7 @@ public class Summary {
         branches = new ArrayList<>();
     }
 
+    @Keep
     public Summary(JSONObject obj) throws JSONException, ParseException {
         total_seconds = obj.getJSONObject("grand_total").getLong("total_seconds");
 

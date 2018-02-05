@@ -1,5 +1,7 @@
 package com.gianlu.timeless.Models;
 
+import android.support.annotation.Keep;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,6 +14,7 @@ public class LoggedEntity {
     public long total_seconds;
 
     @SuppressWarnings("unused")
+    @Keep
     public LoggedEntity(JSONObject obj) throws JSONException {
         name = obj.getString("name");
         total_seconds = obj.getLong("total_seconds");

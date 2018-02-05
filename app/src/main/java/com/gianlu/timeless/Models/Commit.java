@@ -1,5 +1,7 @@
 package com.gianlu.timeless.Models;
 
+import android.support.annotation.Keep;
+
 import com.gianlu.timeless.Utils;
 
 import org.json.JSONException;
@@ -18,6 +20,7 @@ public class Commit {
     public final String html_url;
     public final String ref;
 
+    @Keep
     public Commit(JSONObject obj) throws JSONException, ParseException {
         message = obj.getString("message").replace("\n", "");
         total_seconds = obj.getLong("total_seconds");
