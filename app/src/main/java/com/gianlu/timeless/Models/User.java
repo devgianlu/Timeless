@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Models;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.gianlu.commonutils.Drawer.BaseDrawerProfile;
 import com.gianlu.timeless.Utils;
@@ -14,13 +15,20 @@ public class User implements Serializable, BaseDrawerProfile {
     public final String email;
     public final String username;
     public final String id;
+    private final String website;
     private final String full_name;
 
     public User(JSONObject obj) throws JSONException {
         id = obj.getString("id");
+        website = obj.optString("website", null);
         email = Utils.parseStupidNullJSON(obj, "email");
         username = Utils.parseStupidNullJSON(obj, "username");
         full_name = Utils.parseStupidNullJSON(obj, "full_name");
+    }
+
+    @Nullable
+    public String getWebsite() {
+        return website == null || website.isEmpty() ? null : website.trim();
     }
 
     public String getDisplayName() {

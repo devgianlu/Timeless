@@ -3,7 +3,6 @@ package com.gianlu.timeless.Activities;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommitsActivity extends AppCompatActivity implements WakaTime.IProjects {
-    private final List<Fragment> fragments = new ArrayList<>();
+    private final List<CommitsFragment> fragments = new ArrayList<>();
     private ViewPager pager;
     private ProgressDialog pd;
 
@@ -65,7 +64,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
     }
 
     @Override
-    public void onProjects(final List<Project> projects) {
+    public void onProjects(List<Project> projects) {
         for (Project project : projects)
             if (project.hasRepository)
                 fragments.add(CommitsFragment.getInstance(project));
@@ -79,6 +78,12 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.IProj
             int pos = projects.indexOf(Project.find(project_id, projects));
             if (pos != -1) pager.setCurrentItem(pos, false);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        CommitsFragment fragment = fragments.get(pager.getCurrentItem());
+        if (fragment.onBackPressed()) super.onBackPressed();
     }
 
     @Override

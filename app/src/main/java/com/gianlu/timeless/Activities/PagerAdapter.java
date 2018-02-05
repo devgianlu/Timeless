@@ -8,9 +8,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.List;
 
 class PagerAdapter extends FragmentStatePagerAdapter {
-    private final List<Fragment> fragments;
+    private final List<? extends Fragment> fragments;
 
-    PagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+    PagerAdapter(FragmentManager fm, List<? extends Fragment> fragments) {
         super(fm);
         this.fragments = fragments;
     }

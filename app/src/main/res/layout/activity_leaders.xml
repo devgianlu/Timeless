@@ -1,46 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/leaders"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/leaders_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        <LinearLayout
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <TextView
-                android:id="@+id/leaders_rankingText"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/leaders_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:lines="1"
-                android:text="@string/global_rank"
-                android:textAlignment="center"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/white"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </android.support.design.widget.AppBarLayout>
+                android:paddingBottom="16dp">
 
-    <com.gianlu.commonutils.RecyclerViewLayout
-        android:id="@+id/leaders_recyclerViewLayout"
+                <TextView
+                    android:id="@+id/leaders_rankingText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:lines="1"
+                    android:text="@string/global_rank"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </android.support.design.widget.AppBarLayout>
+
+        <com.gianlu.commonutils.RecyclerViewLayout
+            android:id="@+id/leaders_recyclerViewLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/niceBottomSheet_mask"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <include layout="@layout/nice_bottom_sheet" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/niceBottomSheet_action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_web_white_48dp"
+        android:visibility="gone"
+        app:layout_anchor="@+id/niceBottomSheet_header"
+        app:layout_anchorGravity="top|end" />
+</android.support.design.widget.CoordinatorLayout>
 

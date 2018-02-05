@@ -1,11 +1,9 @@
 package com.gianlu.timeless.Activities;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,18 +11,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ScrollView;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
-import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.commonutils.Toaster;
+import com.gianlu.timeless.Activities.Leaders.LeaderSheet;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
-import com.gianlu.timeless.Charting.SquarePieChart;
 import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.Summary;
@@ -33,18 +29,8 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class LeadersActivity extends AppCompatActivity implements WakaTime.ILeaders, LeadersAdapter.IAdapter {
     private LeadersAdapter adapter;
@@ -53,6 +39,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
     private Leader me;
     private WakaTime wakaTime;
     private RecyclerViewLayout recyclerViewLayout;
+    private LeaderSheet sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +56,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         recyclerViewLayout.disableSwipeRefresh();
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         currFilter = findViewById(R.id.leaders_rankingText);
+        sheet = new LeaderSheet((ViewGroup) findViewById(R.id.leaders));
 
         wakaTime = WakaTime.getInstance();
         wakaTime.getLeaders(this);
@@ -127,52 +115,18 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         });
     }
 
-    @SuppressLint("InflateParams")
     private void displayRankDialog(Leader leader) {
-        ScrollView layout = (ScrollView) getLayoutInflater().inflate(R.layout.dialog_leader, null, false);
+        sheet.expand(leader);
+    }
 
-        SuperTextView rank = layout.findViewById(R.id.leaderDialog_rank);
-        rank.setHtml(R.string.rank, leader.rank);
+    @Override
+    public void onBackPressed() {
+        if (sheet != null && sheet.isExpanded()) {
+            sheet.collapse();
+            return;
+        }
 
-        SuperTextView weekTotal = layout.findViewById(R.id.leaderDialog_weekTotal);
-        weekTotal.setHtml(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true));
-
-        SuperTextView dailyAverage = layout.findViewById(R.id.leaderDialog_dailyAverage);
-        dailyAverage.setHtml(R.string.dailyTimeSpent, Utils.timeFormatterHours(leader.daily_average, true));
-
-        SquarePieChart chart = layout.findViewById(R.id.leaderDialog_chart);
-        chart.setDescription(null);
-        chart.setDrawEntryLabels(false);
-        chart.setRotationEnabled(false);
-
-        final Legend legend = chart.getLegend();
-        legend.setWordWrapEnabled(true);
-
-        final List<PieEntry> entries = new ArrayList<>();
-        for (Map.Entry<String, Long> entry : leader.languages.entrySet())
-            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
-
-        PieDataSet set = new PieDataSet(entries, null);
-        set.setValueTextSize(15);
-        set.setSliceSpace(0);
-        set.setValueTextColor(ContextCompat.getColor(this, android.R.color.white));
-        set.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                if (value < 10) return "";
-                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
-            }
-        });
-        set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), this);
-        chart.setData(new PieData(set));
-        chart.setUsePercentValues(true);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(leader.user.getDisplayName())
-                .setView(layout)
-                .setPositiveButton(android.R.string.ok, null);
-
-        CommonUtils.showDialog(this, builder);
+        super.onBackPressed();
     }
 
     @Override

@@ -32,6 +32,15 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
         return fragment;
     }
 
+    public boolean onBackPressed() {
+        if (sheet != null && sheet.isExpanded()) {
+            sheet.collapse();
+            return false;
+        }
+
+        return true;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
