@@ -19,7 +19,7 @@ import com.gianlu.timeless.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommitsActivity extends AppCompatActivity implements WakaTime.IProjects {
+public class CommitsActivity extends AppCompatActivity implements WakaTime.OnProjects {
     private final List<CommitsFragment> fragments = new ArrayList<>();
     private ViewPager pager;
     private ProgressDialog pd;

@@ -2,6 +2,7 @@ package com.gianlu.timeless.Activities.Projects;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,10 +18,9 @@ import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Charting.SaveChartFragment;
 import com.gianlu.timeless.Listing.CardsAdapter;
-import com.gianlu.timeless.Models.Duration;
-import com.gianlu.timeless.Models.GlobalSummary;
+import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.Project;
-import com.gianlu.timeless.Models.Summary;
+import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
@@ -28,12 +28,12 @@ import com.gianlu.timeless.R;
 import java.util.Date;
 import java.util.List;
 
-public class ProjectFragment extends SaveChartFragment implements WakaTime.ISummary, CardsAdapter.IBranches {
+public class ProjectFragment extends SaveChartFragment implements CardsAdapter.IBranches, WakaTime.BatchStuff {
     private Date start;
     private Date end;
     private Project project;
     private RecyclerViewLayout layout;
-    private WakaTime wakaTime;
+    private List<String> currentBranches = null;
 
     public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
         ProjectFragment fragment = new ProjectFragment();
@@ -92,56 +92,48 @@ public class ProjectFragment extends SaveChartFragment implements WakaTime.ISumm
             return layout;
         }
 
-        wakaTime = WakaTime.get();
-        wakaTime.getRangeSummary(start, end, project, null, this);
+        WakaTime.get().batch(this);
 
         return layout;
     }
 
     @Override
-    public void onSummary(final List<Summary> summaries, final GlobalSummary globalSummary, @Nullable final List<String> branches, @Nullable final List<String> selectedBranches) {
-        if (!isAdded()) return;
+    public void onBranchesChanged(List<String> branches) {
+        currentBranches = branches;
+        layout.startLoading();
+        WakaTime.get().batch(this);
+    }
 
-        final CardsAdapter.CardsList cards = new CardsAdapter.CardsList();
-        cards.addBranchSelector(branches, selectedBranches, this)
-                .addGlobalSummary(globalSummary)
-                .addPieChart(R.string.languages, globalSummary.languages)
-                .addPieChart(R.string.branches, globalSummary.branches)
-                .addFileList(R.string.files, globalSummary.entities);
+    @Override
+    public void request(WakaTime.Requester requester, Handler ui) throws Exception {
+        Summaries summaries = requester.summaries(start, end, project, currentBranches);
+
+        CardsAdapter.CardsList cards = new CardsAdapter.CardsList();
+        cards.addBranchSelector(summaries.availableBranches, summaries.selectedBranches, this)
+                .addGlobalSummary(summaries.globalSummary)
+                .addPieChart(R.string.languages, summaries.globalSummary.languages)
+                .addPieChart(R.string.branches, summaries.globalSummary.branches)
+                .addFileList(R.string.files, summaries.globalSummary.entities);
 
         if (start.getTime() == end.getTime()) {
-            wakaTime.getDurations(start, project, branches, new WakaTime.IDurations() {
-                @Override
-                public void onDurations(final List<Duration> durations, List<String> branches) {
-                    if (!isAdded()) return;
-
-                    cards.addDurations(cards.hasBranchSelector() ? 2 : 1, R.string.durations, durations);
-                    layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
-                }
-
-                @Override
-                public void onException(final Exception ex) {
-                    ProjectFragment.this.onException(ex);
-                }
-            });
+            Durations durations = requester.durations(start, project, summaries.availableBranches);
+            cards.addDurations(cards.hasBranchSelector() ? 2 : 1, R.string.durations, durations.durations);
         } else {
-            cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries);
-            layout.loadListData(new CardsAdapter(getContext(), cards, ProjectFragment.this));
+            cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries.summaries);
         }
+
+        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this);
+        ui.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.loadListData(adapter);
+            }
+        });
     }
 
     @Override
-    public void onException(final Exception ex) {
-        if (ex instanceof WakaTimeException) {
-            layout.showMessage(ex.getMessage(), false);
-        } else {
-            layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
-        }
-    }
-
-    @Override
-    public void onBranchesChanged(List<String> branches) {
-        layout.startLoading();
-        wakaTime.getRangeSummary(start, end, project, branches, this);
+    public void somethingWentWrong(Exception ex) {
+        if (ex instanceof WakaTimeException) layout.showMessage(ex.getMessage(), false);
+        else layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
     }
 }

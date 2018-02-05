@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Leader;
+import com.gianlu.timeless.Models.Leaders;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
@@ -73,11 +74,12 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     }
 
     @Override
-    protected void moreContent(final int page, final IContentProvider<Leader> provider) {
-        wakaTime.getLeaders(language, page, new WakaTime.ILeaders() {
+    protected void moreContent(int page, final IContentProvider<Leader> provider) {
+        wakaTime.getLeaders(language, page, new WakaTime.OnLeaders() {
             @Override
-            public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
-                provider.onMoreContent(leaders);
+            public void onLeaders(Leaders leaders) {
+                maxPages = leaders.maxPages;
+                provider.onMoreContent(leaders.leaders);
             }
 
             @Override

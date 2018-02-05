@@ -1,11 +1,11 @@
 package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,10 +16,9 @@ import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
-import com.gianlu.timeless.Models.Duration;
-import com.gianlu.timeless.Models.GlobalSummary;
+import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.Project;
-import com.gianlu.timeless.Models.Summary;
+import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
@@ -28,12 +27,10 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.ISummary {
+public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff {
     private TextView currDay;
-    private Pair<Date, Date> currentDatePair;
-    private WakaTime wakaTime;
+    private Date currentDate;
     private RecyclerViewLayout recyclerViewLayout;
 
     private void updatePage(Date newDate) {
@@ -42,42 +39,11 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
             return;
         }
 
-        currentDatePair = new Pair<>(newDate, newDate);
+        currentDate = newDate;
         currDay.setText(Utils.getVerbalDateFormatter().format(newDate));
 
         recyclerViewLayout.startLoading();
-
-        wakaTime.getRangeSummary(currentDatePair, this);
-    }
-
-    @Override
-    public void onSummary(List<Summary> summaries, final GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable final List<String> selectedBranches) {
-        wakaTime.getDurations(currentDatePair.first, null, new WakaTime.IDurations() {
-            @Override
-            public void onDurations(final List<Duration> durations, List<String> branches) {
-                recyclerViewLayout.loadListData(new CardsAdapter(DailyStatsActivity.this, new CardsAdapter.CardsList()
-                        .addGlobalSummary(globalSummary)
-                        .addDurations(R.string.durations, durations)
-                        .addPieChart(R.string.projects, globalSummary.projects)
-                        .addPieChart(R.string.languages, globalSummary.languages)
-                        .addPieChart(R.string.editors, globalSummary.editors)
-                        .addPieChart(R.string.operatingSystems, globalSummary.operating_systems), DailyStatsActivity.this));
-            }
-
-            @Override
-            public void onException(final Exception ex) {
-                DailyStatsActivity.this.onException(ex);
-            }
-        });
-    }
-
-    @Override
-    public void onException(final Exception ex) {
-        if (ex instanceof WakaTimeException) {
-            recyclerViewLayout.showMessage(ex.getMessage(), false);
-        } else {
-            recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
-        }
+        WakaTime.get().batch(this);
     }
 
     @Override
@@ -118,19 +84,17 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         recyclerViewLayout = findViewById(R.id.dailyStats_recyclerViewLayout);
         recyclerViewLayout.disableSwipeRefresh();
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        final ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
-        final ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
+        ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
+        ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
         currDay = findViewById(R.id.dailyStats_day);
-
-        wakaTime = WakaTime.get();
 
         nextDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentDatePair == null) return;
+                if (currentDate == null) return;
 
                 Calendar cal = Calendar.getInstance();
-                cal.setTime(currentDatePair.first);
+                cal.setTime(currentDate);
                 cal.add(Calendar.DATE, 1);
 
                 updatePage(cal.getTime());
@@ -140,10 +104,10 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         prevDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentDatePair == null) return;
+                if (currentDate == null) return;
 
                 Calendar cal = Calendar.getInstance();
-                cal.setTime(currentDatePair.first);
+                cal.setTime(currentDate);
                 cal.add(Calendar.DATE, -1);
 
                 updatePage(cal.getTime());
@@ -168,5 +132,32 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
         updatePage(cal.getTime());
+    }
+
+    @Override
+    public void request(WakaTime.Requester requester, Handler ui) throws Exception {
+        Summaries summaries = requester.summaries(currentDate, currentDate, null, null);
+        Durations durations = requester.durations(currentDate, null, null);
+
+        final CardsAdapter adapter = new CardsAdapter(this, new CardsAdapter.CardsList()
+                .addGlobalSummary(summaries.globalSummary)
+                .addDurations(R.string.durations, durations.durations)
+                .addPieChart(R.string.projects, summaries.globalSummary.projects)
+                .addPieChart(R.string.languages, summaries.globalSummary.languages)
+                .addPieChart(R.string.editors, summaries.globalSummary.editors)
+                .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems), this);
+
+        ui.post(new Runnable() {
+            @Override
+            public void run() {
+                recyclerViewLayout.loadListData(adapter);
+            }
+        });
+    }
+
+    @Override
+    public void somethingWentWrong(Exception ex) {
+        if (ex instanceof WakaTimeException) recyclerViewLayout.showMessage(ex.getMessage(), false);
+        else recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
     }
 }

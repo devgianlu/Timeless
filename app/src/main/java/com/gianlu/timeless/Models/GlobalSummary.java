@@ -5,7 +5,7 @@ import java.util.List;
 
 public class GlobalSummary extends Summary {
 
-    public GlobalSummary(List<Summary> summaries) {
+    GlobalSummary(List<Summary> summaries) {
         super();
 
         for (Summary summary : summaries) {

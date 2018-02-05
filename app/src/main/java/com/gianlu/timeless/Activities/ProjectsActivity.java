@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class ProjectsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.IProjects {
+public class ProjectsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.OnProjects {
     private Pair<Date, Date> currentRange;
     private ViewPager pager;
     private Date tmpStart;
@@ -178,7 +178,7 @@ public class ProjectsActivity extends AppCompatActivity implements DatePickerDia
 
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
-        wakaTime.getProjects(new WakaTime.IProjects() {
+        wakaTime.getProjects(new WakaTime.OnProjects() {
             @Override
             public void onProjects(List<Project> projects) {
                 final List<Fragment> fragments = new ArrayList<>();

@@ -21,18 +21,16 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Leaders.LeaderSheet;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
-import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.Leader;
-import com.gianlu.timeless.Models.Summary;
+import com.gianlu.timeless.Models.Leaders;
+import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
 
-import java.util.List;
-
-public class LeadersActivity extends AppCompatActivity implements WakaTime.ILeaders, LeadersAdapter.IAdapter {
+public class LeadersActivity extends AppCompatActivity implements LeadersAdapter.IAdapter {
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang;
@@ -59,23 +57,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         sheet = new LeaderSheet((ViewGroup) findViewById(R.id.leaders));
 
         wakaTime = WakaTime.get();
-        wakaTime.getLeaders(this);
-    }
-
-    @Override
-    public void onLeaders(final List<Leader> leaders, Leader me, int maxPages) {
-        LeadersActivity.this.me = me;
-        adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, currLang, this);
-        recyclerViewLayout.loadListData(adapter);
-    }
-
-    @Override
-    public void onException(Exception ex) {
-        if (ex instanceof WakaTimeException) {
-            recyclerViewLayout.showMessage(ex.getMessage(), false);
-        } else {
-            recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
-        }
+        gatherAndUpdate(currLang);
     }
 
     @Override
@@ -86,21 +68,24 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
     private void gatherAndUpdate(@Nullable final String language) {
         recyclerViewLayout.startLoading();
-        wakaTime.getLeaders(language, new WakaTime.ILeaders() {
+        wakaTime.getLeaders(language, 1, new WakaTime.OnLeaders() {
             @Override
-            public void onLeaders(List<Leader> leaders, Leader me, int maxPages) {
-                LeadersActivity.this.me = me;
-                LeadersActivity.this.adapter = new LeadersAdapter(LeadersActivity.this, leaders, maxPages, me, language, LeadersActivity.this);
+            public void onLeaders(Leaders leaders) {
+                me = leaders.me;
+                adapter = new LeadersAdapter(LeadersActivity.this, leaders.leaders, leaders.maxPages, me, language, LeadersActivity.this);
 
                 currFilter.setText(language == null ? getString(R.string.global_rank) : language);
-                recyclerViewLayout.loadListData(LeadersActivity.this.adapter);
+                recyclerViewLayout.loadListData(adapter);
 
                 currLang = language;
             }
 
             @Override
             public void onException(Exception ex) {
-                LeadersActivity.this.onException(ex);
+                if (ex instanceof WakaTimeException)
+                    recyclerViewLayout.showMessage(ex.getMessage(), false);
+                else
+                    recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
             }
         });
     }
@@ -134,6 +119,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
                 showFilterDialog();
                 break;
         }
+
         return true;
     }
 
@@ -141,10 +127,10 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
         final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
         CommonUtils.showDialog(this, pd);
 
-        wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.ISummary() {
+        wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.OnSummary() {
             @Override
-            public void onSummary(List<Summary> summaries, GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable final List<String> selectedBranches) {
-                final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, globalSummary.languages);
+            public void onSummary(Summaries summaries) {
+                final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, summaries.globalSummary.languages);
                 AlertDialog.Builder builder = new AlertDialog.Builder(LeadersActivity.this);
                 builder.setTitle(R.string.filterByLanguage)
                         .setAdapter(adapter, new DialogInterface.OnClickListener() {
@@ -164,6 +150,11 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
                 CommonUtils.showDialog(LeadersActivity.this, builder);
                 pd.dismiss();
+            }
+
+            @Override
+            public void onWakaTimeError(WakaTimeException ex) {
+                onException(ex); // Shouldn't happen
             }
 
             @Override

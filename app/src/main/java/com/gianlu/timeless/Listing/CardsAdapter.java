@@ -28,15 +28,15 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_BRANCH_SELECTOR = 7;
     private final Context context;
     private final LayoutInflater inflater;
-    private final ISaveChart handler;
+    private final ISaveChart listener;
     private final CardsList objs;
 
-    public CardsAdapter(Context context, CardsList objs, ISaveChart handler) {
+    public CardsAdapter(Context context, CardsList objs, ISaveChart listener) {
         this.context = context;
         this.objs = objs;
 
         this.inflater = LayoutInflater.from(context);
-        this.handler = handler;
+        this.listener = listener;
     }
 
     @Override
@@ -74,11 +74,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (holder instanceof SummaryViewHolder) {
             ((SummaryViewHolder) holder).bind(context, (Summary) objs.objs.get(position));
         } else if (holder instanceof LineChartViewHolder) {
-            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), handler);
+            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), listener);
         } else if (holder instanceof BarChartViewHolder) {
-            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), handler);
+            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), listener);
         } else if (holder instanceof PieChartViewHolder) {
-            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), handler);
+            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), listener);
         } else if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
         } else if (holder instanceof DurationsViewHolder) {

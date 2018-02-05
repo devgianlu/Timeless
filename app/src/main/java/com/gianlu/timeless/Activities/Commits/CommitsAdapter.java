@@ -58,7 +58,7 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
 
     @Override
     protected void moreContent(int page, final IContentProvider<Commit> provider) {
-        wakaTime.getCommits(project, page, new WakaTime.ICommits() {
+        wakaTime.getCommits(project, page, new WakaTime.OnCommits() {
             @Override
             public void onCommits(Commits commits) {
                 provider.onMoreContent(commits.commits);

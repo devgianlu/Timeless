@@ -58,7 +58,7 @@ public class LoadingActivity extends AppCompatActivity {
                 WakaTime.refreshToken(LoadingActivity.this, new WakaTime.OnAccessToken() {
                     @Override
                     public void onTokenAccepted() {
-                        WakaTime.get().getCurrentUser(new WakaTime.IUser() {
+                        WakaTime.get().getCurrentUser(new WakaTime.OnUser() {
                             @Override
                             public void onUser(User user) {
                                 goTo(MainActivity.class, user);

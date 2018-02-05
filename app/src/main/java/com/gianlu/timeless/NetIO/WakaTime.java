@@ -11,16 +11,16 @@ import android.support.annotation.Nullable;
 import android.util.LruCache;
 import android.util.Pair;
 
+import com.crashlytics.android.Crashlytics;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.timeless.BuildConfig;
 import com.gianlu.timeless.Models.Commits;
-import com.gianlu.timeless.Models.Duration;
-import com.gianlu.timeless.Models.GlobalSummary;
-import com.gianlu.timeless.Models.Leader;
+import com.gianlu.timeless.Models.Durations;
+import com.gianlu.timeless.Models.Leaders;
 import com.gianlu.timeless.Models.Project;
-import com.gianlu.timeless.Models.Summary;
+import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.PKeys;
 import com.gianlu.timeless.R;
@@ -76,6 +76,7 @@ public class WakaTime {
     private final LruCache<String, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
     private final OAuth2AccessToken token;
     private final SharedPreferences prefs;
+    private final Requester requester;
 
     private WakaTime(Context context, @Nullable OAuth2AccessToken token) {
         this(PreferenceManager.getDefaultSharedPreferences(context), token);
@@ -85,6 +86,7 @@ public class WakaTime {
         this.token = token;
         this.prefs = prefs;
         handler = new Handler(Looper.getMainLooper());
+        requester = new Requester();
     }
 
     public static void accessToken(final Context context, String uri, final OnAccessToken listener) {
@@ -212,285 +214,6 @@ public class WakaTime {
         return Prefs.getBoolean(prefs, PKeys.CACHE_ENABLED, true);
     }
 
-    public void getCurrentUser(final IUser listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current");
-
-                    if (response.getCode() == 200) {
-                        final User user = new User(new JSONObject(response.getBody()).getJSONObject("data"));
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onUser(user);
-                            }
-                        });
-                    } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public void getDurations(final Date day, @Nullable final List<String> branches, final IDurations listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                SimpleDateFormat formatter = getAPIFormatter();
-                try {
-                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date="
-                            + formatter.format(day)
-                            + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
-
-                    if (response.getCode() == 200) {
-                        JSONObject obj = new JSONObject(response.getBody());
-                        final List<String> responseBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
-                        final List<Duration> durations = CommonUtils.toTList(obj.getJSONArray("data"), Duration.class);
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onDurations(durations, responseBranches);
-                            }
-                        });
-                    } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public void getDurations(final Date day, final Project project, @Nullable List<String> branches, final IDurations listener) {
-        getDurations(day, branches, new IDurations() {
-            @Override
-            public void onDurations(List<Duration> durations, List<String> branches) {
-                listener.onDurations(Duration.filter(durations, project.name), branches);
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                listener.onException(ex);
-            }
-        });
-    }
-
-    public void getProjects(final IProjects listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects");
-
-                    if (response.getCode() == 200) {
-                        final List<Project> projects = CommonUtils.toTList(new JSONObject(response.getBody()).getJSONArray("data"), Project.class);
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onProjects(projects);
-                            }
-                        });
-                    } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public void getCommits(final Project project, final ICommits listener) {
-        getCommits(project, 1, listener);
-    }
-
-    public void getCommits(final Project project, final int page, final ICommits listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects/" + project.id + "/commits?page=" + page);
-
-                    if (response.getCode() == 200) {
-                        final Commits commits = new Commits(new JSONObject(response.getBody()));
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onCommits(commits);
-                            }
-                        });
-                    } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public void getLeaders(final ILeaders listener) {
-        getLeaders(null, 1, listener);
-    }
-
-    public void getLeaders(String language, final ILeaders listener) {
-        getLeaders(language, 1, listener);
-    }
-
-    public void getLeaders(@Nullable final String language, final int page, final ILeaders listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Response response = doRequestSync(Verb.GET, BASE_URL + "leaders" +
-                            "?page=" + page +
-                            (language != null ? ("&language=" + language) : ""));
-
-                    if (response.getCode() == 200) {
-                        JSONObject obj = new JSONObject(response.getBody());
-                        final List<Leader> leaders = CommonUtils.toTList(obj.getJSONArray("data"), Leader.class);
-                        final Leader me = new Leader(obj.getJSONObject("current_user"));
-                        final int pages = obj.getInt("total_pages");
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onLeaders(leaders, me, pages);
-                            }
-                        });
-                    } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public void getRangeSummary(Pair<Date, Date> startAndEnd, final ISummary listener) {
-        getRangeSummary(startAndEnd.first, startAndEnd.second, null, null, listener);
-    }
-
-    public void getRangeSummary(final Date start, final Date end, @Nullable final Project project, @Nullable final List<String> branches, final ISummary listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                SimpleDateFormat formatter = getAPIFormatter();
-                try {
-                    final Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/summaries?start="
-                            + formatter.format(start)
-                            + "&end="
-                            + formatter.format(end)
-                            + (project != null ? ("&project=" + project.name) : "")
-                            + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
-
-                    if (response.getCode() == 200) {
-                        JSONObject obj = new JSONObject(response.getBody());
-                        final List<Summary> summaries = CommonUtils.toTList(obj.getJSONArray("data"), Summary.class);
-                        final GlobalSummary globalSummary = new GlobalSummary(summaries);
-                        final List<String> availableBranches;
-                        if (obj.has("available_branches"))
-                            availableBranches = CommonUtils.toStringsList(obj.getJSONArray("available_branches"), true);
-                        else availableBranches = null;
-
-                        final List<String> selectedBranches;
-                        if (obj.has("branches"))
-                            selectedBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
-                        else selectedBranches = null;
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSummary(summaries, globalSummary, availableBranches, selectedBranches);
-                            }
-                        });
-                    } else if (response.getCode() == 400) {
-                        final WakaTimeException ex = new WakaTimeException(response.getBody());
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(ex); // That's not an error
-                            }
-                        });
-                    } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(new StatusCodeException(response.getCode(), response.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException | ExecutionException | IOException | JSONException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
     @NonNull
     private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException {
         CachedResponse cachedResponse;
@@ -530,6 +253,137 @@ public class WakaTime {
         synchronized (memoryCache) {
             return memoryCache.get(url);
         }
+    }
+
+    public void batch(BatchStuff listener) {
+        executorService.execute(new BatchRequest(listener));
+    }
+
+    public void getCurrentUser(final OnUser listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final User user = requester.user();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onUser(user);
+                        }
+                    });
+                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void getLeaders(@Nullable final String language, final int page, final OnLeaders listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Leaders leaders = requester.leaders(language, page);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onLeaders(leaders);
+                        }
+                    });
+                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void getProjects(final OnProjects listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<Project> projects = requester.projects();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onProjects(projects);
+                        }
+                    });
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void getCommits(final Project project, final int page, final OnCommits listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Commits commits = requester.commits(project, page);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onCommits(commits);
+                        }
+                    });
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void getRangeSummary(final Pair<Date, Date> startAndEnd, final OnSummary listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onSummary(summaries);
+                        }
+                    });
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
+                } catch (final WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWakaTimeError(ex);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public enum Range {
@@ -582,37 +436,33 @@ public class WakaTime {
         }
     }
 
-    public interface IDurations {
-        void onDurations(List<Duration> durations, List<String> branches);
+    public interface OnLeaders {
+        void onLeaders(Leaders leaders);
 
         void onException(Exception ex);
     }
 
-    public interface ILeaders {
-        void onLeaders(List<Leader> leaders, Leader me, int maxPages);
+    public interface OnSummary {
+        void onSummary(Summaries summaries);
+
+        void onWakaTimeError(WakaTimeException ex);
 
         void onException(Exception ex);
     }
 
-    public interface ISummary {
-        void onSummary(List<Summary> summaries, GlobalSummary globalSummary, @Nullable List<String> branches, @Nullable List<String> selectedBranches);
-
-        void onException(Exception ex);
-    }
-
-    public interface IProjects {
+    public interface OnProjects {
         void onProjects(List<Project> projects);
 
         void onException(Exception ex);
     }
 
-    public interface ICommits {
+    public interface OnCommits {
         void onCommits(Commits commits);
 
         void onException(Exception ex);
     }
 
-    public interface IUser {
+    public interface OnUser {
         void onUser(User user);
 
         void onException(Exception ex);
@@ -622,6 +472,12 @@ public class WakaTime {
         void onTokenAccepted();
 
         void onException(Throwable ex);
+    }
+
+    public interface BatchStuff {
+        void request(Requester requester, Handler ui) throws Exception;
+
+        void somethingWentWrong(Exception ex); // Always on UI thread
     }
 
     public static class ShouldGetAccessToken extends RuntimeException {
@@ -654,6 +510,97 @@ public class WakaTime {
             protected String getAuthorizationBaseUrl() {
                 return "https://wakatime.com/oauth/authorize";
             }
+        }
+    }
+
+    public class BatchRequest implements Runnable {
+        private final BatchStuff stuff;
+
+        private BatchRequest(@NonNull BatchStuff stuff) {
+            this.stuff = stuff;
+        }
+
+        @Override
+        public void run() {
+            try {
+                stuff.request(requester, handler);
+            } catch (final Exception ex) {
+                Logging.log(ex);
+
+                if (ex instanceof RuntimeException) Crashlytics.logException(ex);
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        stuff.somethingWentWrong(ex);
+                    }
+                });
+            }
+        }
+    }
+
+    public class Requester {
+
+        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException {
+            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date=" + getAPIFormatter().format(day)
+                    + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
+
+            if (response.getCode() == 200)
+                return new Durations(new JSONObject(response.getBody()), project);
+            else throw new StatusCodeException(response);
+        }
+
+        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, WakaTimeException {
+            return summaries(startAndEnd.first, startAndEnd.second, project, branches);
+        }
+
+        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, WakaTimeException {
+            SimpleDateFormat formatter = getAPIFormatter();
+            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/summaries?start=" + formatter.format(start)
+                    + "&end=" + formatter.format(end)
+                    + (project != null ? ("&project=" + project.name) : "")
+                    + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
+
+            if (response.getCode() == 200) {
+                return new Summaries(new JSONObject(response.getBody()));
+            } else if (response.getCode() == 400) {
+                throw new WakaTimeException(response.getBody());
+            } else {
+                throw new StatusCodeException(response);
+            }
+        }
+
+        public Commits commits(Project project, int page) throws IOException, StatusCodeException, ExecutionException, InterruptedException, JSONException {
+            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects/" + project.id + "/commits?page=" + page);
+
+            if (response.getCode() == 200) return new Commits(new JSONObject(response.getBody()));
+            else throw new StatusCodeException(response);
+        }
+
+        public Leaders leaders(@Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException {
+            Response response = doRequestSync(Verb.GET, BASE_URL + "leaders" +
+                    "?page=" + page +
+                    (language != null ? ("&language=" + language) : ""));
+
+            if (response.getCode() == 200) return new Leaders(new JSONObject(response.getBody()));
+            else throw new StatusCodeException(response);
+        }
+
+        public List<Project> projects() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException {
+            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects");
+
+            if (response.getCode() == 200)
+                return CommonUtils.toTList(new JSONObject(response.getBody()).getJSONArray("data"), Project.class);
+            else
+                throw new StatusCodeException(response);
+        }
+
+        public User user() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException {
+            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current");
+            if (response.getCode() == 200)
+                return new User(new JSONObject(response.getBody()).getJSONObject("data"));
+            else
+                throw new StatusCodeException(response);
         }
     }
 }

@@ -18,7 +18,7 @@ import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 
-public class CommitsFragment extends Fragment implements WakaTime.ICommits, CommitsAdapter.IAdapter {
+public class CommitsFragment extends Fragment implements WakaTime.OnCommits, CommitsAdapter.IAdapter {
     private RecyclerViewLayout recyclerViewLayout;
     private CommitSheet sheet;
 
@@ -57,7 +57,7 @@ public class CommitsFragment extends Fragment implements WakaTime.ICommits, Comm
             return layout;
         }
 
-        WakaTime.get().getCommits(project, this);
+        WakaTime.get().getCommits(project, 1, this);
 
         return layout;
     }
