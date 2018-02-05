@@ -44,7 +44,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
     private final ImageButton save;
 
     BarChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.bar_chart_card, parent, false));
+        super(inflater.inflate(R.layout.card_chart_bar, parent, false));
 
         title = itemView.findViewById(R.id.barChartCard_title);
         chart = itemView.findViewById(R.id.barChartCard_chart);

@@ -129,7 +129,7 @@ public class LeadersActivity extends AppCompatActivity implements WakaTime.ILead
 
     @SuppressLint("InflateParams")
     private void displayRankDialog(Leader leader) {
-        ScrollView layout = (ScrollView) getLayoutInflater().inflate(R.layout.leader_dialog, null, false);
+        ScrollView layout = (ScrollView) getLayoutInflater().inflate(R.layout.dialog_leader, null, false);
 
         SuperTextView rank = layout.findViewById(R.id.leaderDialog_rank);
         rank.setHtml(R.string.rank, leader.rank);

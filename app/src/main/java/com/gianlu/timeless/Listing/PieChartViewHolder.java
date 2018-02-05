@@ -46,7 +46,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
     private final int colorAccent;
 
     PieChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.pie_chart_card, parent, false));
+        super(inflater.inflate(R.layout.card_chart_pie, parent, false));
 
         title = itemView.findViewById(R.id.pieChartCard_title);
         save = itemView.findViewById(R.id.pieChartCard_save);

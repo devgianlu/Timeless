@@ -70,7 +70,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
 
     @Override
     protected RecyclerView.ViewHolder createViewHolder(ViewGroup parent) {
-        return new ViewHolder(inflater.inflate(R.layout.leader_item, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.item_leader, parent, false));
     }
 
     @Override

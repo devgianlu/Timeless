@@ -17,7 +17,7 @@ class DurationsViewHolder extends RecyclerView.ViewHolder {
     public final TextView title;
 
     DurationsViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.durations_card, parent, false));
+        super(inflater.inflate(R.layout.card_durations, parent, false));
 
         title = itemView.findViewById(R.id.durationsCard_title);
         durationsView = itemView.findViewById(R.id.durationsCard_view);

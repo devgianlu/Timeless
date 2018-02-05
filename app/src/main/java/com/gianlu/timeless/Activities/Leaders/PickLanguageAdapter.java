@@ -47,7 +47,7 @@ public class PickLanguageAdapter extends BaseAdapter {
     @SuppressLint("ViewHolder")
     public View getView(int position, View view, ViewGroup parent) {
         String name = getItem(position).name;
-        view = inflater.inflate(R.layout.pick_language_item, parent, false);
+        view = inflater.inflate(R.layout.item_pick_language, parent, false);
 
         TextView language = (TextView) ((ViewGroup) view).getChildAt(0);
         language.setText(name);

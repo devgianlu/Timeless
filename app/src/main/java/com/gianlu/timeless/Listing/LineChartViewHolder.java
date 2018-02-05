@@ -37,7 +37,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
     private final ImageButton save;
 
     LineChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.line_chart_card, parent, false));
+        super(inflater.inflate(R.layout.card_chart_line, parent, false));
 
         title = itemView.findViewById(R.id.lineChartCard_title);
         chart = itemView.findViewById(R.id.lineChartCard_chart);

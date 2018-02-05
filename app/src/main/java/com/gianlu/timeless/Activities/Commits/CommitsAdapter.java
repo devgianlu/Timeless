@@ -19,7 +19,7 @@ import com.gianlu.timeless.Utils;
 
 import java.util.Date;
 
-class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
+public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
     private final Project project;
     private final IAdapter handler;
     private final WakaTime wakaTime;
@@ -54,7 +54,7 @@ class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter
 
     @Override
     protected ViewHolder createViewHolder(ViewGroup parent) {
-        return new ViewHolder(inflater.inflate(R.layout.commit_item, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.item_commit, parent, false));
     }
 
     @Override

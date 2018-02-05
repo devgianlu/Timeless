@@ -26,7 +26,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
     private List<String> selectedBranches = null;
 
     BranchSelectorViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.branch_selector_item, parent, false));
+        super(inflater.inflate(R.layout.item_branch_selector, parent, false));
 
         select = itemView.findViewById(R.id.branchSelectorItem_select);
         selected = itemView.findViewById(R.id.branchSelectorItem_selected);

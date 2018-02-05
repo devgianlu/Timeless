@@ -30,7 +30,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(inflater.inflate(R.layout.logged_entity_item, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.item_logged_entity, parent, false));
     }
 
     @SuppressWarnings("deprecation")
