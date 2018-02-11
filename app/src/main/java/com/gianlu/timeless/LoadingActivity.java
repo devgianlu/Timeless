@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Logging;
+import com.gianlu.commonutils.OfflineActivity;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
@@ -83,12 +84,7 @@ public class LoadingActivity extends AppCompatActivity {
 
             @Override
             public void offline() {
-                Toaster.show(LoadingActivity.this, Toaster.Message.OFFLINE, new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
+                OfflineActivity.startActivity(LoadingActivity.this, R.string.app_name, LoadingActivity.class);
             }
         });
     }
