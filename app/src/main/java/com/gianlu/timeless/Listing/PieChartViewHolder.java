@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -105,7 +106,22 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonUtils.handleCollapseClick(expand, details);
+                CommonUtils.handleCollapseClick(expand, details, new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        if (!CommonUtils.isExpanded(details)) deselectDetails();
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
             }
         });
 
@@ -126,35 +142,42 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                if (!CommonUtils.isExpanded(details))
-                    expand.callOnClick();
-
-                for (int i = 0; i < details.getChildCount(); i++) {
-                    View view = details.getChildAt(i);
-                    if (view instanceof TextView) {
-                        if (Objects.equals(view.getTag(), ((PieEntry) e).getLabel()))
-                            ((TextView) view).setTextColor(colorAccent);
-                        else
-                            ((TextView) view).setTextColor(Color.WHITE);
-                    }
-                }
+                if (!CommonUtils.isExpanded(details)) expand.callOnClick();
+                selectDetails((PieEntry) e);
             }
 
             @Override
             public void onNothingSelected() {
-                if (CommonUtils.isExpanded(details))
-                    expand.callOnClick();
-
-                for (int i = 0; i < details.getChildCount(); i++) {
-                    View view = details.getChildAt(i);
-                    if (view instanceof TextView) ((TextView) view).setTextColor(Color.WHITE);
-                }
+                if (CommonUtils.isExpanded(details)) expand.callOnClick();
+                deselectDetails();
             }
         });
 
         if (total_seconds == 0) {
             expand.setVisibility(View.GONE);
             chart.clear();
+        }
+    }
+
+    private void selectDetails(PieEntry entry) {
+        for (int i = 0; i < details.getChildCount(); i++) {
+            View view = details.getChildAt(i);
+            if (view instanceof TextView) {
+                if (Objects.equals(view.getTag(), entry.getLabel()))
+                    ((TextView) view).setTextColor(colorAccent);
+                else
+                    ((TextView) view).setTextColor(Color.WHITE);
+
+                break;
+            }
+        }
+    }
+
+    private void deselectDetails() {
+        chart.highlightValue(null);
+        for (int i = 0; i < details.getChildCount(); i++) {
+            View view = details.getChildAt(i);
+            if (view instanceof TextView) ((TextView) view).setTextColor(Color.WHITE);
         }
     }
 }
