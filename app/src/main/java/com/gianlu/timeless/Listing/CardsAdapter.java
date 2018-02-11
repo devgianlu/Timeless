@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Listing;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +32,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final ISaveChart listener;
     private final CardsList objs;
 
-    public CardsAdapter(Context context, CardsList objs, ISaveChart listener) {
+    public CardsAdapter(@NonNull Context context, CardsList objs, ISaveChart listener) {
         this.context = context;
         this.objs = objs;
 

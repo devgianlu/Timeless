@@ -64,7 +64,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     public void request(WakaTime.Requester requester, Handler ui) throws Exception {
         Summaries summaries = requester.summaries(range.getStartAndEnd(), null, null);
 
-        final CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+        CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                 .addGlobalSummary(summaries.globalSummary)
                 .addPieChart(R.string.projects, summaries.globalSummary.projects)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
@@ -81,10 +81,12 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
             cards.addProjectsBarChart(1, R.string.periodActivity, summaries.summaries);
         }
 
+        if (getContext() == null) return;
+        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, MainFragment.this);
         ui.post(new Runnable() {
             @Override
             public void run() {
-                layout.loadListData(new CardsAdapter(getContext(), cards, MainFragment.this));
+                layout.loadListData(adapter);
             }
         });
     }

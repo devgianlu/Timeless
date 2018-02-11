@@ -122,6 +122,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
             cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries.summaries);
         }
 
+        if (getContext() == null) return;
         final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this);
         ui.post(new Runnable() {
             @Override

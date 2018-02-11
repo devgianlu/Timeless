@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities.Projects;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     private final List<LoggedEntity> files;
     private final LayoutInflater inflater;
 
-    public FilesAdapter(Context context, List<LoggedEntity> files) {
+    public FilesAdapter(@NonNull Context context, List<LoggedEntity> files) {
         this.files = new ArrayList<>();
         for (LoggedEntity entity : files)
             if (entity.total_seconds > 0)
