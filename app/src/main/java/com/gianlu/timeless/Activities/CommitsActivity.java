@@ -81,6 +81,11 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.OnPro
 
     @Override
     public void onBackPressed() {
+        if (fragments.isEmpty()) {
+            super.onBackPressed();
+            return;
+        }
+
         CommitsFragment fragment = fragments.get(pager.getCurrentItem());
         if (fragment.onBackPressed()) super.onBackPressed();
     }
