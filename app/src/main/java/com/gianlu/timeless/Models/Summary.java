@@ -39,6 +39,7 @@ public class Summary {
     }
 
     @Keep
+    @SuppressWarnings("unused")
     public Summary(JSONObject obj) throws JSONException, ParseException {
         total_seconds = obj.getJSONObject("grand_total").getLong("total_seconds");
 
@@ -52,10 +53,13 @@ public class Summary {
             branches = CommonUtils.toTList(obj.getJSONArray("branches"), LoggedEntity.class);
         else branches = new ArrayList<>();
 
+        if (obj.has("entities"))
+            entities = CommonUtils.toTList(obj.getJSONArray("entities"), LoggedEntity.class);
+        else entities = new ArrayList<>();
+
         languages = CommonUtils.toTList(obj.getJSONArray("languages"), LoggedEntity.class);
         editors = CommonUtils.toTList(obj.getJSONArray("editors"), LoggedEntity.class);
         operating_systems = CommonUtils.toTList(obj.getJSONArray("operating_systems"), LoggedEntity.class);
-        entities = CommonUtils.toTList(obj.getJSONArray("entities"), LoggedEntity.class);
 
         Collections.sort(entities, new LoggedEntity.TotalSecondsComparator());
     }
