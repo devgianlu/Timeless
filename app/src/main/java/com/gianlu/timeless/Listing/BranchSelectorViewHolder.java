@@ -32,7 +32,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         selected = itemView.findViewById(R.id.branchSelectorItem_selected);
     }
 
-    void bind(final Context context, final Config config) {
+    void bind(final Context context, final Config config, final CardsAdapter.IAdapter listener) {
         if (config.selectedBranches.isEmpty())
             selectedBranches = new ArrayList<>(config.branches);
         else selectedBranches = new ArrayList<>(config.selectedBranches);
@@ -41,12 +41,12 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showBranchesDialog(context, config.branches, config.listener);
+                showBranchesDialog(context, config.branches, config.listener, listener);
             }
         });
     }
 
-    private void showBranchesDialog(final Context context, final List<String> allBranches, final CardsAdapter.IBranches listener) {
+    private void showBranchesDialog(final Context context, final List<String> allBranches, final CardsAdapter.IBranches branchesListener, CardsAdapter.IAdapter listener) {
         final boolean[] selectedBranchesBoolean = new boolean[allBranches.size()];
         for (int i = 0; i < allBranches.size(); i++)
             selectedBranchesBoolean[i] = selectedBranches.contains(allBranches.get(i));
@@ -75,13 +75,13 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
                         selectedBranches.clear();
                         selectedBranches.addAll(selectedBranchesTemp);
 
-                        if (listener != null)
-                            listener.onBranchesChanged(selectedBranches);
+                        if (branchesListener != null)
+                            branchesListener.onBranchesChanged(selectedBranches);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null);
 
-        CommonUtils.showDialog(context, builder);
+        if (listener != null) listener.showDialog(builder);
         ThisApplication.sendAnalytics(context, Utils.ACTION_CHANGE_SELECTED_BRANCHES);
     }
 

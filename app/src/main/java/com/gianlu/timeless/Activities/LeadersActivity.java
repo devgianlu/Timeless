@@ -1,12 +1,10 @@
 package com.gianlu.timeless.Activities;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,7 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
-import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Leaders.LeaderSheet;
@@ -30,7 +29,7 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
 
-public class LeadersActivity extends AppCompatActivity implements LeadersAdapter.IAdapter {
+public class LeadersActivity extends ActivityWithDialog implements LeadersAdapter.IAdapter {
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang;
@@ -124,8 +123,7 @@ public class LeadersActivity extends AppCompatActivity implements LeadersAdapter
     }
 
     private void showFilterDialog() {
-        final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
-        CommonUtils.showDialog(this, pd);
+        showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
 
         wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.OnSummary() {
             @Override
@@ -148,8 +146,8 @@ public class LeadersActivity extends AppCompatActivity implements LeadersAdapter
                         })
                         .setNegativeButton(android.R.string.cancel, null);
 
-                CommonUtils.showDialog(LeadersActivity.this, builder);
-                pd.dismiss();
+                dismissDialog();
+                showDialog(builder);
             }
 
             @Override
@@ -160,7 +158,7 @@ public class LeadersActivity extends AppCompatActivity implements LeadersAdapter
             @Override
             public void onException(Exception ex) {
                 Toaster.show(LeadersActivity.this, Utils.Messages.FAILED_LOADING, ex);
-                pd.dismiss();
+                dismissDialog();
             }
         });
     }

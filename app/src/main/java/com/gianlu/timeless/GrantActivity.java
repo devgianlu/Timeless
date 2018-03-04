@@ -1,38 +1,36 @@
 package com.gianlu.timeless;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.NetIO.WakaTime;
 
-public class GrantActivity extends AppCompatActivity {
+public class GrantActivity extends ActivityWithDialog {
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         if (intent.getDataString() != null) {
-            final ProgressDialog pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.checkingPermissions);
-            CommonUtils.showDialog(this, pd);
+            showDialog(DialogUtils.progressDialog(this, R.string.checkingPermissions));
             WakaTime.accessToken(this, intent.getDataString(), new WakaTime.OnAccessToken() {
                 @Override
                 public void onTokenAccepted() {
                     Prefs.putBoolean(GrantActivity.this, PKeys.FIRST_RUN, false);
-                    pd.dismiss();
+                    dismissDialog();
                     startActivity(new Intent(GrantActivity.this, LoadingActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
 
                 @Override
                 public void onException(Throwable ex) {
-                    pd.dismiss();
+                    dismissDialog();
                     Toaster.show(GrantActivity.this, Utils.Messages.CANT_CHECK_GRANT, ex);
                 }
             });

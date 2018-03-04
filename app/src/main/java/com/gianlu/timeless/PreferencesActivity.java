@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 
-import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.LogsActivity;
 import com.gianlu.commonutils.Preferences.AppCompatPreferenceActivity;
 import com.gianlu.commonutils.Preferences.AppCompatPreferenceFragment;
@@ -72,7 +71,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
             findPreference("mpAndroidChart").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
-                    CommonUtils.showDialog(getActivity(), builder
+                    showDialog(builder
                             .setTitle("MPAndroidChart")
                             .setMessage(R.string.mpAndroidChart_details));
                     return true;
@@ -81,7 +80,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
             findPreference("materialDateRangePicker").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
-                    CommonUtils.showDialog(getActivity(), builder
+                    showDialog(builder
                             .setTitle("MaterialDateRangePicker")
                             .setMessage(R.string.materialDateRangePicker_details));
                     return true;
@@ -90,7 +89,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
             findPreference("scribejava").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
-                    CommonUtils.showDialog(getActivity(), builder
+                    showDialog(builder
                             .setTitle("ScribeJava")
                             .setMessage(R.string.scribejava_details));
                     return true;

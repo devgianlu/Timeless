@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -29,19 +30,22 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_BRANCH_SELECTOR = 7;
     private final Context context;
     private final LayoutInflater inflater;
-    private final ISaveChart listener;
+    private final IAdapter listener;
+    private final ISaveChart saveChartListener;
     private final CardsList objs;
 
-    public CardsAdapter(@NonNull Context context, CardsList objs, ISaveChart listener) {
+    public CardsAdapter(@NonNull Context context, CardsList objs, IAdapter listener, ISaveChart saveChartListener) {
         this.context = context;
         this.objs = objs;
 
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
+        this.saveChartListener = saveChartListener;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_SUMMARY:
                 return new SummaryViewHolder(inflater, parent);
@@ -60,7 +64,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             case TYPE_BRANCH_SELECTOR:
                 return new BranchSelectorViewHolder(inflater, parent);
             default:
-                return null;
+                throw new IllegalStateException("Unknown view type: " + viewType);
         }
     }
 
@@ -71,15 +75,15 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SummaryViewHolder) {
             ((SummaryViewHolder) holder).bind(context, (Summary) objs.objs.get(position));
         } else if (holder instanceof LineChartViewHolder) {
-            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), listener);
+            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof BarChartViewHolder) {
-            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), listener);
+            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof PieChartViewHolder) {
-            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), listener);
+            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
         } else if (holder instanceof DurationsViewHolder) {
@@ -87,7 +91,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else if (holder instanceof PercentageViewHolder) {
             ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Pair<Long, Float>) objs.objs.get(position));
         } else if (holder instanceof BranchSelectorViewHolder) {
-            ((BranchSelectorViewHolder) holder).bind(context, (BranchSelectorViewHolder.Config) objs.objs.get(position));
+            ((BranchSelectorViewHolder) holder).bind(context, (BranchSelectorViewHolder.Config) objs.objs.get(position), listener);
         }
 
         if (!(holder instanceof BranchSelectorViewHolder))
@@ -97,6 +101,10 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
         return objs.objs.size();
+    }
+
+    public interface IAdapter {
+        void showDialog(AlertDialog.Builder builder);
     }
 
     public interface IPermissionRequest {

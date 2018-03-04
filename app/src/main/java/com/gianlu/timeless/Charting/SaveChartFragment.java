@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Toast;
 
-import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.R;
@@ -28,7 +28,7 @@ public abstract class SaveChartFragment extends Fragment implements ISaveChart {
 
         this.handler = handler;
         if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            CommonUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
+            DialogUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.writeExternalStorageRequest_title)
                     .setMessage(R.string.writeExternalStorageRequest_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

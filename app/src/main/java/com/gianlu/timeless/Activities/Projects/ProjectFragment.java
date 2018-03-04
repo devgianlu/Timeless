@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Charting.SaveChartFragment;
@@ -28,7 +30,7 @@ import com.gianlu.timeless.R;
 import java.util.Date;
 import java.util.List;
 
-public class ProjectFragment extends SaveChartFragment implements CardsAdapter.IBranches, WakaTime.BatchStuff {
+public class ProjectFragment extends SaveChartFragment implements CardsAdapter.IBranches, WakaTime.BatchStuff, CardsAdapter.IAdapter {
     private Date start;
     private Date end;
     private Project project;
@@ -123,7 +125,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
         }
 
         if (getContext() == null) return;
-        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this);
+        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this, this);
         ui.post(new Runnable() {
             @Override
             public void run() {
@@ -136,5 +138,10 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     public void somethingWentWrong(Exception ex) {
         if (ex instanceof WakaTimeException) layout.showMessage(ex.getMessage(), false);
         else layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
+    }
+
+    @Override
+    public void showDialog(AlertDialog.Builder builder) {
+        DialogUtils.showDialog(getActivity(), builder);
     }
 }

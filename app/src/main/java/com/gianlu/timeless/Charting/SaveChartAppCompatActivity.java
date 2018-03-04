@@ -6,11 +6,10 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.R;
@@ -19,7 +18,7 @@ import com.gianlu.timeless.Utils;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class SaveChartAppCompatActivity extends AppCompatActivity implements ISaveChart {
+public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements ISaveChart {
     private static final int REQUEST_CODE = 4534;
     private CardsAdapter.IPermissionRequest handler;
 
@@ -27,7 +26,7 @@ public abstract class SaveChartAppCompatActivity extends AppCompatActivity imple
     public final void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
         this.handler = handler;
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            CommonUtils.showDialog(this, new AlertDialog.Builder(this)
+            showDialog(new AlertDialog.Builder(this)
                     .setTitle(R.string.writeExternalStorageRequest_title)
                     .setMessage(R.string.writeExternalStorageRequest_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

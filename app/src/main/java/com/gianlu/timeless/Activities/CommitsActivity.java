@@ -1,14 +1,13 @@
 package com.gianlu.timeless.Activities;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Commits.CommitsFragment;
 import com.gianlu.timeless.Models.Project;
@@ -19,10 +18,9 @@ import com.gianlu.timeless.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommitsActivity extends AppCompatActivity implements WakaTime.OnProjects {
+public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnProjects {
     private final List<CommitsFragment> fragments = new ArrayList<>();
     private ViewPager pager;
-    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +54,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.OnPro
             }
         });
 
-        pd = CommonUtils.fastIndeterminateProgressDialog(this, R.string.loadingData);
-        CommonUtils.showDialog(this, pd);
-
+        showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
         WakaTime.get().getProjects(this);
     }
 
@@ -70,7 +66,7 @@ public class CommitsActivity extends AppCompatActivity implements WakaTime.OnPro
 
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
         pager.setOffscreenPageLimit(fragments.size());
-        pd.dismiss();
+        dismissDialog();
 
         String project_id = getIntent().getStringExtra("project_id");
         if (project_id != null) {
