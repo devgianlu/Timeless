@@ -162,10 +162,10 @@ public class WakaTime {
         }.start();
     }
 
-    private static void refreshTokenSync(SharedPreferences prefs) throws ShouldGetAccessToken, InterruptedException, ExecutionException, IOException {
+    private static void refreshTokenSync(SharedPreferences prefs) throws InterruptedException, ExecutionException, IOException {
         String refreshToken = loadRefreshToken(prefs);
         if (refreshToken == null || refreshToken.isEmpty())
-            throw new ShouldGetAccessToken(); // Handled by ThisApplication
+            throw ShouldGetAccessToken.throwNow();
 
         OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
         storeRefreshToken(prefs, token);
@@ -174,7 +174,7 @@ public class WakaTime {
 
     @NonNull
     public static WakaTime get() {
-        if (instance == null) throw new ShouldGetAccessToken();
+        if (instance == null) throw ShouldGetAccessToken.throwNow();
         return instance;
     }
 
@@ -481,6 +481,16 @@ public class WakaTime {
     }
 
     public static class ShouldGetAccessToken extends RuntimeException {
+
+        private ShouldGetAccessToken() {
+        }
+
+        static Error throwNow() {
+            Thread.UncaughtExceptionHandler ueh = Thread.getDefaultUncaughtExceptionHandler();
+            ShouldGetAccessToken ex = new ShouldGetAccessToken();
+            if (ueh != null) ueh.uncaughtException(Thread.currentThread(), ex);
+            return new Error(ex);
+        }
     }
 
     private static class CachedResponse {
