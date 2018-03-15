@@ -143,7 +143,12 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 if (!CommonUtils.isExpanded(details)) expand.callOnClick();
-                selectDetails((PieEntry) e);
+
+                try {
+                    selectDetails((PieEntry) e);
+                } catch (Throwable ex) {
+                    ex.printStackTrace();
+                }
             }
 
             @Override
@@ -163,12 +168,11 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         for (int i = 0; i < details.getChildCount(); i++) {
             View view = details.getChildAt(i);
             if (view instanceof TextView) {
-                if (Objects.equals(view.getTag(), entry.getLabel()))
+                if (Objects.equals(view.getTag(), entry.getLabel())) {
                     ((TextView) view).setTextColor(colorAccent);
-                else
+                } else {
                     ((TextView) view).setTextColor(Color.WHITE);
-
-                break;
+                }
             }
         }
     }
