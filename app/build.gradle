@@ -8,8 +8,8 @@ android {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 33
-        versionName "1.6.1"
+        versionCode 34
+        versionName "1.6.2"
     }
 
     buildTypes {
