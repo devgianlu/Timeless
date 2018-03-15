@@ -59,6 +59,7 @@ public class WakaTime {
     private static final int MAX_CACHE_SIZE = 20;
     private static final OAuth20Service SERVICE;
     private static WakaTime instance;
+    private static OnShouldGetToken shouldGetTokenListener = null;
 
     static {
         ServiceBuilder builder = new ServiceBuilder(APP_ID)
@@ -164,8 +165,9 @@ public class WakaTime {
 
     private static void refreshTokenSync(SharedPreferences prefs) throws InterruptedException, ExecutionException, IOException {
         String refreshToken = loadRefreshToken(prefs);
-        if (refreshToken == null || refreshToken.isEmpty())
+        if (refreshToken == null || refreshToken.isEmpty()) {
             throw ShouldGetAccessToken.throwNow();
+        }
 
         OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
         storeRefreshToken(prefs, token);
@@ -203,6 +205,10 @@ public class WakaTime {
 
     public static String authorizationUrl() {
         return SERVICE.getAuthorizationUrl();
+    }
+
+    public static void setShouldGetTokenListener(OnShouldGetToken listener) {
+        shouldGetTokenListener = listener;
     }
 
     public void cacheEnabledChanged() {
@@ -436,6 +442,10 @@ public class WakaTime {
         }
     }
 
+    public interface OnShouldGetToken {
+        void thrownException(ShouldGetAccessToken ex);
+    }
+
     public interface OnLeaders {
         void onLeaders(Leaders leaders);
 
@@ -486,9 +496,13 @@ public class WakaTime {
         }
 
         static Error throwNow() {
-            Thread.UncaughtExceptionHandler ueh = Thread.getDefaultUncaughtExceptionHandler();
             ShouldGetAccessToken ex = new ShouldGetAccessToken();
-            if (ueh != null) ueh.uncaughtException(Thread.currentThread(), ex);
+            if (shouldGetTokenListener != null) {
+                shouldGetTokenListener.thrownException(ex);
+            } else if (Thread.getDefaultUncaughtExceptionHandler() != null) {
+                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), ex);
+            }
+
             return new Error(ex);
         }
     }

@@ -15,7 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class ThisApplication extends AnalyticsApplication {
+public class ThisApplication extends AnalyticsApplication implements WakaTime.OnShouldGetToken {
 
     @Override
     public void onCreate() {
@@ -34,6 +34,8 @@ public class ThisApplication extends AnalyticsApplication {
             }
         });
 
+        WakaTime.setShouldGetTokenListener(this);
+
         // Backward compatibility
         if (!Prefs.has(this, PKeys.TOKEN)) {
             try {
@@ -47,11 +49,15 @@ public class ThisApplication extends AnalyticsApplication {
         }
     }
 
+    private void startGrant() {
+        startActivity(new Intent(this, GrantActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    }
+
     @Override
     protected boolean uncaughtNotDebug(Thread thread, Throwable throwable) {
         if (throwable instanceof WakaTime.ShouldGetAccessToken) {
-            startActivity(new Intent(this, GrantActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            startGrant();
             return false;
         }
 
@@ -61,5 +67,11 @@ public class ThisApplication extends AnalyticsApplication {
     @Override
     protected boolean isDebug() {
         return BuildConfig.DEBUG;
+    }
+
+    @Override
+    public void thrownException(WakaTime.ShouldGetAccessToken ex) {
+        Logging.log(ex);
+        startGrant();
     }
 }
