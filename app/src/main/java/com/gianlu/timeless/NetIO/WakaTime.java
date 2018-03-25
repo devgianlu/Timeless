@@ -58,6 +58,7 @@ public class WakaTime {
     private static final long MAX_CACHE_AGE = TimeUnit.MINUTES.toMillis(10);
     private static final int MAX_CACHE_SIZE = 20;
     private static final OAuth20Service SERVICE;
+    private static final Object getTokenLock = new Object();
     private static WakaTime instance;
     private static OnShouldGetToken shouldGetTokenListener = null;
 
@@ -97,29 +98,45 @@ public class WakaTime {
         new Thread() {
             @Override
             public void run() {
-                SERVICE.getAccessToken(auth.getCode(), new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
-                    @Override
-                    public void onCompleted(OAuth2AccessToken response) {
-                        storeRefreshToken(context, response);
-                        instance = new WakaTime(context, response);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onTokenAccepted();
-                            }
-                        });
-                    }
+                synchronized (getTokenLock) {
+                    SERVICE.getAccessToken(auth.getCode(), new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
+                        @Override
+                        public void onCompleted(OAuth2AccessToken response) {
+                            storeRefreshToken(context, response);
+                            instance = new WakaTime(context, response);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onTokenAccepted();
+                                }
+                            });
 
-                    @Override
-                    public void onThrowable(final Throwable ex) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(ex);
+                            synchronized (getTokenLock) {
+                                getTokenLock.notifyAll();
                             }
-                        });
+                        }
+
+                        @Override
+                        public void onThrowable(final Throwable ex) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onException(ex);
+                                }
+                            });
+
+                            synchronized (getTokenLock) {
+                                getTokenLock.notifyAll();
+                            }
+                        }
+                    });
+
+                    try {
+                        getTokenLock.wait();
+                    } catch (InterruptedException ex) {
+                        Logging.log(ex);
                     }
-                });
+                }
             }
         }.start();
     }
@@ -136,29 +153,45 @@ public class WakaTime {
         new Thread() {
             @Override
             public void run() {
-                SERVICE.refreshAccessToken(refreshToken, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
-                    @Override
-                    public void onCompleted(OAuth2AccessToken response) {
-                        storeRefreshToken(context, response);
-                        instance = new WakaTime(context, response);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onTokenAccepted();
-                            }
-                        });
-                    }
+                synchronized (getTokenLock) {
+                    SERVICE.refreshAccessToken(refreshToken, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
+                        @Override
+                        public void onCompleted(OAuth2AccessToken response) {
+                            storeRefreshToken(context, response);
+                            instance = new WakaTime(context, response);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onTokenAccepted();
+                                }
+                            });
 
-                    @Override
-                    public void onThrowable(final Throwable ex) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(ex);
+                            synchronized (getTokenLock) {
+                                getTokenLock.notifyAll();
                             }
-                        });
+                        }
+
+                        @Override
+                        public void onThrowable(final Throwable ex) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onException(ex);
+                                }
+                            });
+
+                            synchronized (getTokenLock) {
+                                getTokenLock.notifyAll();
+                            }
+                        }
+                    });
+
+                    try {
+                        getTokenLock.wait();
+                    } catch (InterruptedException ex) {
+                        Logging.log(ex);
                     }
-                });
+                }
             }
         }.start();
     }
@@ -169,9 +202,13 @@ public class WakaTime {
             throw ShouldGetAccessToken.throwNow();
         }
 
-        OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
-        storeRefreshToken(prefs, token);
-        instance = new WakaTime(instance.prefs, token);
+        synchronized (getTokenLock) {
+            getTokenLock.wait();
+            OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
+            storeRefreshToken(prefs, token);
+            instance = new WakaTime(instance.prefs, token);
+            getTokenLock.notifyAll();
+        }
     }
 
     @NonNull
@@ -227,13 +264,16 @@ public class WakaTime {
         else cachedResponse = null;
 
         if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
+            OAuthRequest request = new OAuthRequest(verb, url);
+
             if (token == null) {
                 refreshTokenSync(prefs);
                 return instance.doRequestSync(verb, url);
             }
 
-            OAuthRequest request = new OAuthRequest(verb, url);
-            SERVICE.signRequest(token, request);
+            synchronized (getTokenLock) {
+                SERVICE.signRequest(token, request);
+            }
 
             if (BuildConfig.DEBUG) Logging.log(request.toString(), false);
 
