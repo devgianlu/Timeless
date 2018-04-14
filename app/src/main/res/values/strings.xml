@@ -70,4 +70,7 @@
     <string name="totalTimeSpent"><![CDATA[<b>Total time spent:</b>]]> %s</string>
     <string name="durations">Time distribution</string>
     <string name="periodActivity">Period activity</string>
+    <string name="mpAndroidChart">MPAndroidChart</string>
+    <string name="materialDateRangePicker">MaterialDateRangePicker</string>
+    <string name="scribejava">ScribeJava</string>
 </resources>

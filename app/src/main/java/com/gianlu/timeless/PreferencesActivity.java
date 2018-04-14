@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 
 import com.gianlu.commonutils.LogsActivity;
 import com.gianlu.commonutils.Preferences.AppCompatPreferenceActivity;
 import com.gianlu.commonutils.Preferences.AppCompatPreferenceFragment;
 import com.gianlu.commonutils.Preferences.BaseAboutFragment;
+import com.gianlu.commonutils.Preferences.BaseThirdPartProjectsFragment;
 import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.List;
@@ -58,62 +58,21 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    public static class ThirdPartFragment extends AppCompatPreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.thrid_part_pref);
-            getActivity().setTitle(R.string.third_part);
-            setHasOptionsMenu(true);
-
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setPositiveButton(android.R.string.ok, null);
-
-            findPreference("mpAndroidChart").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                public boolean onPreferenceClick(Preference preference) {
-                    showDialog(builder
-                            .setTitle("MPAndroidChart")
-                            .setMessage(R.string.mpAndroidChart_details));
-                    return true;
-                }
-            });
-
-            findPreference("materialDateRangePicker").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                public boolean onPreferenceClick(Preference preference) {
-                    showDialog(builder
-                            .setTitle("MaterialDateRangePicker")
-                            .setMessage(R.string.materialDateRangePicker_details));
-                    return true;
-                }
-            });
-
-            findPreference("scribejava").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                public boolean onPreferenceClick(Preference preference) {
-                    showDialog(builder
-                            .setTitle("ScribeJava")
-                            .setMessage(R.string.scribejava_details));
-                    return true;
-                }
-            });
-
-            findPreference("apacheLicense").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                public boolean onPreferenceClick(Preference preference) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.apache.org/licenses/LICENSE-2.0")));
-                    return true;
-                }
-            });
-
-            findPreference("mitLicense").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                public boolean onPreferenceClick(Preference preference) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://opensource.org/licenses/MIT")));
-                    return true;
-                }
-            });
-        }
+    public static class ThirdPartFragment extends BaseThirdPartProjectsFragment {
 
         @Override
         protected Class getParent() {
             return PreferencesActivity.class;
+        }
+
+        @NonNull
+        @Override
+        protected ThirdPartProject[] getProjects() {
+            return new ThirdPartProject[]{
+                    new ThirdPartProject(R.string.mpAndroidChart, R.string.mpAndroidChart_details, ThirdPartProject.License.APACHE),
+                    new ThirdPartProject(R.string.materialDateRangePicker, R.string.materialDateRangePicker_details, ThirdPartProject.License.APACHE),
+                    new ThirdPartProject(R.string.scribejava, R.string.scribejava_details, ThirdPartProject.License.MIT)
+            };
         }
     }
 
@@ -127,6 +86,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         @Override
         protected String getPackageName() {
             return "com.gianlu.timeless";
+        }
+
+        @Nullable
+        @Override
+        protected Uri getOpenSourceUrl() {
+            return null;
         }
 
         @Override
