@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities.Commits;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -20,13 +21,16 @@ import java.util.Date;
 
 public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
     private final Project project;
-    private final IAdapter handler;
+    private final IAdapter listener;
     private final WakaTime wakaTime;
 
-    CommitsAdapter(final Context context, final Commits commits, IAdapter handler) {
-        super(context, commits.commits, commits.total_pages, ContextCompat.getColor(context, R.color.colorPrimary_shadow), true);
+    CommitsAdapter(Context context, Commits commits, IAdapter listener) {
+        super(new Config<Commit>(context)
+                .items(commits.commits)
+                .maxPages(commits.total_pages)
+                .separators(ContextCompat.getColor(context, R.color.colorPrimary_shadow), true));
         this.project = commits.project;
-        this.handler = handler;
+        this.listener = listener;
         this.wakaTime = WakaTime.get();
     }
 
@@ -37,8 +41,8 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
     }
 
     @Override
-    protected void userBindViewHolder(CommitsAdapter.ViewHolder holder, int position) {
-        final Commit commit = items.get(position).getItem();
+    protected void userBindViewHolder(@NonNull CommitsAdapter.ViewHolder holder, @NonNull ItemEnclosure<Commit> item, int position) {
+        final Commit commit = item.getItem();
         holder.message.setText(commit.message);
         holder.author.setText(commit.getAuthor());
         holder.hash.setText(commit.truncated_hash());
@@ -46,7 +50,7 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (handler != null) handler.onCommitSelected(project, commit);
+                if (listener != null) listener.onCommitSelected(project, commit);
             }
         });
     }

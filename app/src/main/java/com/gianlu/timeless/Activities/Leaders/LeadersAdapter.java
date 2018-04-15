@@ -3,6 +3,7 @@ package com.gianlu.timeless.Activities.Leaders;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -29,7 +30,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     private final WakaTime wakaTime;
 
     public LeadersAdapter(Context context, List<Leader> items, int maxPages, @Nullable Leader me, @Nullable String language, IAdapter listener) {
-        super(context, items, maxPages, -1, false);
+        super(new Config<Leader>(context).items(items).maxPages(maxPages).noSeparators());
         this.language = language;
         this.listener = listener;
         this.wakaTime = WakaTime.get();
@@ -45,7 +46,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     }
 
     @Override
-    protected void userBindViewHolder(ViewHolder holder, int position) {
+    protected void userBindViewHolder(@NonNull ViewHolder holder, @NonNull ItemEnclosure<Leader> item, int position) {
         final ItemEnclosure<Leader> leader = items.get(position);
 
         holder.rank.setTypeface(roboto);
@@ -78,7 +79,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
         wakaTime.getLeaders(language, page, new WakaTime.OnLeaders() {
             @Override
             public void onLeaders(Leaders leaders) {
-                maxPages = leaders.maxPages;
+                maxPages(leaders.maxPages);
                 provider.onMoreContent(leaders.leaders);
             }
 
