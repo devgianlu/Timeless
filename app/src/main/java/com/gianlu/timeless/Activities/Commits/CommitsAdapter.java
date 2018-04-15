@@ -3,7 +3,6 @@ package com.gianlu.timeless.Activities.Commits;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,7 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
         super(new Config<Commit>(context)
                 .items(commits.commits)
                 .maxPages(commits.total_pages)
-                .separators(ContextCompat.getColor(context, R.color.colorPrimary_shadow), true));
+                .separators(true));
         this.project = commits.project;
         this.listener = listener;
         this.wakaTime = WakaTime.get();

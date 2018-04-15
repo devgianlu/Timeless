@@ -55,7 +55,15 @@ public class CommitSheet extends NiceBaseBottomSheet {
         author.setHtml(R.string.commitAuthor, commit.getAuthor());
         date.setHtml(R.string.commitDate, Utils.getDateTimeFormatter().format(new Date(commit.committer_date)));
         hash.setHtml(R.string.commitHash, commit.hash);
-        timeSpent.setHtml(R.string.commitTimeSpent, CommonUtils.timeFormatter(commit.total_seconds));
+
+        String time = CommonUtils.timeFormatter(commit.total_seconds);
+        if (time.equals("∞")) {
+            timeSpent.setVisibility(View.GONE);
+        } else {
+            timeSpent.setVisibility(View.VISIBLE);
+            timeSpent.setHtml(R.string.commitTimeSpent, time);
+        }
+
         if (commit.ref != null) {
             ref.setVisibility(View.VISIBLE);
             ref.setHtml(R.string.commitReference, commit.ref);

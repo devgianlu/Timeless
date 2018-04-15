@@ -2,6 +2,7 @@ package com.gianlu.timeless.Models;
 
 import android.support.annotation.Keep;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Utils;
 
 import org.json.JSONException;
@@ -22,11 +23,11 @@ public class Commit {
 
     @Keep
     public Commit(JSONObject obj) throws JSONException, ParseException {
-        message = obj.getString("message").replace("\n", "");
+        message = obj.getString("message").replace("\n", " ");
         total_seconds = obj.getLong("total_seconds");
         hash = obj.getString("hash");
         html_url = obj.getString("html_url");
-        ref = obj.getString("ref");
+        ref = CommonUtils.getStupidString(obj, "ref");
         author_email = Utils.parseStupidNullJSON(obj, "author_email");
         author_name = Utils.parseStupidNullJSON(obj, "author_name");
         author_username = Utils.parseStupidNullJSON(obj, "author_username");

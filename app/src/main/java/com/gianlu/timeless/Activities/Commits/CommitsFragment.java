@@ -65,7 +65,7 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
     @Override
     public void onCommits(Commits commits) {
         if (!isAdded()) return;
-        recyclerViewLayout.loadListData(new CommitsAdapter(getContext(), commits, CommitsFragment.this));
+        recyclerViewLayout.loadListData(new CommitsAdapter(getContext(), commits, this));
     }
 
     @Override
