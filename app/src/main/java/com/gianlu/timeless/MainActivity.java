@@ -1,6 +1,5 @@
 package com.gianlu.timeless;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -15,8 +14,6 @@ import android.support.v7.widget.Toolbar;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Drawer.BaseDrawerItem;
 import com.gianlu.commonutils.Drawer.DrawerManager;
-import com.gianlu.commonutils.Drawer.Initializer;
-import com.gianlu.commonutils.Drawer.ProfilesAdapter;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Activities.DailyStatsActivity;
@@ -30,7 +27,7 @@ import com.gianlu.timeless.NetIO.WakaTime;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DrawerManager.ISetup<User> {
+public class MainActivity extends AppCompatActivity {
     private DrawerManager<User> drawerManager;
 
     @Override
@@ -50,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
             return;
         }
 
-        drawerManager = new DrawerManager<>(new Initializer<>(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar, this)
-                .hasSingleProfile(user, new DrawerManager.ILogout() {
+        drawerManager = new DrawerManager.Config<User>(R.drawable.drawer_background)
+                .singleProfile(user, new DrawerManager.ILogout() {
                     @Override
                     public void logout() {
                         deleteFile("token");
@@ -67,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
                 .addMenuItem(new BaseDrawerItem(DrawerConst.LEADERS, R.drawable.ic_show_chart_black_48dp, getString(R.string.leaderboards)))
                 .addMenuItemSeparator()
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.ic_settings_black_48dp, getString(R.string.preferences)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.ic_report_problem_black_48dp, getString(R.string.support))));
+                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.ic_report_problem_black_48dp, getString(R.string.support))).build(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar);
 
         drawerManager.setDrawerListener(new DrawerManager.IDrawerListener<User>() {
             @Override
@@ -100,17 +97,14 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
 
             @Override
             public void onProfileSelected(User profile) {
-
             }
 
             @Override
             public void addProfile() {
-
             }
 
             @Override
             public void editProfile(List<User> items) {
-
             }
         });
 
@@ -129,12 +123,10 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
     }
@@ -142,52 +134,18 @@ public class MainActivity extends AppCompatActivity implements DrawerManager.ISe
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (drawerManager != null)
-            drawerManager.onTogglerConfigurationChanged(newConfig);
+        if (drawerManager != null) drawerManager.onTogglerConfigurationChanged(newConfig);
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (drawerManager != null)
-            drawerManager.syncTogglerState();
+        if (drawerManager != null) drawerManager.syncTogglerState();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (drawerManager != null)
-            drawerManager.syncTogglerState();
-    }
-
-    @Override
-    public int getColorAccent() {
-        return R.color.colorAccent;
-    }
-
-    @Override
-    public int getHeaderBackground() {
-        return R.drawable.drawer_background;
-    }
-
-    @Override
-    public int getDrawerBadge() {
-        return 0; // Not needed
-    }
-
-    @Override
-    public int getColorPrimaryShadow() {
-        return R.color.colorPrimary_shadow;
-    }
-
-    @Override
-    public int getColorPrimary() {
-        return R.color.colorPrimary;
-    }
-
-    @Nullable
-    @Override
-    public ProfilesAdapter<User> getProfilesAdapter(Context context, List<User> profiles, DrawerManager.IDrawerListener<User> listener) {
-        return null;
+        if (drawerManager != null) drawerManager.syncTogglerState();
     }
 }

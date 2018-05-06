@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.Models.Commits;
@@ -45,17 +47,23 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         CoordinatorLayout layout = (CoordinatorLayout) inflater.inflate(R.layout.fragment_commits, container, false);
         recyclerViewLayout = (RecyclerViewLayout) layout.getChildAt(0);
-        recyclerViewLayout.disableSwipeRefresh();
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-
         sheet = new CommitSheet(layout);
 
-        Project project;
+        final Project project;
         Bundle args = getArguments();
         if (args == null || (project = (Project) args.getSerializable("project")) == null) {
             recyclerViewLayout.showMessage(R.string.errorMessage, true);
             return layout;
         }
+
+        recyclerViewLayout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                WakaTime.get().skipNextRequestCache();
+                WakaTime.get().getCommits(project, 1, CommitsFragment.this);
+            }
+        }, MaterialColors.getInstance().getColorsRes());
 
         WakaTime.get().getCommits(project, 1, this);
 

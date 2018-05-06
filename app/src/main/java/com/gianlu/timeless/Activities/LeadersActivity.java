@@ -3,6 +3,7 @@ package com.gianlu.timeless.Activities;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Leaders.LeaderSheet;
@@ -50,8 +52,15 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         recyclerViewLayout = findViewById(R.id.leaders_recyclerViewLayout);
-        recyclerViewLayout.disableSwipeRefresh();
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerViewLayout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                WakaTime.get().skipNextRequestCache();
+                gatherAndUpdate(currLang);
+            }
+        }, MaterialColors.getInstance().getColorsRes());
+
         currFilter = findViewById(R.id.leaders_rankingText);
         sheet = new LeaderSheet((ViewGroup) findViewById(R.id.leaders));
 

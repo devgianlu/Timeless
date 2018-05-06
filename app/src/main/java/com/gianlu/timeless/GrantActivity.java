@@ -13,7 +13,7 @@ import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.NetIO.WakaTime;
 
-public class GrantActivity extends ActivityWithDialog {
+public class GrantActivity extends ActivityWithDialog { // TODO: Can be prettier
 
     @Override
     protected void onNewIntent(Intent intent) {

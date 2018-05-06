@@ -2,7 +2,9 @@ package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
@@ -33,7 +36,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     private Date currentDate;
     private RecyclerViewLayout recyclerViewLayout;
 
-    private void updatePage(Date newDate) {
+    private void updatePage(@NonNull Date newDate, boolean refresh) {
         if (newDate.after(new Date())) {
             Toaster.show(DailyStatsActivity.this, Utils.Messages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
             return;
@@ -43,7 +46,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         currDay.setText(Utils.getVerbalDateFormatter().format(newDate));
 
         recyclerViewLayout.startLoading();
-        WakaTime.get().batch(this);
+        WakaTime.get().batch(this, refresh);
     }
 
     @Override
@@ -82,8 +85,14 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         recyclerViewLayout = findViewById(R.id.dailyStats_recyclerViewLayout);
-        recyclerViewLayout.disableSwipeRefresh();
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerViewLayout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updatePage(currentDate == null ? new Date() : currentDate, true);
+            }
+        }, MaterialColors.getInstance().getColorsRes());
+
         ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
         ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
         currDay = findViewById(R.id.dailyStats_day);
@@ -97,7 +106,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 cal.setTime(currentDate);
                 cal.add(Calendar.DATE, 1);
 
-                updatePage(cal.getTime());
+                updatePage(cal.getTime(), false);
             }
         });
 
@@ -110,11 +119,11 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 cal.setTime(currentDate);
                 cal.add(Calendar.DATE, -1);
 
-                updatePage(cal.getTime());
+                updatePage(cal.getTime(), false);
             }
         });
 
-        updatePage(new Date());
+        updatePage(new Date(), false);
     }
 
     @Nullable
@@ -131,7 +140,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         cal.set(Calendar.MONTH, monthOfYear);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-        updatePage(cal.getTime());
+        updatePage(cal.getTime(), false);
     }
 
     @Override

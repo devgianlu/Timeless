@@ -79,6 +79,8 @@ public class WakaTime {
     private final OAuth2AccessToken token;
     private final SharedPreferences prefs;
     private final Requester requester;
+    private volatile boolean skipCache = false;
+    private volatile boolean skipNextCache = false;
 
     private WakaTime(Context context, @Nullable OAuth2AccessToken token) {
         this(PreferenceManager.getDefaultSharedPreferences(context), token);
@@ -260,7 +262,8 @@ public class WakaTime {
     @NonNull
     private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException {
         CachedResponse cachedResponse;
-        if (verb == Verb.GET && cacheEnabled()) cachedResponse = getFromCache(url);
+        if (verb == Verb.GET && cacheEnabled() && !skipCache && !skipNextCache)
+            cachedResponse = getFromCache(url);
         else cachedResponse = null;
 
         if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
@@ -288,6 +291,8 @@ public class WakaTime {
                 memoryCache.put(url, new CachedResponse(resp));
             }
 
+            skipNextCache = false;
+
             return resp;
         } else {
             return cachedResponse.response;
@@ -301,8 +306,8 @@ public class WakaTime {
         }
     }
 
-    public void batch(BatchStuff listener) {
-        executorService.execute(new BatchRequest(listener));
+    public void batch(BatchStuff listener, boolean skipCache) {
+        executorService.execute(new BatchRequest(listener, skipCache));
     }
 
     public void getCurrentUser(final OnUser listener) {
@@ -430,6 +435,10 @@ public class WakaTime {
                 }
             }
         });
+    }
+
+    public void skipNextRequestCache() {
+        skipNextCache = true;
     }
 
     public enum Range {
@@ -579,15 +588,19 @@ public class WakaTime {
 
     public class BatchRequest implements Runnable {
         private final BatchStuff stuff;
+        private final boolean skipCache;
 
-        private BatchRequest(@NonNull BatchStuff stuff) {
+        private BatchRequest(@NonNull BatchStuff stuff, boolean skipCache) {
             this.stuff = stuff;
+            this.skipCache = skipCache;
         }
 
         @Override
         public void run() {
             try {
+                requester.skipCache(skipCache);
                 stuff.request(requester, handler);
+                requester.resetSkipCache();
             } catch (final Exception ex) {
                 Logging.log(ex);
 
@@ -604,6 +617,14 @@ public class WakaTime {
     }
 
     public class Requester {
+
+        private void skipCache(boolean skipCache) {
+            WakaTime.this.skipCache = skipCache;
+        }
+
+        private void resetSkipCache() {
+            WakaTime.this.skipCache = false;
+        }
 
         public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException {
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date=" + getAPIFormatter().format(day)

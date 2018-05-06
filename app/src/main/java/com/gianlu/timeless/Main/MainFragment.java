@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gianlu.commonutils.Dialogs.DialogUtils;
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Charting.SaveChartFragment;
 import com.gianlu.timeless.Listing.CardsAdapter;
@@ -42,8 +44,13 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(inflater);
-        layout.disableSwipeRefresh();
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                WakaTime.get().batch(MainFragment.this, true);
+            }
+        }, MaterialColors.getInstance().getColorsRes());
 
         Bundle args = getArguments();
         if (args == null || (range = (WakaTime.Range) args.getSerializable("range")) == null) {
@@ -51,7 +58,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
             return layout;
         }
 
-        WakaTime.get().batch(this);
+        WakaTime.get().batch(this, false);
 
         return layout;
     }

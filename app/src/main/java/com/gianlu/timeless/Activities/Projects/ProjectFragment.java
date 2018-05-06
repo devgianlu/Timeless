@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Pair;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gianlu.commonutils.Dialogs.DialogUtils;
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Charting.SaveChartFragment;
@@ -82,8 +84,13 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(inflater);
-        layout.disableSwipeRefresh();
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                WakaTime.get().batch(ProjectFragment.this, true);
+            }
+        }, MaterialColors.getInstance().getColorsRes());
 
         Bundle args = getArguments();
         if (args == null
@@ -94,7 +101,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
             return layout;
         }
 
-        WakaTime.get().batch(this);
+        WakaTime.get().batch(this, false);
 
         return layout;
     }
@@ -103,7 +110,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     public void onBranchesChanged(List<String> branches) {
         currentBranches = branches;
         layout.startLoading();
-        WakaTime.get().batch(this);
+        WakaTime.get().batch(this, false);
     }
 
     @Override
