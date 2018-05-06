@@ -2,6 +2,7 @@ package com.gianlu.timeless.NetIO;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.timeless.BuildConfig;
+import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.Leaders;
@@ -60,7 +62,6 @@ public class WakaTime {
     private static final OAuth20Service SERVICE;
     private static final Object getTokenLock = new Object();
     private static WakaTime instance;
-    private static OnShouldGetToken shouldGetTokenListener = null;
 
     static {
         ServiceBuilder builder = new ServiceBuilder(APP_ID)
@@ -109,7 +110,7 @@ public class WakaTime {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    listener.onTokenAccepted();
+                                    listener.onTokenAccepted(instance);
                                 }
                             });
 
@@ -164,7 +165,7 @@ public class WakaTime {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    listener.onTokenAccepted();
+                                    listener.onTokenAccepted(instance);
                                 }
                             });
 
@@ -198,10 +199,10 @@ public class WakaTime {
         }.start();
     }
 
-    private static void refreshTokenSync(SharedPreferences prefs) throws InterruptedException, ExecutionException, IOException {
+    private static void refreshTokenSync(SharedPreferences prefs) throws InterruptedException, ExecutionException, IOException, ShouldGetAccessToken {
         String refreshToken = loadRefreshToken(prefs);
         if (refreshToken == null || refreshToken.isEmpty()) {
-            throw ShouldGetAccessToken.throwNow();
+            throw new ShouldGetAccessToken();
         }
 
         synchronized (getTokenLock) {
@@ -214,8 +215,8 @@ public class WakaTime {
     }
 
     @NonNull
-    public static WakaTime get() {
-        if (instance == null) throw ShouldGetAccessToken.throwNow();
+    public static WakaTime get() throws ShouldGetAccessToken {
+        if (instance == null) throw new ShouldGetAccessToken();
         return instance;
     }
 
@@ -246,10 +247,6 @@ public class WakaTime {
         return SERVICE.getAuthorizationUrl();
     }
 
-    public static void setShouldGetTokenListener(OnShouldGetToken listener) {
-        shouldGetTokenListener = listener;
-    }
-
     public void cacheEnabledChanged() {
         if (cacheEnabled()) memoryCache.resize(MAX_CACHE_SIZE);
         else memoryCache.trimToSize(-1);
@@ -260,7 +257,7 @@ public class WakaTime {
     }
 
     @NonNull
-    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException {
+    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, ShouldGetAccessToken {
         CachedResponse cachedResponse;
         if (verb == Verb.GET && cacheEnabled() && !skipCache && !skipNextCache)
             cachedResponse = getFromCache(url);
@@ -322,7 +319,7 @@ public class WakaTime {
                             listener.onUser(user);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException ex) {
+                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException | ShouldGetAccessToken ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -346,7 +343,7 @@ public class WakaTime {
                             listener.onLeaders(leaders);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException ex) {
+                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException | ShouldGetAccessToken ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -370,7 +367,7 @@ public class WakaTime {
                             listener.onProjects(projects);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -394,7 +391,7 @@ public class WakaTime {
                             listener.onCommits(commits);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -418,7 +415,7 @@ public class WakaTime {
                             listener.onSummary(summaries);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -491,10 +488,6 @@ public class WakaTime {
         }
     }
 
-    public interface OnShouldGetToken {
-        void thrownException(ShouldGetAccessToken ex);
-    }
-
     public interface OnLeaders {
         void onLeaders(Leaders leaders);
 
@@ -528,7 +521,7 @@ public class WakaTime {
     }
 
     public interface OnAccessToken {
-        void onTokenAccepted();
+        void onTokenAccepted(@NonNull WakaTime instance);
 
         void onException(Throwable ex);
     }
@@ -539,20 +532,15 @@ public class WakaTime {
         void somethingWentWrong(Exception ex); // Always on UI thread
     }
 
-    public static class ShouldGetAccessToken extends RuntimeException {
+    public static class ShouldGetAccessToken extends Exception {
 
         private ShouldGetAccessToken() {
         }
 
-        static Error throwNow() {
-            ShouldGetAccessToken ex = new ShouldGetAccessToken();
-            if (shouldGetTokenListener != null) {
-                shouldGetTokenListener.thrownException(ex);
-            } else if (Thread.getDefaultUncaughtExceptionHandler() != null) {
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), ex);
-            }
-
-            return new Error(ex);
+        public void resolve(Context context) {
+            if (context == null) throw new RuntimeException(this);
+            context.startActivity(new Intent(context, GrantActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
     }
 
@@ -626,7 +614,7 @@ public class WakaTime {
             WakaTime.this.skipCache = false;
         }
 
-        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException {
+        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, ShouldGetAccessToken {
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date=" + getAPIFormatter().format(day)
                     + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
 
@@ -635,11 +623,11 @@ public class WakaTime {
             else throw new StatusCodeException(response);
         }
 
-        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, WakaTimeException {
+        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, WakaTimeException, ShouldGetAccessToken {
             return summaries(startAndEnd.first, startAndEnd.second, project, branches);
         }
 
-        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, WakaTimeException {
+        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, WakaTimeException, ShouldGetAccessToken {
             SimpleDateFormat formatter = getAPIFormatter();
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/summaries?start=" + formatter.format(start)
                     + "&end=" + formatter.format(end)
@@ -655,14 +643,14 @@ public class WakaTime {
             }
         }
 
-        public Commits commits(Project project, int page) throws IOException, StatusCodeException, ExecutionException, InterruptedException, JSONException {
+        public Commits commits(Project project, int page) throws IOException, StatusCodeException, ExecutionException, InterruptedException, JSONException, ShouldGetAccessToken {
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects/" + project.id + "/commits?page=" + page);
 
             if (response.getCode() == 200) return new Commits(new JSONObject(response.getBody()));
             else throw new StatusCodeException(response);
         }
 
-        public Leaders leaders(@Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException {
+        public Leaders leaders(@Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, ShouldGetAccessToken {
             Response response = doRequestSync(Verb.GET, BASE_URL + "leaders" +
                     "?page=" + page +
                     (language != null ? ("&language=" + language) : ""));
@@ -671,7 +659,7 @@ public class WakaTime {
             else throw new StatusCodeException(response);
         }
 
-        public List<Project> projects() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException {
+        public List<Project> projects() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, ShouldGetAccessToken {
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects");
 
             if (response.getCode() == 200)
@@ -680,7 +668,7 @@ public class WakaTime {
                 throw new StatusCodeException(response);
         }
 
-        public User user() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException {
+        public User user() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, ShouldGetAccessToken {
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current");
             if (response.getCode() == 200)
                 return new User(new JSONObject(response.getBody()).getJSONObject("data"));

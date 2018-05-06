@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,7 +24,7 @@ public class GrantActivity extends ActivityWithDialog { // TODO: Can be prettier
             showDialog(DialogUtils.progressDialog(this, R.string.checkingPermissions));
             WakaTime.accessToken(this, intent.getDataString(), new WakaTime.OnAccessToken() {
                 @Override
-                public void onTokenAccepted() {
+                public void onTokenAccepted(@NonNull WakaTime instance) {
                     dismissDialog();
 
                     try {

@@ -75,7 +75,12 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         if (date != null) currentRange = new Pair<>(date, date);
         else currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
 
-        wakaTime = WakaTime.get();
+        try {
+            wakaTime = WakaTime.get();
+        } catch (WakaTime.ShouldGetAccessToken ex) {
+            ex.resolve(this);
+            return;
+        }
 
         updateRangeText();
         wakaTime.getProjects(this);

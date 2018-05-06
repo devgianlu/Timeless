@@ -1,7 +1,5 @@
 package com.gianlu.timeless;
 
-import android.content.Intent;
-
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
 import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Logging;
@@ -15,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class ThisApplication extends AnalyticsApplication implements WakaTime.OnShouldGetToken {
+public class ThisApplication extends AnalyticsApplication {
 
     @Override
     public void onCreate() {
@@ -34,8 +32,6 @@ public class ThisApplication extends AnalyticsApplication implements WakaTime.On
             }
         });
 
-        WakaTime.setShouldGetTokenListener(this);
-
         // Backward compatibility
         if (!Prefs.has(this, PKeys.TOKEN)) {
             try {
@@ -49,15 +45,11 @@ public class ThisApplication extends AnalyticsApplication implements WakaTime.On
         }
     }
 
-    private void startGrant() {
-        startActivity(new Intent(this, GrantActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-    }
 
     @Override
     protected boolean uncaughtNotDebug(Thread thread, Throwable throwable) {
         if (throwable instanceof WakaTime.ShouldGetAccessToken) {
-            startGrant();
+            ((WakaTime.ShouldGetAccessToken) throwable).resolve(this);
             return false;
         }
 
@@ -67,11 +59,5 @@ public class ThisApplication extends AnalyticsApplication implements WakaTime.On
     @Override
     protected boolean isDebug() {
         return BuildConfig.DEBUG;
-    }
-
-    @Override
-    public void thrownException(WakaTime.ShouldGetAccessToken ex) {
-        Logging.log(ex);
-        startGrant();
     }
 }

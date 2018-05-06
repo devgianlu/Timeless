@@ -23,14 +23,11 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
     private final IAdapter listener;
     private final WakaTime wakaTime;
 
-    CommitsAdapter(Context context, Commits commits, IAdapter listener) {
-        super(new Config<Commit>(context)
-                .items(commits.commits)
-                .maxPages(commits.total_pages)
-                .separators(true));
+    CommitsAdapter(Context context, Commits commits, WakaTime wakaTime, IAdapter listener) {
+        super(new Config<Commit>(context).items(commits.commits).maxPages(commits.total_pages).separators(true));
         this.project = commits.project;
         this.listener = listener;
-        this.wakaTime = WakaTime.get();
+        this.wakaTime = wakaTime;
     }
 
     @Nullable

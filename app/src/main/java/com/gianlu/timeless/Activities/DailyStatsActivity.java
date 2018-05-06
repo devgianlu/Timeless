@@ -46,7 +46,12 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         currDay.setText(Utils.getVerbalDateFormatter().format(newDate));
 
         recyclerViewLayout.startLoading();
-        WakaTime.get().batch(this, refresh);
+
+        try {
+            WakaTime.get().batch(this, refresh);
+        } catch (WakaTime.ShouldGetAccessToken ex) {
+            ex.resolve(this);
+        }
     }
 
     @Override

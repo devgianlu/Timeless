@@ -29,11 +29,11 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     private final Typeface roboto;
     private final WakaTime wakaTime;
 
-    public LeadersAdapter(Context context, List<Leader> items, int maxPages, @Nullable Leader me, @Nullable String language, IAdapter listener) {
+    public LeadersAdapter(Context context, List<Leader> items, int maxPages, @Nullable Leader me, @Nullable String language, WakaTime wakaTime, IAdapter listener) {
         super(new Config<Leader>(context).items(items).maxPages(maxPages).noSeparators());
         this.language = language;
         this.listener = listener;
-        this.wakaTime = WakaTime.get();
+        this.wakaTime = wakaTime;
         this.roboto = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
         if (me != null) this.me = me.user;
         else this.me = null;

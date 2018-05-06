@@ -54,8 +54,13 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnPr
             }
         });
 
-        showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
-        WakaTime.get().getProjects(this);
+        try {
+            showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
+            WakaTime.get().getProjects(this);
+        } catch (WakaTime.ShouldGetAccessToken ex) {
+            dismissDialog();
+            ex.resolve(this);
+        }
     }
 
     @Override

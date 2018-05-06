@@ -46,8 +46,13 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             findPreference("cacheEnabled").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    WakaTime.get().cacheEnabledChanged();
-                    return true;
+                    try {
+                        WakaTime.get().cacheEnabledChanged();
+                        return true;
+                    } catch (WakaTime.ShouldGetAccessToken ex) {
+                        ex.resolve(getActivity());
+                        return false;
+                    }
                 }
             });
         }

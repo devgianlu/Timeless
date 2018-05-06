@@ -42,6 +42,8 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
         return true;
     }
 
+    private WakaTime wakaTime;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,15 +59,22 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
             return layout;
         }
 
+        try {
+            wakaTime = WakaTime.get();
+        } catch (WakaTime.ShouldGetAccessToken ex) {
+            ex.resolve(getContext());
+            return layout;
+        }
+
         recyclerViewLayout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.get().skipNextRequestCache();
-                WakaTime.get().getCommits(project, 1, CommitsFragment.this);
+                wakaTime.skipNextRequestCache();
+                wakaTime.getCommits(project, 1, CommitsFragment.this);
             }
         }, MaterialColors.getInstance().getColorsRes());
 
-        WakaTime.get().getCommits(project, 1, this);
+        wakaTime.getCommits(project, 1, this);
 
         return layout;
     }
@@ -73,7 +82,7 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
     @Override
     public void onCommits(Commits commits) {
         if (!isAdded()) return;
-        recyclerViewLayout.loadListData(new CommitsAdapter(getContext(), commits, this));
+        recyclerViewLayout.loadListData(new CommitsAdapter(getContext(), commits, wakaTime, this));
     }
 
     @Override

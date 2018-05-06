@@ -38,6 +38,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     private Project project;
     private RecyclerViewLayout layout;
     private List<String> currentBranches = null;
+    private WakaTime wakaTime;
 
     public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
         ProjectFragment fragment = new ProjectFragment();
@@ -85,12 +86,6 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(inflater);
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                WakaTime.get().batch(ProjectFragment.this, true);
-            }
-        }, MaterialColors.getInstance().getColorsRes());
 
         Bundle args = getArguments();
         if (args == null
@@ -101,7 +96,21 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
             return layout;
         }
 
-        WakaTime.get().batch(this, false);
+        try {
+            wakaTime = WakaTime.get();
+        } catch (WakaTime.ShouldGetAccessToken ex) {
+            ex.resolve(getContext());
+            return layout;
+        }
+
+        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                wakaTime.batch(ProjectFragment.this, true);
+            }
+        }, MaterialColors.getInstance().getColorsRes());
+
+        wakaTime.batch(this, false);
 
         return layout;
     }
@@ -110,7 +119,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     public void onBranchesChanged(List<String> branches) {
         currentBranches = branches;
         layout.startLoading();
-        WakaTime.get().batch(this, false);
+        wakaTime.batch(this, false);
     }
 
     @Override

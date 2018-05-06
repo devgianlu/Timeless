@@ -3,6 +3,7 @@ package com.gianlu.timeless;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -58,8 +59,8 @@ public class LoadingActivity extends AppCompatActivity {
             public void goodToGo() {
                 WakaTime.refreshToken(LoadingActivity.this, new WakaTime.OnAccessToken() {
                     @Override
-                    public void onTokenAccepted() {
-                        WakaTime.get().getCurrentUser(new WakaTime.OnUser() {
+                    public void onTokenAccepted(@NonNull WakaTime instance) {
+                        instance.getCurrentUser(new WakaTime.OnUser() {
                             @Override
                             public void onUser(User user) {
                                 goTo(MainActivity.class, user);

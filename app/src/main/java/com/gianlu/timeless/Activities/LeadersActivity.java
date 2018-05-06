@@ -56,7 +56,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
         recyclerViewLayout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WakaTime.get().skipNextRequestCache();
+                wakaTime.skipNextRequestCache();
                 gatherAndUpdate(currLang);
             }
         }, MaterialColors.getInstance().getColorsRes());
@@ -64,8 +64,12 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
         currFilter = findViewById(R.id.leaders_rankingText);
         sheet = new LeaderSheet((ViewGroup) findViewById(R.id.leaders));
 
-        wakaTime = WakaTime.get();
-        gatherAndUpdate(currLang);
+        try {
+            wakaTime = WakaTime.get();
+            gatherAndUpdate(currLang);
+        } catch (WakaTime.ShouldGetAccessToken ex) {
+            ex.resolve(this);
+        }
     }
 
     @Override
@@ -80,7 +84,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
             @Override
             public void onLeaders(Leaders leaders) {
                 me = leaders.me;
-                adapter = new LeadersAdapter(LeadersActivity.this, leaders.leaders, leaders.maxPages, me, language, LeadersActivity.this);
+                adapter = new LeadersAdapter(LeadersActivity.this, leaders.leaders, leaders.maxPages, me, language, wakaTime, LeadersActivity.this);
 
                 currFilter.setText(language == null ? getString(R.string.global_rank) : language);
                 recyclerViewLayout.loadListData(adapter);

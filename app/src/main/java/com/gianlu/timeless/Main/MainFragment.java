@@ -30,6 +30,7 @@ import java.util.Date;
 public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, CardsAdapter.IAdapter {
     private WakaTime.Range range;
     private RecyclerViewLayout layout;
+    private WakaTime wakaTime;
 
     public static MainFragment getInstance(Context context, WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
@@ -45,12 +46,6 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(inflater);
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                WakaTime.get().batch(MainFragment.this, true);
-            }
-        }, MaterialColors.getInstance().getColorsRes());
 
         Bundle args = getArguments();
         if (args == null || (range = (WakaTime.Range) args.getSerializable("range")) == null) {
@@ -58,7 +53,21 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
             return layout;
         }
 
-        WakaTime.get().batch(this, false);
+        try {
+            wakaTime = WakaTime.get();
+        } catch (WakaTime.ShouldGetAccessToken ex) {
+            ex.resolve(getContext());
+            return layout;
+        }
+
+        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                wakaTime.batch(MainFragment.this, true);
+            }
+        }, MaterialColors.getInstance().getColorsRes());
+
+        wakaTime.batch(this, false);
 
         return layout;
     }
