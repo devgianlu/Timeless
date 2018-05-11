@@ -54,9 +54,7 @@ public class LoggedEntity {
     public static class TotalSecondsComparator implements Comparator<LoggedEntity> {
         @Override
         public int compare(LoggedEntity o1, LoggedEntity o2) {
-            if (o1.total_seconds == o2.total_seconds) return 0;
-            else if (o1.total_seconds > o2.total_seconds) return -1;
-            else return 1;
+            return Long.compare(o2.total_seconds, o1.total_seconds);
         }
     }
 }
