@@ -31,6 +31,7 @@ import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
 import com.github.scribejava.core.model.OAuthAsyncRequestCallback;
 import com.github.scribejava.core.model.OAuthConfig;
@@ -149,7 +150,7 @@ public class WakaTime {
 
         final String refreshToken = loadRefreshToken(context);
         if (refreshToken == null || refreshToken.isEmpty()) {
-            listener.onException(new ShouldGetAccessToken());
+            listener.onException(new ShouldGetAccessToken(new IllegalArgumentException("Refresh token is null or empty!")));
             return;
         }
 
@@ -176,6 +177,9 @@ public class WakaTime {
 
                         @Override
                         public void onThrowable(final Throwable ex) {
+                            if (ex instanceof OAuth2AccessTokenErrorResponse)
+                                Crashlytics.setString("token", refreshToken);
+
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -201,22 +205,27 @@ public class WakaTime {
 
     private static void refreshTokenSync(SharedPreferences prefs) throws InterruptedException, ExecutionException, IOException, ShouldGetAccessToken {
         String refreshToken = loadRefreshToken(prefs);
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            throw new ShouldGetAccessToken();
-        }
+        if (refreshToken == null || refreshToken.isEmpty())
+            throw new ShouldGetAccessToken(new IllegalArgumentException("Refresh token is null or empty!"));
 
-        synchronized (getTokenLock) {
-            getTokenLock.wait();
-            OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
-            storeRefreshToken(prefs, token);
-            instance = new WakaTime(instance.prefs, token);
-            getTokenLock.notifyAll();
+        try {
+            synchronized (getTokenLock) {
+                getTokenLock.wait();
+                OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
+                storeRefreshToken(prefs, token);
+                instance = new WakaTime(instance.prefs, token);
+                getTokenLock.notifyAll();
+            }
+        } catch (OAuth2AccessTokenErrorResponse ex) {
+            Crashlytics.setString("token", refreshToken);
+            throw ex;
         }
     }
 
     @NonNull
     public static WakaTime get() throws ShouldGetAccessToken {
-        if (instance == null) throw new ShouldGetAccessToken();
+        if (instance == null)
+            throw new ShouldGetAccessToken(new NullPointerException("Instance hasn't been initialized!"));
         return instance;
     }
 
@@ -534,7 +543,8 @@ public class WakaTime {
 
     public static class ShouldGetAccessToken extends Exception {
 
-        private ShouldGetAccessToken() {
+        private ShouldGetAccessToken(Throwable cause) {
+            super(cause);
         }
 
         public void resolve(Context context) {
