@@ -6,10 +6,10 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gianlu.commonutils.ConnectivityChecker;
+import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.OfflineActivity;
 import com.gianlu.commonutils.Preferences.Prefs;
@@ -17,7 +17,7 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 
-public class LoadingActivity extends AppCompatActivity {
+public class LoadingActivity extends ActivityWithDialog {
     private Intent goTo;
     private boolean finished = false;
 
