@@ -158,40 +158,43 @@ public class WakaTime {
             @Override
             public void run() {
                 synchronized (getTokenLock) {
-                    SERVICE.refreshAccessToken(refreshToken, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
-                        @Override
-                        public void onCompleted(OAuth2AccessToken response) {
-                            storeRefreshToken(context, response);
-                            instance = new WakaTime(context, response);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onTokenAccepted(instance);
+                    try {
+                        SERVICE.refreshAccessToken(refreshToken, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
+                            @Override
+                            public void onCompleted(OAuth2AccessToken response) {
+                                storeRefreshToken(context, response);
+                                instance = new WakaTime(context, response);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onTokenAccepted(instance);
+                                    }
+                                });
+
+                                synchronized (getTokenLock) {
+                                    getTokenLock.notifyAll();
                                 }
-                            });
-
-                            synchronized (getTokenLock) {
-                                getTokenLock.notifyAll();
                             }
-                        }
 
-                        @Override
-                        public void onThrowable(final Throwable ex) {
-                            if (ex instanceof OAuth2AccessTokenErrorResponse)
-                                Crashlytics.setString("token", refreshToken);
+                            @Override
+                            public void onThrowable(final Throwable ex) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onException(ex);
+                                    }
+                                });
 
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onException(ex);
+                                synchronized (getTokenLock) {
+                                    getTokenLock.notifyAll();
                                 }
-                            });
-
-                            synchronized (getTokenLock) {
-                                getTokenLock.notifyAll();
                             }
-                        }
-                    });
+                        });
+                    } catch (OAuth2AccessTokenErrorResponse ex) {
+                        Logging.log(ex);
+                        listener.onException(new ShouldGetAccessToken(new IllegalArgumentException("Refresh token is invalid!")));
+                        return;
+                    }
 
                     try {
                         getTokenLock.wait();
