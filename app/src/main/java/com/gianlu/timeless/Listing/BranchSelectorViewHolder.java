@@ -32,7 +32,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         selected = itemView.findViewById(R.id.branchSelectorItem_selected);
     }
 
-    void bind(final Context context, final Config config, final CardsAdapter.IAdapter listener) {
+    void bind(final Context context, final Config config, final CardsAdapter.Listener listener) {
         if (config.selectedBranches.isEmpty())
             selectedBranches = new ArrayList<>(config.branches);
         else selectedBranches = new ArrayList<>(config.selectedBranches);
@@ -46,7 +46,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void showBranchesDialog(final Context context, final List<String> allBranches, final CardsAdapter.IBranches branchesListener, CardsAdapter.IAdapter listener) {
+    private void showBranchesDialog(final Context context, final List<String> allBranches, final CardsAdapter.OnBranches branchesListener, CardsAdapter.Listener listener) {
         final boolean[] selectedBranchesBoolean = new boolean[allBranches.size()];
         for (int i = 0; i < allBranches.size(); i++)
             selectedBranchesBoolean[i] = selectedBranches.contains(allBranches.get(i));
@@ -88,9 +88,9 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
     static class Config {
         private final List<String> branches;
         private final List<String> selectedBranches;
-        private final CardsAdapter.IBranches listener;
+        private final CardsAdapter.OnBranches listener;
 
-        Config(List<String> branches, List<String> selectedBranches, CardsAdapter.IBranches listener) {
+        Config(List<String> branches, List<String> selectedBranches, CardsAdapter.OnBranches listener) {
             this.branches = branches;
             this.selectedBranches = selectedBranches;
             this.listener = listener;

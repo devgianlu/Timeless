@@ -79,7 +79,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
             @Override
             public void onResult(@NonNull Leaders leaders) {
                 maxPages(leaders.maxPages);
-                provider.onMoreContent(leaders.leaders);
+                provider.onMoreContent(leaders);
             }
 
             @Override

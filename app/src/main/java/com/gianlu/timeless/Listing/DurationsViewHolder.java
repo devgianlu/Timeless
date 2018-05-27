@@ -7,10 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gianlu.timeless.Charting.DurationsView;
-import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.R;
-
-import java.util.List;
 
 class DurationsViewHolder extends RecyclerView.ViewHolder {
     public final DurationsView durationsView;
@@ -23,7 +21,7 @@ class DurationsViewHolder extends RecyclerView.ViewHolder {
         durationsView = itemView.findViewById(R.id.durationsCard_view);
     }
 
-    void bind(final @StringRes int title, List<Duration> durations) {
+    void bind(final @StringRes int title, Durations durations) {
         this.title.setText(title);
 
         durationsView.setDurations(durations);

@@ -32,7 +32,7 @@ import com.gianlu.timeless.R;
 import java.util.Date;
 import java.util.List;
 
-public class ProjectFragment extends SaveChartFragment implements CardsAdapter.IBranches, WakaTime.BatchStuff, CardsAdapter.IAdapter {
+public class ProjectFragment extends SaveChartFragment implements CardsAdapter.OnBranches, WakaTime.BatchStuff, CardsAdapter.Listener {
     private Date start;
     private Date end;
     private Project project;
@@ -116,7 +116,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     }
 
     @Override
-    public void onBranchesChanged(List<String> branches) {
+    public void onBranchesChanged(@NonNull List<String> branches) {
         currentBranches = branches;
         layout.startLoading();
         wakaTime.batch(this, false);
@@ -135,9 +135,9 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
 
         if (start.getTime() == end.getTime()) {
             Durations durations = requester.durations(start, project, summaries.availableBranches);
-            cards.addDurations(cards.hasBranchSelector() ? 2 : 1, R.string.durations, durations.durations);
+            cards.addDurations(cards.hasBranchSelector() ? 2 : 1, R.string.durations, durations);
         } else {
-            cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries.summaries);
+            cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries);
         }
 
         if (getContext() == null) return;
@@ -157,7 +157,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.I
     }
 
     @Override
-    public void showDialog(AlertDialog.Builder builder) {
+    public void showDialog(@NonNull AlertDialog.Builder builder) {
         DialogUtils.showDialog(getActivity(), builder);
     }
 }

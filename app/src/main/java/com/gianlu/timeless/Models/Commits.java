@@ -1,22 +1,22 @@
 package com.gianlu.timeless.Models;
 
-import com.gianlu.commonutils.CommonUtils;
-
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
+import java.text.ParseException;
+import java.util.ArrayList;
 
-public class Commits {
-    public final List<Commit> commits;
+public class Commits extends ArrayList<Commit> {
     public final Project project;
     public final int total_pages;
     public final int total;
-    public int page;
-    public int next_page;
+    public final int page;
+    public final int next_page;
 
-    public Commits(JSONObject obj) throws JSONException {
-        commits = CommonUtils.toTList(obj.getJSONArray("commits"), Commit.class);
+    public Commits(JSONObject obj) throws JSONException, ParseException {
+        JSONArray array = obj.getJSONArray("commits");
+        for (int i = 0; i < array.length(); i++) add(new Commit(array.getJSONObject(i)));
 
         project = new Project(obj.getJSONObject("project"));
 
@@ -24,12 +24,5 @@ public class Commits {
         total_pages = obj.getInt("total_pages");
         page = obj.getInt("page");
         next_page = obj.optInt("next_page", -1);
-    }
-
-    public void update(Commits newCommits) {
-        commits.addAll(newCommits.commits);
-
-        page = newCommits.page;
-        next_page = newCommits.next_page;
     }
 }

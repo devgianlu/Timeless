@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.gianlu.commonutils.FontsManager;
 import com.gianlu.commonutils.MaterialColors;
@@ -19,7 +20,6 @@ import com.gianlu.timeless.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,28 +39,24 @@ public class DurationsView extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
-    public void setDurations(List<Duration> durations) {
+    public void setDurations(Durations durations) {
         this.projects = new ArrayList<>();
         for (Duration duration : durations)
             if (!projects.contains(duration.project))
                 projects.add(duration.project);
 
         removeAllViews();
-        MaterialColors colors = MaterialColors.getShuffledInstance();
-        for (int i = 0; i < projects.size(); i++)
-            addView(new ChartView(getContext(), projects.get(i), Durations.filter(durations, projects.get(i)), ContextCompat.getColor(getContext(), colors.getColor(i)), projects.size() <= 1));
-
-        if (projects.isEmpty())
-            addView(new ChartView(getContext(), "", Collections.<Duration>emptyList(), 0, true));
-    }
-
-    private int countVisibleChildren() {
-        int count = 0;
-        for (int i = 0; i < getChildCount(); i++)
-            if (getChildAt(i).getVisibility() == VISIBLE)
-                count++;
-
-        return count;
+        if (projects.isEmpty()) {
+            TextView noData = new TextView(getContext());
+            noData.setText(R.string.noData);
+            noData.setTextColor(Color.rgb(247, 189, 51));
+            noData.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+            addView(noData);
+        } else {
+            MaterialColors colors = MaterialColors.getShuffledInstance();
+            for (int i = 0; i < projects.size(); i++)
+                addView(new ChartView(getContext(), projects.get(i), durations.filter(projects.get(i)), ContextCompat.getColor(getContext(), colors.getColor(i)), projects.size() <= 1));
+        }
     }
 
     private class ChartView extends View {
@@ -73,8 +69,6 @@ public class DurationsView extends LinearLayout {
         private final Paint durationPaint;
         private final Paint gridPaint;
         private final Paint textPaint;
-        private final Paint noDataPaint;
-        private final Rect noDataBounds = new Rect();
         private final int mPadding;
         private float mInternalPadding;
         private int mHeight;
@@ -93,11 +87,6 @@ public class DurationsView extends LinearLayout {
             textPaint.setColor(Color.BLACK);
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
-
-            noDataPaint = new Paint();
-            noDataPaint.setColor(Color.rgb(247, 189, 51));
-            noDataPaint.setAntiAlias(true);
-            noDataPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, context.getResources().getDisplayMetrics()));
 
             titleTextPaint = new Paint();
             titleTextPaint.setColor(Color.BLACK);
@@ -200,18 +189,6 @@ public class DurationsView extends LinearLayout {
                         canvas.drawRect((key * secPerPixel) + mInternalPadding, mPadding, ((key + val) * secPerPixel) + mInternalPadding, canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - mPadding, durationPaint);
                         if (!drawn) drawn = true;
                     }
-                }
-            }
-
-            if (!drawn) {
-                canvas.drawColor(Color.WHITE);
-
-                if (lonely || DurationsView.this.countVisibleChildren() == 1) {
-                    String noData = getContext().getString(R.string.noData);
-                    noDataPaint.getTextBounds(noData, 0, noData.length(), noDataBounds);
-                    canvas.drawText(noData, (canvas.getWidth() - noDataBounds.width()) / 2, (canvas.getHeight() + noDataBounds.height()) / 2, noDataPaint);
-                } else {
-                    setVisibility(GONE);
                 }
             }
         }

@@ -1,38 +1,36 @@
 package com.gianlu.timeless.Models;
 
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.gianlu.commonutils.CommonUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-public class Durations {
-    public final List<Duration> durations;
+public class Durations extends ArrayList<Duration> {
     public final List<String> branches;
 
     public Durations(JSONObject obj, @Nullable Project project) throws JSONException {
-        branches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
-        durations = CommonUtils.toTList(obj.getJSONArray("data"), Duration.class);
-
-        if (project != null) {
-            Iterator<Duration> iterator = durations.listIterator();
-            while (iterator.hasNext()) {
-                if (!Objects.equals(iterator.next().project, project.name))
-                    iterator.remove();
-            }
+        JSONArray array = obj.getJSONArray("data");
+        for (int i = 0; i < array.length(); i++) {
+            Duration duration = new Duration(array.getJSONObject(i));
+            if (project == null || Objects.equals(duration.project, project.name)) add(duration);
         }
+
+        branches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
     }
 
-    public static List<Duration> filter(List<Duration> durations, String projectName) {
+    @NonNull
+    public List<Duration> filter(String projectName) {
         List<Duration> filtered = new ArrayList<>();
-        for (Duration duration : durations)
+        for (Duration duration : this)
             if (Objects.equals(duration.project, projectName))
                 filtered.add(duration);
 

@@ -47,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -408,7 +409,7 @@ public class WakaTime {
                             listener.onResult(commits);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken | ParseException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -432,7 +433,7 @@ public class WakaTime {
                             listener.onSummary(summaries);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken ex) {
+                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken | ParseException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -633,12 +634,12 @@ public class WakaTime {
         }
 
         @NonNull
-        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, WakaTimeException, ShouldGetAccessToken {
+        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, WakaTimeException, ShouldGetAccessToken, ParseException {
             return summaries(startAndEnd.first, startAndEnd.second, project, branches);
         }
 
         @NonNull
-        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, WakaTimeException, ShouldGetAccessToken {
+        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, WakaTimeException, ShouldGetAccessToken, ParseException {
             SimpleDateFormat formatter = getAPIFormatter();
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/summaries?start=" + formatter.format(start)
                     + "&end=" + formatter.format(end)
@@ -655,7 +656,7 @@ public class WakaTime {
         }
 
         @NonNull
-        public Commits commits(Project project, int page) throws IOException, StatusCodeException, ExecutionException, InterruptedException, JSONException, ShouldGetAccessToken {
+        public Commits commits(Project project, int page) throws IOException, StatusCodeException, ExecutionException, InterruptedException, JSONException, ShouldGetAccessToken, ParseException {
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects/" + project.id + "/commits?page=" + page);
 
             if (response.getCode() == 200) return new Commits(new JSONObject(response.getBody()));
@@ -677,7 +678,7 @@ public class WakaTime {
             Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects");
 
             if (response.getCode() == 200)
-                return new Projects(new JSONObject(response.getBody()).getJSONArray("data"));
+                return new Projects(new JSONObject(response.getBody()));
             else
                 throw new StatusCodeException(response);
         }

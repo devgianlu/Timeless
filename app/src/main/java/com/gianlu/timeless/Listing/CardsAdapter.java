@@ -3,7 +3,6 @@ package com.gianlu.timeless.Listing;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,11 +10,13 @@ import android.view.ViewGroup;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Charting.OnSaveChart;
-import com.gianlu.timeless.Models.Duration;
+import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.GlobalSummary;
-import com.gianlu.timeless.Models.LoggedEntity;
+import com.gianlu.timeless.Models.LoggedEntities;
+import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.Models.Summary;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +31,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_BRANCH_SELECTOR = 7;
     private final Context context;
     private final LayoutInflater inflater;
-    private final IAdapter listener;
+    private final Listener listener;
     private final OnSaveChart saveChartListener;
     private final CardsList objs;
 
-    public CardsAdapter(@NonNull Context context, CardsList objs, IAdapter listener, OnSaveChart saveChartListener) {
+    public CardsAdapter(@NonNull Context context, CardsList objs, Listener listener, OnSaveChart saveChartListener) {
         this.context = context;
         this.objs = objs;
 
@@ -74,22 +75,21 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SummaryViewHolder) {
             ((SummaryViewHolder) holder).bind(context, (Summary) objs.objs.get(position));
         } else if (holder instanceof LineChartViewHolder) {
-            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), saveChartListener);
+            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof BarChartViewHolder) {
-            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (List<Summary>) objs.objs.get(position), saveChartListener);
+            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof PieChartViewHolder) {
-            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position), saveChartListener);
+            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (LoggedEntities) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof ListViewHolder) {
-            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (List<LoggedEntity>) objs.objs.get(position));
+            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (LoggedEntities) objs.objs.get(position));
         } else if (holder instanceof DurationsViewHolder) {
-            ((DurationsViewHolder) holder).bind(objs.titles.get(position), (List<Duration>) objs.objs.get(position));
+            ((DurationsViewHolder) holder).bind(objs.titles.get(position), (Durations) objs.objs.get(position));
         } else if (holder instanceof PercentageViewHolder) {
-            ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Pair<Long, Float>) objs.objs.get(position));
+            ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Float) objs.objs.get(position));
         } else if (holder instanceof BranchSelectorViewHolder) {
             ((BranchSelectorViewHolder) holder).bind(context, (BranchSelectorViewHolder.Config) objs.objs.get(position), listener);
         }
@@ -103,19 +103,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return objs.objs.size();
     }
 
-    public interface IAdapter {
-        void showDialog(AlertDialog.Builder builder);
+    public interface Listener {
+        void showDialog(@NonNull AlertDialog.Builder builder);
     }
 
-    public interface IPermissionRequest {
-        void onGranted();
+    public interface OnBranches {
+        void onBranchesChanged(@NonNull List<String> branches);
     }
 
-    public interface IBranches {
-        void onBranchesChanged(List<String> branches);
-    }
-
-    @SuppressWarnings({"SameParameterValue", "UnusedReturnValue", "unused", "WeakerAccess"})
     public static class CardsList {
         private final List<Integer> titles;
         private final List<Integer> types;
@@ -138,7 +133,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         /**
          * Always on top
          */
-        public CardsList addBranchSelector(List<String> branches, List<String> selectedBranches, IBranches listener) {
+        public CardsList addBranchSelector(List<String> branches, List<String> selectedBranches, OnBranches listener) {
             if (!branches.isEmpty()) {
                 titles.add(0, null);
                 types.add(0, TYPE_BRANCH_SELECTOR);
@@ -153,9 +148,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         public CardsList addPercentage(int index, @StringRes int title, long today, float beforeAverage) {
+            BigDecimal bd = new BigDecimal(today);
+            bd = bd.divide(new BigDecimal(beforeAverage), 10, BigDecimal.ROUND_HALF_UP);
+            bd = bd.multiply(new BigDecimal(100));
+            bd = bd.subtract(new BigDecimal(100));
+
             titles.add(index, title);
             types.add(index, TYPE_PERCENTAGE);
-            objs.add(index, new Pair<>(today, beforeAverage));
+            objs.add(index, bd.floatValue());
 
             return this;
         }
@@ -172,11 +172,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addProjectsBarChart(@StringRes int title, List<Summary> summaries) {
+        public CardsList addProjectsBarChart(@StringRes int title, Summaries summaries) {
             return addProjectsBarChart(titles.size(), title, summaries);
         }
 
-        public CardsList addProjectsBarChart(int index, @StringRes int title, List<Summary> summaries) {
+        public CardsList addProjectsBarChart(int index, @StringRes int title, Summaries summaries) {
             titles.add(index, title);
             types.add(index, TYPE_PROJECTS_BAR);
             objs.add(index, summaries);
@@ -184,11 +184,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addFileList(@StringRes int title, List<LoggedEntity> entities) {
+        public CardsList addFileList(@StringRes int title, LoggedEntities entities) {
             return addFileList(titles.size(), title, entities);
         }
 
-        public CardsList addFileList(int index, @StringRes int title, List<LoggedEntity> entities) {
+        public CardsList addFileList(int index, @StringRes int title, LoggedEntities entities) {
             if (entities.size() > 0) {
                 titles.add(index, title);
                 types.add(index, TYPE_FILE_LIST);
@@ -198,11 +198,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addPieChart(@StringRes int title, List<LoggedEntity> entities) {
+        public CardsList addPieChart(@StringRes int title, LoggedEntities entities) {
             return addPieChart(titles.size(), title, entities);
         }
 
-        public CardsList addPieChart(int index, @StringRes int title, List<LoggedEntity> entities) {
+        public CardsList addPieChart(int index, @StringRes int title, LoggedEntities entities) {
             titles.add(index, title);
             types.add(index, TYPE_PIE);
             objs.add(index, entities);
@@ -210,11 +210,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addDurations(@StringRes int title, List<Duration> durations) {
+        public CardsList addDurations(@StringRes int title, Durations durations) {
             return addDurations(titles.size(), title, durations);
         }
 
-        public CardsList addDurations(int index, @StringRes int title, List<Duration> durations) {
+        public CardsList addDurations(int index, @StringRes int title, Durations durations) {
             titles.add(index, title);
             types.add(index, TYPE_DURATIONS);
             objs.add(index, durations);
@@ -222,11 +222,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addLineChart(@StringRes int title, List<Summary> summaries) {
+        public CardsList addLineChart(@StringRes int title, Summaries summaries) {
             return addLineChart(titles.size(), title, summaries);
         }
 
-        public CardsList addLineChart(int index, @StringRes int title, List<Summary> summaries) {
+        public CardsList addLineChart(int index, @StringRes int title, Summaries summaries) {
             titles.add(index, title);
             types.add(index, TYPE_LINE);
             objs.add(index, summaries);

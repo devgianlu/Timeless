@@ -1,7 +1,5 @@
 package com.gianlu.timeless.Models;
 
-import android.support.annotation.Keep;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +14,6 @@ public class Leader {
     public final long daily_average;
     public final Map<String, Long> languages;
 
-    @Keep
     public Leader(JSONObject obj) throws JSONException {
         rank = obj.optInt("rank", -1);
         user = new User(obj.getJSONObject("user"));

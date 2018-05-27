@@ -9,10 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gianlu.timeless.Activities.Projects.FilesAdapter;
-import com.gianlu.timeless.Models.LoggedEntity;
+import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.R;
-
-import java.util.List;
 
 class ListViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
@@ -25,7 +23,7 @@ class ListViewHolder extends RecyclerView.ViewHolder {
         list = itemView.findViewById(R.id.listCard_list);
     }
 
-    void bind(Context context, @StringRes int title, List<LoggedEntity> entities) {
+    void bind(Context context, @StringRes int title, LoggedEntities entities) {
         this.title.setText(title);
 
         list.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));

@@ -27,7 +27,7 @@ import com.gianlu.timeless.R;
 
 import java.util.Date;
 
-public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, CardsAdapter.IAdapter {
+public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, CardsAdapter.Listener {
     private WakaTime.Range range;
     private RecyclerViewLayout layout;
     private WakaTime wakaTime;
@@ -93,10 +93,10 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
             Summaries weekBefore = requester.summaries(range.getWeekBefore(), null, null);
             Durations durations = requester.durations(new Date(), null, null);
 
-            cards.addDurations(1, R.string.durations, durations.durations);
-            cards.addPercentage(1, R.string.averageImprovement, summaries.globalSummary.total_seconds, Summary.doTotalSecondsAverage(weekBefore.summaries));
+            cards.addDurations(1, R.string.durations, durations);
+            cards.addPercentage(1, R.string.averageImprovement, summaries.globalSummary.total_seconds, Summary.doTotalSecondsAverage(weekBefore));
         } else {
-            cards.addProjectsBarChart(1, R.string.periodActivity, summaries.summaries);
+            cards.addProjectsBarChart(1, R.string.periodActivity, summaries);
         }
 
         if (getContext() == null) return;
@@ -116,7 +116,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     }
 
     @Override
-    public void showDialog(AlertDialog.Builder builder) {
+    public void showDialog(@NonNull AlertDialog.Builder builder) {
         DialogUtils.showDialog(getActivity(), builder);
     }
 }

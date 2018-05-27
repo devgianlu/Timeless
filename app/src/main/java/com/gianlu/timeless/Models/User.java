@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Models;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.gianlu.commonutils.CommonUtils;
@@ -43,6 +44,7 @@ public class User implements Serializable, BaseDrawerProfile {
         }
     }
 
+    @NonNull
     @Override
     public String getInitials(Context context) {
         if (username == null && email == null && full_name == null)
@@ -67,11 +69,13 @@ public class User implements Serializable, BaseDrawerProfile {
         }
     }
 
+    @NonNull
     @Override
     public String getProfileName(Context context) {
         return getDisplayName();
     }
 
+    @NonNull
     @Override
     public String getSecondaryText(Context context) {
         return email;

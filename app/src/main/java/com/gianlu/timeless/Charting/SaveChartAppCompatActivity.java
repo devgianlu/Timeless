@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Toaster;
-import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
@@ -20,10 +19,10 @@ import java.io.IOException;
 
 public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements OnSaveChart {
     private static final int REQUEST_CODE = 4534;
-    private CardsAdapter.IPermissionRequest listener;
+    private OnGrantedPermission listener;
 
     @Override
-    public final void onWritePermissionRequested(@NonNull CardsAdapter.IPermissionRequest listener) {
+    public final void onWritePermissionRequested(@NonNull OnGrantedPermission listener) {
         this.listener = listener;
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             showDialog(new AlertDialog.Builder(this)

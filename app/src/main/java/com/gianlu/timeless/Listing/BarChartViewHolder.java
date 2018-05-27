@@ -13,8 +13,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.MaterialColors;
+import com.gianlu.timeless.Charting.OnGrantedPermission;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
+import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
@@ -51,7 +53,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         save = itemView.findViewById(R.id.barChartCard_save);
     }
 
-    void bind(final Context context, final @StringRes int title, final List<Summary> summaries, final OnSaveChart handler) {
+    void bind(final Context context, final @StringRes int title, final Summaries summaries, final OnSaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -135,7 +137,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     handler.onSaveRequested(chart, Utils.getFileName(context, title));
                 } else {
-                    handler.onWritePermissionRequested(new CardsAdapter.IPermissionRequest() {
+                    handler.onWritePermissionRequested(new OnGrantedPermission() {
                         @Override
                         public void onGranted() {
                             handler.onSaveRequested(chart, Utils.getFileName(context, title));

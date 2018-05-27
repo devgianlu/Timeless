@@ -85,7 +85,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
             @Override
             public void onResult(@NonNull Leaders leaders) {
                 me = leaders.me;
-                adapter = new LeadersAdapter(LeadersActivity.this, leaders.leaders, leaders.maxPages, me, language, wakaTime, LeadersActivity.this);
+                adapter = new LeadersAdapter(LeadersActivity.this, leaders, leaders.maxPages, me, language, wakaTime, LeadersActivity.this);
 
                 currFilter.setText(language == null ? getString(R.string.global_rank) : language);
                 recyclerViewLayout.loadListData(adapter);

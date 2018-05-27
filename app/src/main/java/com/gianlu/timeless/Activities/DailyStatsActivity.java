@@ -31,7 +31,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, CardsAdapter.IAdapter {
+public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, CardsAdapter.Listener {
     private TextView currDay;
     private Date currentDate;
     private RecyclerViewLayout recyclerViewLayout;
@@ -155,7 +155,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
 
         final CardsAdapter adapter = new CardsAdapter(this, new CardsAdapter.CardsList()
                 .addGlobalSummary(summaries.globalSummary)
-                .addDurations(R.string.durations, durations.durations)
+                .addDurations(R.string.durations, durations)
                 .addPieChart(R.string.projects, summaries.globalSummary.projects)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)

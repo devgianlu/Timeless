@@ -1,7 +1,5 @@
 package com.gianlu.timeless.Models;
 
-import android.support.annotation.Keep;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,8 +11,6 @@ public class LoggedEntity {
     public final String name;
     public long total_seconds;
 
-    @SuppressWarnings("unused")
-    @Keep
     public LoggedEntity(JSONObject obj) throws JSONException {
         name = obj.getString("name");
         total_seconds = obj.getLong("total_seconds");
@@ -26,11 +22,12 @@ public class LoggedEntity {
     }
 
     public static void sum(List<LoggedEntity> parents, List<LoggedEntity> children) {
-        for (LoggedEntity child : children)
+        for (LoggedEntity child : children) {
             if (parents.contains(child))
                 parents.get(parents.indexOf(child)).total_seconds += child.total_seconds;
             else
                 parents.add(new LoggedEntity(child));
+        }
     }
 
     public static long sumSeconds(List<LoggedEntity> entities) {

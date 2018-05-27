@@ -1,8 +1,6 @@
 package com.gianlu.timeless.Listing;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.StringRes;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,7 +9,6 @@ import android.widget.TextView;
 
 import com.gianlu.timeless.R;
 
-import java.math.BigDecimal;
 import java.util.Locale;
 
 class PercentageViewHolder extends RecyclerView.ViewHolder {
@@ -27,32 +24,18 @@ class PercentageViewHolder extends RecyclerView.ViewHolder {
         percentage = itemView.findViewById(R.id.percentageCard_percentage);
     }
 
-    @SuppressLint("SetTextI18n")
-    void bind(@StringRes int title, Pair<Long, Float> values) {
+    void bind(@StringRes int title, float roundedPercent) {
         this.title.setText(title);
 
-        if (values.first == null || values.second == null) return;
-
-        if (values.second != 0) {
-            BigDecimal bd = new BigDecimal(values.first);
-            bd = bd.divide(new BigDecimal(values.second), 10, BigDecimal.ROUND_HALF_UP);
-            bd = bd.multiply(new BigDecimal(100));
-            bd = bd.subtract(new BigDecimal(100));
-            float roundedPercent = bd.floatValue();
-
-            if (roundedPercent == 0) {
-                percentage.setText(String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
-                trending.setImageResource(R.drawable.ic_trending_flat_black_48dp);
-            } else if (roundedPercent > 0) {
-                percentage.setText("+" + String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
-                trending.setImageResource(R.drawable.ic_trending_up_black_48dp);
-            } else {
-                percentage.setText(String.format(Locale.getDefault(), "%.2f", roundedPercent) + "%");
-                trending.setImageResource(R.drawable.ic_trending_down_black_48dp);
-            }
-        } else {
-            percentage.setText("0%");
+        if (roundedPercent == 0) {
+            percentage.setText(String.format(Locale.getDefault(), "%.2f%%", roundedPercent));
             trending.setImageResource(R.drawable.ic_trending_flat_black_48dp);
+        } else if (roundedPercent > 0) {
+            percentage.setText(String.format(Locale.getDefault(), "+%.2f%%", roundedPercent));
+            trending.setImageResource(R.drawable.ic_trending_up_black_48dp);
+        } else {
+            percentage.setText(String.format(Locale.getDefault(), "%.2f%%", roundedPercent));
+            trending.setImageResource(R.drawable.ic_trending_down_black_48dp);
         }
     }
 }

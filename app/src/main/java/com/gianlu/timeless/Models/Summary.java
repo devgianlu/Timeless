@@ -1,27 +1,22 @@
 package com.gianlu.timeless.Models;
 
-import android.support.annotation.Keep;
-
-import com.gianlu.commonutils.CommonUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 public class Summary {
     private static final SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    public final List<LoggedEntity> projects;
-    public final List<LoggedEntity> languages;
-    public final List<LoggedEntity> editors;
-    public final List<LoggedEntity> operating_systems;
-    public final List<LoggedEntity> entities;
-    public final List<LoggedEntity> branches;
+    public final LoggedEntities projects;
+    public final LoggedEntities languages;
+    public final LoggedEntities editors;
+    public final LoggedEntities operating_systems;
+    public final LoggedEntities entities;
+    public final LoggedEntities branches;
     public long total_seconds;
     public long date;
     public int sumNumber;
@@ -30,36 +25,36 @@ public class Summary {
         total_seconds = 0;
         sumNumber = 0;
         date = -1;
-        projects = new ArrayList<>();
-        languages = new ArrayList<>();
-        editors = new ArrayList<>();
-        operating_systems = new ArrayList<>();
-        entities = new ArrayList<>();
-        branches = new ArrayList<>();
+        projects = LoggedEntities.empty();
+        languages = LoggedEntities.empty();
+        editors = LoggedEntities.empty();
+        operating_systems = LoggedEntities.empty();
+        entities = LoggedEntities.empty();
+        branches = LoggedEntities.empty();
     }
 
-    @Keep
-    @SuppressWarnings("unused")
     public Summary(JSONObject obj) throws JSONException, ParseException {
         total_seconds = obj.getJSONObject("grand_total").getLong("total_seconds");
-
         date = parser.parse(obj.getJSONObject("range").getString("date")).getTime();
 
         if (obj.has("projects"))
-            projects = CommonUtils.toTList(obj.getJSONArray("projects"), LoggedEntity.class);
-        else projects = new ArrayList<>();
+            projects = new LoggedEntities(obj.getJSONArray("projects"));
+        else
+            projects = LoggedEntities.empty();
 
         if (obj.has("branches"))
-            branches = CommonUtils.toTList(obj.getJSONArray("branches"), LoggedEntity.class);
-        else branches = new ArrayList<>();
+            branches = new LoggedEntities(obj.getJSONArray("branches"));
+        else
+            branches = LoggedEntities.empty();
 
         if (obj.has("entities"))
-            entities = CommonUtils.toTList(obj.getJSONArray("entities"), LoggedEntity.class);
-        else entities = new ArrayList<>();
+            entities = new LoggedEntities(obj.getJSONArray("entities"));
+        else
+            entities = LoggedEntities.empty();
 
-        languages = CommonUtils.toTList(obj.getJSONArray("languages"), LoggedEntity.class);
-        editors = CommonUtils.toTList(obj.getJSONArray("editors"), LoggedEntity.class);
-        operating_systems = CommonUtils.toTList(obj.getJSONArray("operating_systems"), LoggedEntity.class);
+        languages = new LoggedEntities(obj.getJSONArray("languages"));
+        editors = new LoggedEntities(obj.getJSONArray("editors"));
+        operating_systems = new LoggedEntities(obj.getJSONArray("operating_systems"));
 
         Collections.sort(entities, new LoggedEntity.TotalSecondsComparator());
     }
