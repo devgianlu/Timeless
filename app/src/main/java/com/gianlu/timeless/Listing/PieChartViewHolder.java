@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.SuperTextView;
-import com.gianlu.timeless.Charting.ISaveChart;
+import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
@@ -57,7 +57,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         colorAccent = ContextCompat.getColor(parent.getContext(), R.color.colorAccent);
     }
 
-    void bind(final Context context, final @StringRes int title, List<LoggedEntity> entities, final ISaveChart handler) {
+    void bind(final Context context, final @StringRes int title, List<LoggedEntity> entities, final OnSaveChart handler) {
         this.title.setText(title);
 
         chart.setDescription(null);

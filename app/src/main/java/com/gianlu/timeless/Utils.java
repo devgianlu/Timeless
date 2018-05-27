@@ -17,13 +17,10 @@ import android.view.View;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.Project;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -105,13 +102,6 @@ public class Utils {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf;
-    }
-
-    @Nullable
-    public static String parseStupidNullJSON(JSONObject obj, String name) {
-        String value = obj.optString(name);
-        if (Objects.equals(value, "null")) return null;
-        else return value;
     }
 
     public static String timeFormatterHours(long sec, boolean seconds) {

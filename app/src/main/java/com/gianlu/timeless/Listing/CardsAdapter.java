@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.Charting.ISaveChart;
+import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.LoggedEntity;
@@ -31,10 +31,10 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final Context context;
     private final LayoutInflater inflater;
     private final IAdapter listener;
-    private final ISaveChart saveChartListener;
+    private final OnSaveChart saveChartListener;
     private final CardsList objs;
 
-    public CardsAdapter(@NonNull Context context, CardsList objs, IAdapter listener, ISaveChart saveChartListener) {
+    public CardsAdapter(@NonNull Context context, CardsList objs, IAdapter listener, OnSaveChart saveChartListener) {
         this.context = context;
         this.objs = objs;
 

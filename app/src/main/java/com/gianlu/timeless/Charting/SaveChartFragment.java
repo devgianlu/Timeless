@@ -18,15 +18,15 @@ import com.gianlu.timeless.Utils;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class SaveChartFragment extends Fragment implements ISaveChart {
+public abstract class SaveChartFragment extends Fragment implements OnSaveChart {
     private static final int REQUEST_CODE = 3453;
-    private CardsAdapter.IPermissionRequest handler;
+    private CardsAdapter.IPermissionRequest listener;
 
     @Override
-    public final void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
+    public final void onWritePermissionRequested(@NonNull CardsAdapter.IPermissionRequest listener) {
         if (getActivity() == null) return;
 
-        this.handler = handler;
+        this.listener = listener;
         if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             DialogUtils.showDialog(getActivity(), new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.writeExternalStorageRequest_title)
@@ -43,7 +43,7 @@ public abstract class SaveChartFragment extends Fragment implements ISaveChart {
     }
 
     @Override
-    public final void onSaveRequested(View chart, String name) {
+    public final void onSaveRequested(@NonNull View chart, @NonNull String name) {
         try {
             File dest = SaveChartUtils.save(getContext(), chart, getProject(), name);
             Toaster.show(getActivity(), getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);
@@ -54,8 +54,8 @@ public abstract class SaveChartFragment extends Fragment implements ISaveChart {
 
     @Override
     public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (handler != null && requestCode == REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
+        if (listener != null && requestCode == REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) listener.onGranted();
             else Toaster.show(getActivity(), Utils.Messages.WRITE_DENIED);
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);

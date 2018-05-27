@@ -18,13 +18,13 @@ import com.gianlu.timeless.Utils;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements ISaveChart {
+public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements OnSaveChart {
     private static final int REQUEST_CODE = 4534;
-    private CardsAdapter.IPermissionRequest handler;
+    private CardsAdapter.IPermissionRequest listener;
 
     @Override
-    public final void onWritePermissionRequested(CardsAdapter.IPermissionRequest handler) {
-        this.handler = handler;
+    public final void onWritePermissionRequested(@NonNull CardsAdapter.IPermissionRequest listener) {
+        this.listener = listener;
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             showDialog(new AlertDialog.Builder(this)
                     .setTitle(R.string.writeExternalStorageRequest_title)
@@ -42,8 +42,8 @@ public abstract class SaveChartAppCompatActivity extends ActivityWithDialog impl
 
     @Override
     public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (handler != null && requestCode == REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) handler.onGranted();
+        if (listener != null && requestCode == REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) listener.onGranted();
             else Toaster.show(this, Utils.Messages.WRITE_DENIED);
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -51,7 +51,7 @@ public abstract class SaveChartAppCompatActivity extends ActivityWithDialog impl
     }
 
     @Override
-    public final void onSaveRequested(View chart, String name) {
+    public final void onSaveRequested(@NonNull View chart, @NonNull String name) {
         try {
             File dest = SaveChartUtils.save(this, chart, getProject(), name);
             Toaster.show(this, getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);

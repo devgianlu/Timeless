@@ -28,9 +28,9 @@ public class Commit {
         hash = obj.getString("hash");
         html_url = obj.getString("html_url");
         ref = CommonUtils.getStupidString(obj, "ref");
-        author_email = Utils.parseStupidNullJSON(obj, "author_email");
-        author_name = Utils.parseStupidNullJSON(obj, "author_name");
-        author_username = Utils.parseStupidNullJSON(obj, "author_username");
+        author_email = CommonUtils.getStupidString(obj, "author_email");
+        author_name = CommonUtils.getStupidString(obj, "author_name");
+        author_username = CommonUtils.getStupidString(obj, "author_username");
         committer_date = Utils.getISOParser().parse(obj.getString("committer_date")).getTime();
     }
 
