@@ -2,15 +2,17 @@ package com.gianlu.timeless.Activities.Leaders;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.gianlu.commonutils.BottomSheet.BaseModalBottomSheet;
 import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.commonutils.NiceBaseBottomSheet;
 import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Charting.SquarePieChart;
 import com.gianlu.timeless.Models.Leader;
@@ -29,45 +31,32 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class LeaderSheet extends NiceBaseBottomSheet {
-
-    public LeaderSheet(ViewGroup parent) {
-        super(parent, R.layout.sheet_header_leader, R.layout.sheet_leader, false);
+public class LeaderSheet extends BaseModalBottomSheet {
+    @NonNull
+    public static LeaderSheet get(@NonNull Leader leader) {
+        LeaderSheet sheet = new LeaderSheet();
+        Bundle args = new Bundle();
+        args.putSerializable("leader", leader);
+        sheet.setArguments(args);
+        return sheet;
     }
 
     @Override
-    protected boolean onPrepareAction(@NonNull FloatingActionButton fab, Object... payloads) {
-        final String website = ((Leader) payloads[0]).user.getWebsite();
-        if (website != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(website)));
-                }
-            });
-
-            return true;
-        }
-
+    protected boolean onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Bundle args) {
         return false;
     }
 
     @Override
-    protected void onCreateHeaderView(@NonNull ViewGroup parent, Object... payloads) {
-        TextView name = parent.findViewById(R.id.leaderSheet_name);
-        name.setText(((Leader) payloads[0]).user.getDisplayName());
+    protected void onCreateBody(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Bundle args) throws MissingArgumentException {
+        inflater.inflate(R.layout.sheet_leader, parent, true);
 
-        parent.setBackgroundResource(R.color.colorPrimary);
-    }
-
-    @Override
-    protected void onCreateContentView(@NonNull ViewGroup parent, Object... payloads) {
         SuperTextView rank = parent.findViewById(R.id.leaderSheet_rank);
         SuperTextView weekTotal = parent.findViewById(R.id.leaderSheet_weekTotal);
         SuperTextView dailyAverage = parent.findViewById(R.id.leaderSheet_dailyAverage);
-        SquarePieChart chart = parent.findViewById(R.id.leaderSheet_chart);
+        SquarePieChart chart = parent.findViewById(R.id.leaderSheet_chart); // FIXME: Not actually square
 
-        Leader leader = (Leader) payloads[0];
+        Leader leader = (Leader) args.getSerializable("leader");
+        if (leader == null) throw new MissingArgumentException();
 
         rank.setHtml(R.string.rank, leader.rank);
         weekTotal.setHtml(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true));
@@ -100,5 +89,34 @@ public class LeaderSheet extends NiceBaseBottomSheet {
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
         chart.invalidate();
+
+        isLoading(false);
+    }
+
+    @Override
+    protected void onCustomizeToolbar(@NonNull Toolbar toolbar, @NonNull Bundle args) throws MissingArgumentException {
+        toolbar.setBackgroundResource(R.color.colorPrimary);
+
+        Leader leader = (Leader) args.getSerializable("leader");
+        if (leader == null) throw new MissingArgumentException();
+
+        toolbar.setTitle(leader.user.getDisplayName());
+    }
+
+    @Override
+    protected boolean onCustomizeAction(@NonNull final FloatingActionButton action, @NonNull Bundle args) throws MissingArgumentException {
+        final Leader leader = (Leader) args.getSerializable("leader");
+        if (leader == null) throw new MissingArgumentException();
+
+        if (leader.user.getWebsite() == null) return false;
+
+        action.setImageResource(R.drawable.ic_web_white_48dp);
+        action.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(leader.user.getWebsite())));
+            }
+        });
+        return true;
     }
 }

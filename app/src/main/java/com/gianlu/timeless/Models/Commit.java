@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Models;
 
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Utils;
@@ -8,9 +9,10 @@ import com.gianlu.timeless.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 
-public class Commit {
+public class Commit implements Serializable {
     public final String message;
     public final String hash;
     public final long committer_date;
@@ -34,10 +36,12 @@ public class Commit {
         committer_date = Utils.getISOParser().parse(obj.getString("committer_date")).getTime();
     }
 
+    @NonNull
     public String truncated_hash() {
         return hash.substring(0, 8);
     }
 
+    @NonNull
     public String getAuthor() {
         if (author_name != null) return author_name;
         else if (author_username != null) return author_username;

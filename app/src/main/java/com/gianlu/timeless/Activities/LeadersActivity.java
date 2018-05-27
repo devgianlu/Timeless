@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
@@ -39,7 +38,6 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     private Leader me;
     private WakaTime wakaTime;
     private RecyclerViewLayout recyclerViewLayout;
-    private LeaderSheet sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,6 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
         }, MaterialColors.getInstance().getColorsRes());
 
         currFilter = findViewById(R.id.leaders_rankingText);
-        sheet = new LeaderSheet((ViewGroup) findViewById(R.id.leaders));
 
         try {
             wakaTime = WakaTime.get();
@@ -104,13 +101,13 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     }
 
     private void displayRankDialog(Leader leader) {
-        sheet.expand(leader);
+        showDialog(LeaderSheet.get(leader));
     }
 
     @Override
     public void onBackPressed() {
-        if (sheet != null && sheet.isExpanded()) {
-            sheet.collapse();
+        if (hasVisibleDialog()) {
+            dismissDialog();
             return;
         }
 

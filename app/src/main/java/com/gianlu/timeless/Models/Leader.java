@@ -4,15 +4,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
-public class Leader {
+public class Leader implements Serializable {
     public final int rank;
     public final User user;
     public final long total_seconds;
     public final long daily_average;
-    public final Map<String, Long> languages;
+    public final HashMap<String, Long> languages;
 
     public Leader(JSONObject obj) throws JSONException {
         rank = obj.optInt("rank", -1);
