@@ -60,14 +60,14 @@ public class LoadingActivity extends ActivityWithDialog {
                 WakaTime.refreshToken(LoadingActivity.this, new WakaTime.OnAccessToken() {
                     @Override
                     public void onTokenAccepted(@NonNull WakaTime instance) {
-                        instance.getCurrentUser(new WakaTime.OnUser() {
+                        instance.getCurrentUser(new WakaTime.OnResult<User>() {
                             @Override
-                            public void onUser(User user) {
+                            public void onResult(@NonNull User user) {
                                 goTo(MainActivity.class, user);
                             }
 
                             @Override
-                            public void onException(Exception ex) {
+                            public void onException(@NonNull Exception ex) {
                                 Toaster.show(LoadingActivity.this, Utils.Messages.FAILED_LOADING, ex);
                                 finish();
                             }
@@ -75,7 +75,7 @@ public class LoadingActivity extends ActivityWithDialog {
                     }
 
                     @Override
-                    public void onException(Throwable ex) {
+                    public void onException(@NonNull Throwable ex) {
                         Toaster.show(LoadingActivity.this, Utils.Messages.CANT_REFRESH_TOKEN, ex);
                         deleteFile("token");
                         goTo(GrantActivity.class, null);

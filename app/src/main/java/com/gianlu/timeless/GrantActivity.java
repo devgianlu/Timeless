@@ -36,7 +36,7 @@ public class GrantActivity extends ActivityWithDialog { // TODO: Can be prettier
                 }
 
                 @Override
-                public void onException(Throwable ex) {
+                public void onException(@NonNull Throwable ex) {
                     dismissDialog();
                     Toaster.show(GrantActivity.this, Utils.Messages.CANT_CHECK_GRANT, ex);
                 }

@@ -79,7 +79,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     }
 
     @Override
-    public void request(WakaTime.Requester requester, Handler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull Handler ui) throws Exception {
         Summaries summaries = requester.summaries(range.getStartAndEnd(), null, null);
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
@@ -110,7 +110,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     }
 
     @Override
-    public void somethingWentWrong(Exception ex) {
+    public void somethingWentWrong(@NonNull Exception ex) {
         if (ex instanceof WakaTimeException) layout.showMessage(ex.getMessage(), false);
         else layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
     }

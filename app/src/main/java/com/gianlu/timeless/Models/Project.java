@@ -1,7 +1,6 @@
 package com.gianlu.timeless.Models;
 
 
-import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 
 import org.json.JSONException;
@@ -16,7 +15,6 @@ public class Project implements Serializable {
     public final String name;
     public final boolean hasRepository;
 
-    @Keep
     public Project(JSONObject obj) throws JSONException {
         id = obj.getString("id");
         name = obj.getString("name");

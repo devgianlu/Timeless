@@ -149,7 +149,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     }
 
     @Override
-    public void request(WakaTime.Requester requester, Handler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull Handler ui) throws Exception {
         Summaries summaries = requester.summaries(currentDate, currentDate, null, null);
         Durations durations = requester.durations(currentDate, null, null);
 
@@ -170,7 +170,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     }
 
     @Override
-    public void somethingWentWrong(Exception ex) {
+    public void somethingWentWrong(@NonNull Exception ex) {
         if (ex instanceof WakaTimeException) recyclerViewLayout.showMessage(ex.getMessage(), false);
         else recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
     }

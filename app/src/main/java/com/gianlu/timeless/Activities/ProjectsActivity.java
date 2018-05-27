@@ -2,6 +2,7 @@ package com.gianlu.timeless.Activities;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -16,6 +17,7 @@ import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Projects.ProjectFragment;
 import com.gianlu.timeless.Models.Project;
+import com.gianlu.timeless.Models.Projects;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
@@ -30,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class ProjectsActivity extends ActivityWithDialog implements DatePickerDialog.OnDateSetListener, WakaTime.OnProjects {
+public class ProjectsActivity extends ActivityWithDialog implements DatePickerDialog.OnDateSetListener, WakaTime.OnResult<Projects> {
     private Pair<Date, Date> currentRange;
     private ViewPager pager;
     private Date tmpStart;
@@ -87,7 +89,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
     }
 
     @Override
-    public void onProjects(final List<Project> projects) {
+    public void onResult(@NonNull final Projects projects) {
         final List<Fragment> fragments = new ArrayList<>();
         for (Project project : projects)
             fragments.add(ProjectFragment.getInstance(project, currentRange));
@@ -95,15 +97,15 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
         dismissDialog();
 
-        String project_id = getIntent().getStringExtra("project_id");
-        if (project_id != null) {
-            int pos = projects.indexOf(Project.find(project_id, projects));
+        String projectId = getIntent().getStringExtra("project_id");
+        if (projectId != null) {
+            int pos = projects.indexOf(projectId);
             if (pos != -1) pager.setCurrentItem(pos, false);
         }
     }
 
     @Override
-    public void onException(Exception ex) {
+    public void onException(@NonNull Exception ex) {
         Toaster.show(ProjectsActivity.this, Utils.Messages.FAILED_LOADING, ex, new Runnable() {
             @Override
             public void run() {
@@ -179,9 +181,9 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         updateRangeText();
 
         showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
-        wakaTime.getProjects(new WakaTime.OnProjects() {
+        wakaTime.getProjects(new WakaTime.OnResult<Projects>() {
             @Override
-            public void onProjects(List<Project> projects) {
+            public void onResult(@NonNull Projects projects) {
                 final List<Fragment> fragments = new ArrayList<>();
                 for (Project project : projects)
                     fragments.add(ProjectFragment.getInstance(project, currentRange));
@@ -193,7 +195,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
             }
 
             @Override
-            public void onException(Exception ex) {
+            public void onException(@NonNull Exception ex) {
                 dismissDialog();
                 Toaster.show(ProjectsActivity.this, Utils.Messages.FAILED_LOADING, ex, new Runnable() {
                     @Override

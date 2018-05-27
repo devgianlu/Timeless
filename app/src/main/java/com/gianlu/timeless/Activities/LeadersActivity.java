@@ -2,6 +2,7 @@ package com.gianlu.timeless.Activities;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -31,7 +32,7 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
 
-public class LeadersActivity extends ActivityWithDialog implements LeadersAdapter.IAdapter {
+public class LeadersActivity extends ActivityWithDialog implements LeadersAdapter.Listener {
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang;
@@ -80,9 +81,9 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
     private void gatherAndUpdate(@Nullable final String language) {
         recyclerViewLayout.startLoading();
-        wakaTime.getLeaders(language, 1, new WakaTime.OnLeaders() {
+        wakaTime.getLeaders(language, 1, new WakaTime.OnResult<Leaders>() {
             @Override
-            public void onLeaders(Leaders leaders) {
+            public void onResult(@NonNull Leaders leaders) {
                 me = leaders.me;
                 adapter = new LeadersAdapter(LeadersActivity.this, leaders.leaders, leaders.maxPages, me, language, wakaTime, LeadersActivity.this);
 
@@ -93,7 +94,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
             }
 
             @Override
-            public void onException(Exception ex) {
+            public void onException(@NonNull Exception ex) {
                 if (ex instanceof WakaTimeException)
                     recyclerViewLayout.showMessage(ex.getMessage(), false);
                 else
@@ -140,7 +141,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
         wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.OnSummary() {
             @Override
-            public void onSummary(Summaries summaries) {
+            public void onSummary(@NonNull Summaries summaries) {
                 final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, summaries.globalSummary.languages);
                 AlertDialog.Builder builder = new AlertDialog.Builder(LeadersActivity.this);
                 builder.setTitle(R.string.filterByLanguage)
@@ -164,12 +165,12 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
             }
 
             @Override
-            public void onWakaTimeError(WakaTimeException ex) {
+            public void onWakaTimeError(@NonNull WakaTimeException ex) {
                 onException(ex); // Shouldn't happen
             }
 
             @Override
-            public void onException(Exception ex) {
+            public void onException(@NonNull Exception ex) {
                 Toaster.show(LeadersActivity.this, Utils.Messages.FAILED_LOADING, ex);
                 dismissDialog();
             }
@@ -177,7 +178,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     }
 
     @Override
-    public void onLeaderSelected(Leader leader) {
+    public void onLeaderSelected(@NonNull Leader leader) {
         displayRankDialog(leader);
     }
 }

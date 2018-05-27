@@ -20,10 +20,10 @@ import java.util.Date;
 
 public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
     private final Project project;
-    private final IAdapter listener;
+    private final Listener listener;
     private final WakaTime wakaTime;
 
-    CommitsAdapter(Context context, Commits commits, WakaTime wakaTime, IAdapter listener) {
+    CommitsAdapter(Context context, Commits commits, WakaTime wakaTime, Listener listener) {
         super(new Config<Commit>(context).items(commits.commits).maxPages(commits.total_pages).separators(true));
         this.project = commits.project;
         this.listener = listener;
@@ -57,22 +57,22 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
     }
 
     @Override
-    protected void moreContent(int page, final IContentProvider<Commit> provider) {
-        wakaTime.getCommits(project, page, new WakaTime.OnCommits() {
+    protected void moreContent(int page, @NonNull final ContentProvider<Commit> provider) {
+        wakaTime.getCommits(project, page, new WakaTime.OnResult<Commits>() {
             @Override
-            public void onCommits(Commits commits) {
+            public void onResult(@NonNull Commits commits) {
                 provider.onMoreContent(commits.commits);
             }
 
             @Override
-            public void onException(Exception ex) {
+            public void onException(@NonNull Exception ex) {
                 provider.onFailed(ex);
             }
         });
     }
 
-    public interface IAdapter {
-        void onCommitSelected(Project project, Commit commit);
+    public interface Listener {
+        void onCommitSelected(@NonNull Project project, @NonNull Commit commit);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

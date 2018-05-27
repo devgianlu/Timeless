@@ -20,10 +20,12 @@ import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 
-public class CommitsFragment extends Fragment implements WakaTime.OnCommits, CommitsAdapter.IAdapter {
+public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commits>, CommitsAdapter.Listener {
     private RecyclerViewLayout recyclerViewLayout;
     private CommitSheet sheet;
+    private WakaTime wakaTime;
 
+    @NonNull
     public static CommitsFragment getInstance(Project project) {
         CommitsFragment fragment = new CommitsFragment();
         Bundle args = new Bundle();
@@ -41,8 +43,6 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
 
         return true;
     }
-
-    private WakaTime wakaTime;
 
     @Nullable
     @Override
@@ -80,13 +80,13 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
     }
 
     @Override
-    public void onCommits(Commits commits) {
+    public void onResult(@NonNull Commits commits) {
         if (!isAdded()) return;
         recyclerViewLayout.loadListData(new CommitsAdapter(getContext(), commits, wakaTime, this));
     }
 
     @Override
-    public void onException(Exception ex) {
+    public void onException(@NonNull Exception ex) {
         if (ex instanceof WakaTimeException) {
             recyclerViewLayout.showMessage(ex.getMessage(), false);
         } else {
@@ -95,7 +95,7 @@ public class CommitsFragment extends Fragment implements WakaTime.OnCommits, Com
     }
 
     @Override
-    public void onCommitSelected(Project project, Commit commit) {
+    public void onCommitSelected(@NonNull Project project, @NonNull Commit commit) {
         sheet.expand(commit);
     }
 }

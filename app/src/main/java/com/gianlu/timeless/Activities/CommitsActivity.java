@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -11,6 +12,7 @@ import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.Commits.CommitsFragment;
 import com.gianlu.timeless.Models.Project;
+import com.gianlu.timeless.Models.Projects;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
@@ -18,7 +20,7 @@ import com.gianlu.timeless.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnProjects {
+public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnResult<Projects> {
     private final List<CommitsFragment> fragments = new ArrayList<>();
     private ViewPager pager;
 
@@ -45,12 +47,10 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnPr
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
@@ -64,7 +64,7 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnPr
     }
 
     @Override
-    public void onProjects(List<Project> projects) {
+    public void onResult(@NonNull Projects projects) {
         for (Project project : projects)
             if (project.hasRepository)
                 fragments.add(CommitsFragment.getInstance(project));
@@ -73,9 +73,9 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnPr
         pager.setOffscreenPageLimit(fragments.size());
         dismissDialog();
 
-        String project_id = getIntent().getStringExtra("project_id");
-        if (project_id != null) {
-            int pos = projects.indexOf(Project.find(project_id, projects));
+        String projectId = getIntent().getStringExtra("project_id");
+        if (projectId != null) {
+            int pos = projects.indexOf(projectId);
             if (pos != -1) pager.setCurrentItem(pos, false);
         }
     }
@@ -92,7 +92,7 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnPr
     }
 
     @Override
-    public void onException(Exception ex) {
+    public void onException(@NonNull Exception ex) {
         Toaster.show(CommitsActivity.this, Utils.Messages.FAILED_LOADING, ex, new Runnable() {
             @Override
             public void run() {
