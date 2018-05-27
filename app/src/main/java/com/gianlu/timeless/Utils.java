@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +13,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import com.gianlu.commonutils.FontsManager;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.Project;
 
@@ -45,7 +45,8 @@ public class Utils {
         }
     }
 
-    public static Bitmap createBitmap(View view) {
+    @NonNull
+    public static Bitmap createBitmap(@NonNull View view) {
         Bitmap chartBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas chartCanvas = new Canvas(chartBitmap);
         chartCanvas.drawColor(Color.WHITE);
@@ -60,7 +61,7 @@ public class Utils {
         textPaint.setColor(Color.WHITE);
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(38);
-        textPaint.setTypeface(Typeface.createFromAsset(view.getContext().getAssets(), "fonts/Roboto-Light.ttf"));
+        textPaint.setTypeface(FontsManager.get().get(view.getContext(), FontsManager.ROBOTO_LIGHT));
 
         String text = view.getContext().getString(R.string.watermark);
         Rect textBounds = new Rect();
@@ -82,28 +83,33 @@ public class Utils {
         return bitmap;
     }
 
+    @NonNull
     public static String getFileName(@NonNull Context context, @StringRes int title) {
         return context.getString(title) + " (" + new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault()).format(new Date()) + ")";
     }
 
+    @NonNull
     public static SimpleDateFormat getDateTimeFormatter() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         return sdf;
     }
 
+    @NonNull
     public static SimpleDateFormat getOnlyDateFormatter() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         return sdf;
     }
 
+    @NonNull
     public static SimpleDateFormat getISOParser() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf;
     }
 
+    @NonNull
     public static String timeFormatterHours(long sec, boolean seconds) {
         long hours = TimeUnit.SECONDS.toHours(sec);
         long minute = TimeUnit.SECONDS.toMinutes(sec) - TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(sec));
@@ -130,6 +136,7 @@ public class Utils {
         }
     }
 
+    @NonNull
     public static SimpleDateFormat getVerbalDateFormatter() {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd/MM/yyyy", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());

@@ -14,12 +14,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class ThisApplication extends AnalyticsApplication {
+    public static final String USER_AGENT = "Timeless by devgianlu";
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        ConnectivityChecker.setUserAgent("Timeless, a Wakatime client");
+        ConnectivityChecker.setUserAgent(USER_AGENT);
         ConnectivityChecker.setProvider(new ConnectivityChecker.URLProvider() {
             @Override
             public URL getUrl(boolean useDotCom) throws MalformedURLException {
@@ -44,7 +45,6 @@ public class ThisApplication extends AnalyticsApplication {
             }
         }
     }
-
 
     @Override
     protected boolean uncaughtNotDebug(Thread thread, Throwable throwable) {

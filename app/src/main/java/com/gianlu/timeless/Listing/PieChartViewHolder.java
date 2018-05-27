@@ -111,7 +111,6 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
                 CommonUtils.handleCollapseClick(expand, details, new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-
                     }
 
                     @Override
@@ -121,7 +120,6 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
-
                     }
                 });
             }

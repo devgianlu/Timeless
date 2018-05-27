@@ -29,6 +29,7 @@ import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.PKeys;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.ThisApplication;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
@@ -72,6 +73,7 @@ public class WakaTime {
         ServiceBuilder builder = new ServiceBuilder(APP_ID)
                 .apiSecret(APP_SECRET)
                 .callback(CALLBACK)
+                .userAgent(ThisApplication.USER_AGENT)
                 .scope("email,read_stats,read_logged_time,read_teams");
 
         if (BuildConfig.DEBUG) builder.debug();

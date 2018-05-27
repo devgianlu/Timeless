@@ -32,6 +32,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     private RecyclerViewLayout layout;
     private WakaTime wakaTime;
 
+    @NonNull
     public static MainFragment getInstance(Context context, WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
