@@ -53,7 +53,7 @@ public class LeaderSheet extends BaseModalBottomSheet {
         SuperTextView rank = parent.findViewById(R.id.leaderSheet_rank);
         SuperTextView weekTotal = parent.findViewById(R.id.leaderSheet_weekTotal);
         SuperTextView dailyAverage = parent.findViewById(R.id.leaderSheet_dailyAverage);
-        SquarePieChart chart = parent.findViewById(R.id.leaderSheet_chart); // FIXME: Not actually square
+        SquarePieChart chart = parent.findViewById(R.id.leaderSheet_chart);
 
         Leader leader = (Leader) args.getSerializable("leader");
         if (leader == null) throw new MissingArgumentException();
