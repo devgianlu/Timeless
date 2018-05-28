@@ -2,7 +2,6 @@ package com.gianlu.timeless.Activities.Commits;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
@@ -19,23 +18,19 @@ import com.gianlu.timeless.Utils;
 
 import java.util.Date;
 
-public class CommitSheet extends BaseModalBottomSheet {
+public class CommitSheet extends BaseModalBottomSheet<Commit, Void> {
     @NonNull
-    public static CommitSheet get(@NonNull Commit commit) {
-        CommitSheet sheet = new CommitSheet();
-        Bundle args = new Bundle();
-        args.putSerializable("commit", commit);
-        sheet.setArguments(args);
-        return sheet;
+    public static CommitSheet get() {
+        return new CommitSheet();
     }
 
     @Override
-    protected boolean onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Bundle args) {
+    protected boolean onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Commit commit) {
         return false;
     }
 
     @Override
-    protected void onCreateBody(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Bundle args) throws MissingArgumentException {
+    protected void onCreateBody(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Commit commit) {
         inflater.inflate(R.layout.sheet_commit, parent, true);
 
         SuperTextView author = parent.findViewById(R.id.commitSheet_author);
@@ -43,9 +38,6 @@ public class CommitSheet extends BaseModalBottomSheet {
         SuperTextView hash = parent.findViewById(R.id.commitSheet_hash);
         SuperTextView ref = parent.findViewById(R.id.commitSheet_ref);
         SuperTextView timeSpent = parent.findViewById(R.id.commitSheet_timeSpent);
-
-        Commit commit = (Commit) args.getSerializable("commit");
-        if (commit == null) throw new MissingArgumentException();
 
         author.setHtml(R.string.commitAuthor, commit.getAuthor());
         date.setHtml(R.string.commitDate, Utils.getDateTimeFormatter().format(new Date(commit.committer_date)));
@@ -70,20 +62,13 @@ public class CommitSheet extends BaseModalBottomSheet {
     }
 
     @Override
-    protected void onCustomizeToolbar(@NonNull Toolbar toolbar, @NonNull Bundle args) throws MissingArgumentException {
+    protected void onCustomizeToolbar(@NonNull Toolbar toolbar, @NonNull Commit commit) {
         toolbar.setBackgroundResource(R.color.colorPrimary);
-
-        Commit commit = (Commit) args.getSerializable("commit");
-        if (commit == null) throw new MissingArgumentException();
-
         toolbar.setTitle(commit.message);
     }
 
     @Override
-    protected boolean onCustomizeAction(@NonNull FloatingActionButton action, @NonNull Bundle args) throws MissingArgumentException {
-        final Commit commit = (Commit) args.getSerializable("commit");
-        if (commit == null) throw new MissingArgumentException();
-
+    protected boolean onCustomizeAction(@NonNull FloatingActionButton action, @NonNull final Commit commit) {
         action.setImageResource(R.drawable.ic_open_in_browser_white_48dp);
         action.setOnClickListener(new View.OnClickListener() {
             @Override

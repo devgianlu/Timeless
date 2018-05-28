@@ -2,7 +2,6 @@ package com.gianlu.timeless.Activities.Leaders;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -31,32 +30,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class LeaderSheet extends BaseModalBottomSheet {
+public class LeaderSheet extends BaseModalBottomSheet<Leader, Void> {
     @NonNull
-    public static LeaderSheet get(@NonNull Leader leader) {
-        LeaderSheet sheet = new LeaderSheet();
-        Bundle args = new Bundle();
-        args.putSerializable("leader", leader);
-        sheet.setArguments(args);
-        return sheet;
+    public static LeaderSheet get() {
+        return new LeaderSheet();
     }
 
     @Override
-    protected boolean onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Bundle args) {
+    protected boolean onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Leader leader) {
         return false;
     }
 
     @Override
-    protected void onCreateBody(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Bundle args) throws MissingArgumentException {
+    protected void onCreateBody(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @NonNull Leader leader) {
         inflater.inflate(R.layout.sheet_leader, parent, true);
 
         SuperTextView rank = parent.findViewById(R.id.leaderSheet_rank);
         SuperTextView weekTotal = parent.findViewById(R.id.leaderSheet_weekTotal);
         SuperTextView dailyAverage = parent.findViewById(R.id.leaderSheet_dailyAverage);
         SquarePieChart chart = parent.findViewById(R.id.leaderSheet_chart);
-
-        Leader leader = (Leader) args.getSerializable("leader");
-        if (leader == null) throw new MissingArgumentException();
 
         rank.setHtml(R.string.rank, leader.rank);
         weekTotal.setHtml(R.string.last7DaysTimeSpent, Utils.timeFormatterHours(leader.total_seconds, true));
@@ -94,20 +86,13 @@ public class LeaderSheet extends BaseModalBottomSheet {
     }
 
     @Override
-    protected void onCustomizeToolbar(@NonNull Toolbar toolbar, @NonNull Bundle args) throws MissingArgumentException {
+    protected void onCustomizeToolbar(@NonNull Toolbar toolbar, @NonNull Leader leader) {
         toolbar.setBackgroundResource(R.color.colorPrimary);
-
-        Leader leader = (Leader) args.getSerializable("leader");
-        if (leader == null) throw new MissingArgumentException();
-
         toolbar.setTitle(leader.user.getDisplayName());
     }
 
     @Override
-    protected boolean onCustomizeAction(@NonNull final FloatingActionButton action, @NonNull Bundle args) throws MissingArgumentException {
-        final Leader leader = (Leader) args.getSerializable("leader");
-        if (leader == null) throw new MissingArgumentException();
-
+    protected boolean onCustomizeAction(@NonNull final FloatingActionButton action, @NonNull final Leader leader) {
         if (leader.user.getWebsite() == null) return false;
 
         action.setImageResource(R.drawable.ic_web_white_48dp);

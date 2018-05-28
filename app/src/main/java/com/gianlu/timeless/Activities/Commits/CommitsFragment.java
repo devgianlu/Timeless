@@ -90,7 +90,7 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
 
     @Override
     public void onCommitSelected(@NonNull Project project, @NonNull Commit commit) {
-        DialogUtils.showDialog(getActivity(), CommitSheet.get(commit));
+        CommitSheet.get().show(getActivity(), commit);
     }
 }
 

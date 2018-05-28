@@ -101,7 +101,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     }
 
     private void displayRankDialog(Leader leader) {
-        showDialog(LeaderSheet.get(leader));
+        LeaderSheet.get().show(this, leader);
     }
 
     @Override
