@@ -40,6 +40,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     private List<String> currentBranches = null;
     private WakaTime wakaTime;
 
+    @NonNull
     public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
         ProjectFragment fragment = new ProjectFragment();
         fragment.setHasOptionsMenu(true);

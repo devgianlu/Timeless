@@ -12,8 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.OnGrantedPermission;
 import com.gianlu.timeless.Charting.OnSaveChart;
+import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
@@ -26,12 +28,14 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 class LineChartViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
@@ -49,6 +53,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
     void bind(final Context context, final @StringRes int title, final Summaries summaries, final OnSaveChart handler) {
         this.title.setText(title);
 
+        chart.setNoDataText(context.getString(R.string.noData));
         chart.setDescription(null);
         chart.setTouchEnabled(false);
 
@@ -76,24 +81,35 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        chart.getLegend().setEnabled(false);
+        MaterialColors colors = MaterialColors.getShuffledInstance();
+        Map<String, ILineDataSet> branchToSets = new HashMap<>(summaries.availableBranches.size());
+        int i = 0;
+        for (Summary summary : summaries) {
+            for (LoggedEntity branch : summary.branches) {
+                LineDataSet set = (LineDataSet) branchToSets.get(branch.name);
+                if (set == null) {
+                    int color = ContextCompat.getColor(context, colors.getColor(i));
+                    i++;
 
-        List<Entry> entries = new ArrayList<>();
-        for (int i = 0; i < summaries.size(); i++) {
-            Summary summary = summaries.get(i);
-            entries.add(new Entry(i, summary.total_seconds));
+                    set = new LineDataSet(new ArrayList<Entry>(), branch.name);
+                    set.setDrawValues(false);
+                    set.setDrawCircles(summary.branches.size() == 1);
+                    set.setDrawCircleHole(false);
+                    set.setFillColor(color);
+                    set.setFillAlpha(100);
+                    set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    set.setColor(color);
+                    set.setDrawFilled(true);
+
+                    branchToSets.put(branch.name, set);
+                }
+
+                set.addEntry(new Entry(set.getEntryCount() + 1, branch.total_seconds));
+            }
         }
 
-        LineDataSet set = new LineDataSet(entries, null);
-        set.setDrawValues(false);
-        set.setDrawCircles(entries.size() == 1);
-        set.setDrawCircleHole(false);
-        set.setFillColor(ContextCompat.getColor(context, R.color.colorAccent));
-        set.setFillAlpha(100);
-        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set.setColor(ContextCompat.getColor(context, R.color.colorAccent));
-        set.setDrawFilled(true);
-        chart.setData(new LineData(set));
+        if (branchToSets.isEmpty()) chart.clear();
+        else chart.setData(new LineData(new ArrayList<>(branchToSets.values())));
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
