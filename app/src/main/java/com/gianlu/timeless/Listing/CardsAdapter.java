@@ -149,9 +149,10 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         public CardsList addPercentage(int index, @StringRes int title, long today, float beforeAverage) {
             BigDecimal bd = new BigDecimal(today);
-            bd = bd.divide(new BigDecimal(beforeAverage), 10, BigDecimal.ROUND_HALF_UP);
+            if (beforeAverage > 0)
+                bd = bd.divide(new BigDecimal(beforeAverage), 10, BigDecimal.ROUND_HALF_UP);
+            bd = bd.subtract(new BigDecimal(1));
             bd = bd.multiply(new BigDecimal(100));
-            bd = bd.subtract(new BigDecimal(100));
 
             titles.add(index, title);
             types.add(index, TYPE_PERCENTAGE);
