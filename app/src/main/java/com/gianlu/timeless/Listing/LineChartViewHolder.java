@@ -1,8 +1,6 @@
 package com.gianlu.timeless.Listing;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +11,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.timeless.Charting.OnGrantedPermission;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summaries;
@@ -50,7 +47,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         save = itemView.findViewById(R.id.lineChartCard_save);
     }
 
-    void bind(final Context context, final @StringRes int title, final Summaries summaries, final OnSaveChart handler) {
+    void bind(final Context context, final @StringRes int title, final Summaries summaries, final OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setNoDataText(context.getString(R.string.noData));
@@ -114,16 +111,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    handler.onSaveRequested(chart, Utils.getFileName(context, title));
-                } else {
-                    handler.onWritePermissionRequested(new OnGrantedPermission() {
-                        @Override
-                        public void onGranted() {
-                            handler.onSaveRequested(chart, Utils.getFileName(context, title));
-                        }
-                    });
-                }
+                listener.saveImage(chart, title);
             }
         });
     }

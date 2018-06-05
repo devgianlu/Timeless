@@ -42,7 +42,7 @@ public class MainActivity extends ActivityWithDialog {
 
         User user = (User) getIntent().getSerializableExtra("user");
         if (user == null) {
-            Toaster.show(this, Utils.Messages.FAILED_LOADING, new NullPointerException("user is null!"));
+            Toaster.with(this).message(R.string.failedLoading).ex(new NullPointerException("user is null!")).show();
             onBackPressed();
             return;
         }

@@ -3,7 +3,7 @@
     <string name="grant_hello">Welcome to Timeless!</string>
     <string name="grant_help">All you have to do to connect Timeless to your WakaTime account is click the button below! I want to assure you I will not have access to your credentials.</string>
     <string name="grantAccess">Grant access</string>
-    <string name="checkingPermissions">Checking permissions. Please wait…</string>
+    <string name="checkingWakatimePermissions">Checking permissions. Please wait…</string>
     <string name="last_7_days">Last 7 days</string>
     <string name="last_30_days">Last 30 days</string>
     <string name="errorMessage">Failed loading data. Pull to refresh or restart the application!</string>
@@ -27,7 +27,7 @@
     <string name="materialDateRangePicker_details">https://github.com/borax12/MaterialDateRangePicker</string>
     <string name="writeExternalStorageRequest_title">Write external storage permission</string>
     <string name="writeExternalStorageRequest_message">To save the chart image, the app needs to write to the external storage</string>
-    <string name="savedIn">Image has been saved in %s!</string>
+    <string name="imageSavedTo">The image has been saved to %s</string>
     <string name="watermark">Made with Timeless, a Wakatime client</string>
     <string name="global_rank">Global rank</string>
     <string name="filterByLanguage">Filter by language</string>
@@ -46,14 +46,14 @@
     <string name="commitTimeSpent"><![CDATA[<b>Time spent:</b>]]> %s</string>
     <string name="failedLoading">Failed loading data.</string>
     <string name="failedRefreshing">Failed refreshing data.</string>
-    <string name="failedCheckingPermissions">Failed checking permissions!</string>
+    <string name="failedCheckingWakatimePermissions">Failed checking permissions!</string>
     <string name="failedRefreshingToken">Failed refreshing the token!</string>
     <string name="tokenRejected">Server rejected your request. Try again or contact me!</string>
     <string name="userNotFound">You have not been found.</string>
     <string name="grantAccessAgain">Please grant access again.</string>
     <string name="failedSavingImage">Failed saving the chart image!</string>
     <string name="cannotGoFuture">You cannot go into the future!</string>
-    <string name="noWritePermission">You have denied the write permission.</string>
+    <string name="writeDenied">You have denied the write permission.</string>
     <string name="network">Network</string>
     <string name="enableCache">Enable cache</string>
     <string name="enableCacheSummary">Short term cache (to save data)</string>

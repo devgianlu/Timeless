@@ -38,7 +38,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
 
     private void updatePage(@NonNull Date newDate, boolean refresh) {
         if (newDate.after(new Date())) {
-            Toaster.show(DailyStatsActivity.this, Utils.Messages.FUTURE_DATE, Utils.getOnlyDateFormatter().format(newDate));
+            Toaster.with(this).message(R.string.cannotGoFuture).extra(newDate).show();
             return;
         }
 

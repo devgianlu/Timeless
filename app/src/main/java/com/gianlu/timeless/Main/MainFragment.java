@@ -6,13 +6,11 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Charting.SaveChartFragment;
@@ -114,10 +112,5 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     public void somethingWentWrong(@NonNull Exception ex) {
         if (ex instanceof WakaTimeException) layout.showMessage(ex.getMessage(), false);
         else layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
-    }
-
-    @Override
-    public void showDialog(@NonNull AlertDialog.Builder builder) {
-        DialogUtils.showDialog(getActivity(), builder);
     }
 }

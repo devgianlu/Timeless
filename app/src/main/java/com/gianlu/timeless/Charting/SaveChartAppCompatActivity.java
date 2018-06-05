@@ -1,61 +1,47 @@
 package com.gianlu.timeless.Charting;
 
 import android.Manifest;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.Toast;
 
+import com.gianlu.commonutils.AskPermission;
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
 
 import java.io.File;
-import java.io.IOException;
 
-public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements OnSaveChart {
-    private static final int REQUEST_CODE = 4534;
-    private OnGrantedPermission listener;
+public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements OnSaveChart, AskPermission.Listener {
+    private View chart;
+    private int title;
 
     @Override
-    public final void onWritePermissionRequested(@NonNull OnGrantedPermission listener) {
-        this.listener = listener;
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            showDialog(new AlertDialog.Builder(this)
-                    .setTitle(R.string.writeExternalStorageRequest_title)
-                    .setMessage(R.string.writeExternalStorageRequest_message)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(SaveChartAppCompatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
-                        }
-                    }));
-        } else {
-            ActivityCompat.requestPermissions(SaveChartAppCompatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
-        }
+    public final void saveImage(@NonNull View chart, int title) {
+        this.chart = chart;
+        this.title = title;
+        AskPermission.ask(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, this);
     }
 
     @Override
-    public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (listener != null && requestCode == REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) listener.onGranted();
-            else Toaster.show(this, Utils.Messages.WRITE_DENIED);
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+    public final void permissionGranted(@NonNull String permission) {
+        File image = SaveChartUtils.save(chart, title, getProject());
+        if (image == null)
+            showToast(Toaster.build().message(R.string.failedSavingImage).error(true));
+        else showToast(Toaster.build().message(R.string.imageSavedTo, image.getAbsolutePath()));
     }
 
     @Override
-    public final void onSaveRequested(@NonNull View chart, @NonNull String name) {
-        try {
-            File dest = SaveChartUtils.save(this, chart, getProject(), name);
-            Toaster.show(this, getString(R.string.savedIn, dest.getPath()), Toast.LENGTH_LONG, null, null, null);
-        } catch (IOException ex) {
-            Toaster.show(this, Utils.Messages.FAILED_SAVING_CHART, ex);
-        }
+    public final void permissionDenied(@NonNull String permission) {
+        showToast(Toaster.build().message(R.string.writeDenied).error(true));
+
+        chart = null;
+        title = 0;
+    }
+
+    @Override
+    public final void askRationale(@NonNull AlertDialog.Builder builder) {
+        builder.setTitle(R.string.writeExternalStorageRequest_title)
+                .setMessage(R.string.writeExternalStorageRequest_message);
     }
 }

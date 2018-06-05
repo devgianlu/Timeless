@@ -15,7 +15,6 @@ import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Projects;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
-import com.gianlu.timeless.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,11 +92,7 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
 
     @Override
     public void onException(@NonNull Exception ex) {
-        Toaster.show(CommitsActivity.this, Utils.Messages.FAILED_LOADING, ex, new Runnable() {
-            @Override
-            public void run() {
-                onBackPressed();
-            }
-        });
+        Toaster.with(this).message(R.string.failedLoading).ex(ex).show();
+        onBackPressed();
     }
 }

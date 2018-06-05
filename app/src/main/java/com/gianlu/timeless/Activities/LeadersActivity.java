@@ -122,7 +122,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                 break;
             case R.id.leaders_me:
                 if (me != null && me.rank != -1) displayRankDialog(me);
-                else Toaster.show(LeadersActivity.this, Utils.Messages.USER_NOT_FOUND);
+                else Toaster.with(this).message(R.string.userNotFound).extra(me.user).show();
                 AnalyticsApplication.sendAnalytics(this, Utils.ACTION_SHOW_ME_LEADER);
                 break;
             case R.id.leaders_filter:
@@ -168,7 +168,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
             @Override
             public void onException(@NonNull Exception ex) {
-                Toaster.show(LeadersActivity.this, Utils.Messages.FAILED_LOADING, ex);
+                Toaster.with(LeadersActivity.this).message(R.string.failedLoading).ex(ex).show();
                 dismissDialog();
             }
         });

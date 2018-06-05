@@ -62,12 +62,10 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
@@ -106,12 +104,8 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
 
     @Override
     public void onException(@NonNull Exception ex) {
-        Toaster.show(ProjectsActivity.this, Utils.Messages.FAILED_LOADING, ex, new Runnable() {
-            @Override
-            public void run() {
-                onBackPressed();
-            }
-        });
+        Toaster.with(this).message(R.string.failedLoading).ex(ex).show();
+        onBackPressed();
     }
 
     @SuppressLint("SetTextI18n")
@@ -197,12 +191,8 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
             @Override
             public void onException(@NonNull Exception ex) {
                 dismissDialog();
-                Toaster.show(ProjectsActivity.this, Utils.Messages.FAILED_LOADING, ex, new Runnable() {
-                    @Override
-                    public void run() {
-                        onBackPressed();
-                    }
-                });
+                Toaster.with(ProjectsActivity.this).message(R.string.failedLoading).ex(ex).show();
+                onBackPressed();
             }
         });
 

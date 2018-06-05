@@ -68,7 +68,7 @@ public class LoadingActivity extends ActivityWithDialog {
 
                             @Override
                             public void onException(@NonNull Exception ex) {
-                                Toaster.show(LoadingActivity.this, Utils.Messages.FAILED_LOADING, ex);
+                                Toaster.with(LoadingActivity.this).message(R.string.failedLoading).ex(ex).show();
                                 finish();
                             }
                         });
@@ -76,7 +76,7 @@ public class LoadingActivity extends ActivityWithDialog {
 
                     @Override
                     public void onException(@NonNull Throwable ex) {
-                        Toaster.show(LoadingActivity.this, Utils.Messages.CANT_REFRESH_TOKEN, ex);
+                        Toaster.with(LoadingActivity.this).message(R.string.failedRefreshingToken).ex(ex).show();
                         deleteFile("token");
                         goTo(GrantActivity.class, null);
                     }

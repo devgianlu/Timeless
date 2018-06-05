@@ -3,6 +3,7 @@ package com.gianlu.timeless.Listing;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         selected = itemView.findViewById(R.id.branchSelectorItem_selected);
     }
 
-    void bind(final Context context, final Config config, final CardsAdapter.Listener listener) {
+    void bind(@NonNull final Context context, final Config config, final CardsAdapter.Listener listener) {
         if (config.selectedBranches.isEmpty())
             selectedBranches = new ArrayList<>(config.branches);
         else selectedBranches = new ArrayList<>(config.selectedBranches);
@@ -46,7 +47,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void showBranchesDialog(final Context context, final List<String> allBranches, final CardsAdapter.OnBranches branchesListener, CardsAdapter.Listener listener) {
+    private void showBranchesDialog(@NonNull final Context context, final List<String> allBranches, final CardsAdapter.OnBranches branchesListener, CardsAdapter.Listener listener) {
         final boolean[] selectedBranchesBoolean = new boolean[allBranches.size()];
         for (int i = 0; i < allBranches.size(); i++)
             selectedBranchesBoolean[i] = selectedBranches.contains(allBranches.get(i));
@@ -68,7 +69,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
                                 selectedBranchesTemp.add(allBranches.get(i));
 
                         if (selectedBranchesTemp.isEmpty()) {
-                            Toaster.show(context, Utils.Messages.NO_BRANCHES_SELECTED);
+                            Toaster.with(context).message(R.string.noBranchesSelected).show();
                             return;
                         }
 

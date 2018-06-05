@@ -1,8 +1,6 @@
 package com.gianlu.timeless.Listing;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
@@ -18,7 +16,6 @@ import android.widget.TextView;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.SuperTextView;
-import com.gianlu.timeless.Charting.OnGrantedPermission;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.Models.LoggedEntity;
@@ -59,7 +56,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         colorAccent = ContextCompat.getColor(parent.getContext(), R.color.colorAccent);
     }
 
-    void bind(final Context context, final @StringRes int title, LoggedEntities entities, final OnSaveChart handler) {
+    void bind(final Context context, final @StringRes int title, LoggedEntities entities, final OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -92,16 +89,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    handler.onSaveRequested(chart, Utils.getFileName(context, title));
-                } else {
-                    handler.onWritePermissionRequested(new OnGrantedPermission() {
-                        @Override
-                        public void onGranted() {
-                            handler.onSaveRequested(chart, Utils.getFileName(context, title));
-                        }
-                    });
-                }
+                listener.saveImage(chart, title);
             }
         });
 

@@ -21,7 +21,7 @@ public class GrantActivity extends ActivityWithDialog { // TODO: Can be prettier
         super.onNewIntent(intent);
 
         if (intent.getDataString() != null) {
-            showDialog(DialogUtils.progressDialog(this, R.string.checkingPermissions));
+            showDialog(DialogUtils.progressDialog(this, R.string.checkingWakatimePermissions));
             WakaTime.accessToken(this, intent.getDataString(), new WakaTime.OnAccessToken() {
                 @Override
                 public void onTokenAccepted(@NonNull WakaTime instance) {
@@ -31,14 +31,14 @@ public class GrantActivity extends ActivityWithDialog { // TODO: Can be prettier
                         startActivity(new Intent(GrantActivity.this, LoadingActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                         Prefs.putBoolean(GrantActivity.this, PKeys.FIRST_RUN, false);
                     } catch (ActivityNotFoundException ex) {
-                        Toaster.show(GrantActivity.this, Utils.Messages.CANT_CHECK_GRANT, ex);
+                        Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
                     }
                 }
 
                 @Override
                 public void onException(@NonNull Throwable ex) {
                     dismissDialog();
-                    Toaster.show(GrantActivity.this, Utils.Messages.CANT_CHECK_GRANT, ex);
+                    Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
                 }
             });
         }
