@@ -171,7 +171,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
 
     @Override
     public void somethingWentWrong(@NonNull Exception ex) {
-        if (ex instanceof WakaTimeException) recyclerViewLayout.showMessage(ex.getMessage(), false);
-        else recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
+        if (ex instanceof WakaTimeException) recyclerViewLayout.showError(ex.getMessage());
+        else recyclerViewLayout.showError(R.string.failedLoading_reason, ex.getMessage());
     }
 }

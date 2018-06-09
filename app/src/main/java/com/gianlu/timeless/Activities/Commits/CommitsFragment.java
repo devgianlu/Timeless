@@ -52,7 +52,7 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
         final Project project;
         Bundle args = getArguments();
         if (args == null || (project = (Project) args.getSerializable("project")) == null) {
-            layout.showMessage(R.string.errorMessage, true);
+            layout.showError(R.string.errorMessage);
             return layout;
         }
 
@@ -84,8 +84,8 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
 
     @Override
     public void onException(@NonNull Exception ex) {
-        if (ex instanceof WakaTimeException) layout.showMessage(ex.getMessage(), false);
-        else layout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
+        if (ex instanceof WakaTimeException) layout.showError(ex.getMessage());
+        else layout.showError(R.string.failedLoading_reason, ex.getMessage());
     }
 
     @Override

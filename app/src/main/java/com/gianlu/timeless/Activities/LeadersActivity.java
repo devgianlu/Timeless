@@ -93,9 +93,9 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
             @Override
             public void onException(@NonNull Exception ex) {
                 if (ex instanceof WakaTimeException)
-                    recyclerViewLayout.showMessage(ex.getMessage(), false);
+                    recyclerViewLayout.showError(ex.getMessage());
                 else
-                    recyclerViewLayout.showMessage(R.string.failedLoading_reason, true, ex.getMessage());
+                    recyclerViewLayout.showError(R.string.failedLoading_reason, ex.getMessage());
             }
         });
     }
