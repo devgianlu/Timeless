@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -25,9 +26,7 @@ import com.gianlu.timeless.Main.PagerAdapter;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 
-import java.util.List;
-
-public class MainActivity extends ActivityWithDialog {
+public class MainActivity extends ActivityWithDialog implements DrawerManager.MenuDrawerListener {
     private DrawerManager<User> drawerManager;
 
     @Override
@@ -47,10 +46,10 @@ public class MainActivity extends ActivityWithDialog {
             return;
         }
 
-        drawerManager = new DrawerManager.Config<User>(R.drawable.drawer_background)
-                .singleProfile(user, new DrawerManager.ILogout() {
+        drawerManager = new DrawerManager.Config<User>(this, R.drawable.drawer_background)
+                .singleProfile(user, new DrawerManager.OnAction() {
                     @Override
-                    public void logout() {
+                    public void drawerAction() {
                         deleteFile("token");
                         PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("firstRun", true).apply();
                         startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -66,47 +65,7 @@ public class MainActivity extends ActivityWithDialog {
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.ic_settings_black_48dp, getString(R.string.preferences)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.ic_report_problem_black_48dp, getString(R.string.support))).build(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar);
 
-        drawerManager.setDrawerListener(new DrawerManager.IDrawerListener<User>() {
-            @Override
-            public boolean onMenuItemSelected(BaseDrawerItem which) {
-                switch (which.id) {
-                    case DrawerConst.HOME:
-                        return true;
-                    case DrawerConst.DAILY_STATS:
-                        startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
-                        return false;
-                    case DrawerConst.COMMITS:
-                        startActivity(new Intent(MainActivity.this, CommitsActivity.class));
-                        return false;
-                    case DrawerConst.PROJECTS:
-                        startActivity(new Intent(MainActivity.this, ProjectsActivity.class));
-                        return false;
-                    case DrawerConst.LEADERS:
-                        startActivity(new Intent(MainActivity.this, LeadersActivity.class));
-                        return false;
-                    case DrawerConst.PREFERENCES:
-                        startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
-                        return false;
-                    case DrawerConst.SUPPORT:
-                        CommonUtils.sendEmail(MainActivity.this, getString(R.string.app_name), null);
-                        return true;
-                    default:
-                        return true;
-                }
-            }
-
-            @Override
-            public void onProfileSelected(User profile) {
-            }
-
-            @Override
-            public void addProfile() {
-            }
-
-            @Override
-            public void editProfile(List<User> items) {
-            }
-        });
+        drawerManager.setActiveItem(DrawerConst.HOME);
 
         pager.setOffscreenPageLimit(3);
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
@@ -147,5 +106,33 @@ public class MainActivity extends ActivityWithDialog {
     protected void onResume() {
         super.onResume();
         if (drawerManager != null) drawerManager.syncTogglerState();
+    }
+
+    @Override
+    public boolean onDrawerMenuItemSelected(@NonNull BaseDrawerItem item) {
+        switch (item.id) {
+            case DrawerConst.HOME:
+                return true;
+            case DrawerConst.DAILY_STATS:
+                startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
+                return false;
+            case DrawerConst.COMMITS:
+                startActivity(new Intent(MainActivity.this, CommitsActivity.class));
+                return false;
+            case DrawerConst.PROJECTS:
+                startActivity(new Intent(MainActivity.this, ProjectsActivity.class));
+                return false;
+            case DrawerConst.LEADERS:
+                startActivity(new Intent(MainActivity.this, LeadersActivity.class));
+                return false;
+            case DrawerConst.PREFERENCES:
+                startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
+                return false;
+            case DrawerConst.SUPPORT:
+                CommonUtils.sendEmail(MainActivity.this, getString(R.string.app_name), null);
+                return true;
+            default:
+                return true;
+        }
     }
 }
