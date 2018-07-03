@@ -83,7 +83,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
-        layout = new RecyclerViewLayout(inflater);
+        layout = new RecyclerViewLayout(requireContext());
         layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         Bundle args = getArguments();

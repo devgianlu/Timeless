@@ -90,7 +90,8 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
 
                     set = new LineDataSet(new ArrayList<Entry>(), branch.name);
                     set.setDrawValues(false);
-                    set.setDrawCircles(summary.branches.size() == 1);
+                    set.setDrawCircles(true);
+                    set.setCircleColor(color);
                     set.setDrawCircleHole(false);
                     set.setFillColor(color);
                     set.setFillAlpha(100);
@@ -102,6 +103,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
                 }
 
                 set.addEntry(new Entry(set.getEntryCount() + 1, branch.total_seconds));
+                if (set.getEntryCount() > 1) set.setDrawCircles(false);
             }
         }
 
