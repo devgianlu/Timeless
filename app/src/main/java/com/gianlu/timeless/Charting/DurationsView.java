@@ -70,8 +70,8 @@ public class DurationsView extends LinearLayout {
         private final Paint gridPaint;
         private final Paint textPaint;
         private final int mPadding;
+        private final int mHeight;
         private float mInternalPadding;
-        private int mHeight;
 
         public ChartView(Context context, String project, List<Duration> durations, int color, boolean lonely) {
             super(context);

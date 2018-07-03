@@ -46,7 +46,7 @@ public class User implements Serializable, BaseDrawerProfile {
 
     @NonNull
     @Override
-    public String getInitials(Context context) {
+    public String getInitials(@NonNull Context context) {
         if (username == null && email == null && full_name == null)
             return "??";
 
@@ -71,13 +71,13 @@ public class User implements Serializable, BaseDrawerProfile {
 
     @NonNull
     @Override
-    public String getProfileName(Context context) {
+    public String getProfileName(@NonNull Context context) {
         return getDisplayName();
     }
 
     @NonNull
     @Override
-    public String getSecondaryText(Context context) {
+    public String getSecondaryText(@NonNull Context context) {
         return email;
     }
 }
