@@ -10,14 +10,13 @@ import android.view.View;
 
 import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
-import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.OfflineActivity;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 
-public class LoadingActivity extends ActivityWithDialog {
+public class LoadingActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
     private Intent goTo;
     private boolean finished = false;
 
@@ -25,7 +24,7 @@ public class LoadingActivity extends ActivityWithDialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Prefs.getBoolean(this, PKeys.FIRST_RUN, true)) {
+        if (Prefs.getBoolean(this, PK.FIRST_RUN, true)) {
             startActivity(new Intent(this, GrantActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
@@ -52,35 +51,10 @@ public class LoadingActivity extends ActivityWithDialog {
             }
         }, 1000);
 
-        Logging.clearLogs(this);
-
         ConnectivityChecker.checkAsync(new ConnectivityChecker.OnCheck() {
             @Override
             public void goodToGo() {
-                WakaTime.refreshToken(LoadingActivity.this, new WakaTime.OnAccessToken() {
-                    @Override
-                    public void onTokenAccepted(@NonNull WakaTime instance) {
-                        instance.getCurrentUser(new WakaTime.OnResult<User>() {
-                            @Override
-                            public void onResult(@NonNull User user) {
-                                goTo(MainActivity.class, user);
-                            }
-
-                            @Override
-                            public void onException(@NonNull Exception ex) {
-                                Toaster.with(LoadingActivity.this).message(R.string.failedLoading).ex(ex).show();
-                                finish();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onException(@NonNull Throwable ex) {
-                        Toaster.with(LoadingActivity.this).message(R.string.failedRefreshingToken).ex(ex).show();
-                        deleteFile("token");
-                        goTo(GrantActivity.class, null);
-                    }
-                });
+                new WakaTime.Builder(LoadingActivity.this).alreadyAuthorized(LoadingActivity.this);
             }
 
             @Override
@@ -95,5 +69,27 @@ public class LoadingActivity extends ActivityWithDialog {
         if (user != null) intent.putExtra("user", user);
         if (finished) startActivity(intent);
         else this.goTo = intent;
+    }
+
+    @Override
+    public void onWakatimeInitialized(@NonNull WakaTime instance) {
+        instance.getCurrentUser(new WakaTime.OnResult<User>() {
+            @Override
+            public void onResult(@NonNull User user) {
+                goTo(MainActivity.class, user);
+            }
+
+            @Override
+            public void onException(@NonNull Exception ex) {
+                Toaster.with(LoadingActivity.this).message(R.string.failedLoading).ex(ex).show();
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public void onException(@NonNull Exception ex) {
+        Toaster.with(LoadingActivity.this).message(R.string.failedRefreshingToken).ex(ex).show();
+        goTo(GrantActivity.class, null);
     }
 }

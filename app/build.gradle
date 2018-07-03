@@ -23,12 +23,13 @@ android {
 
 dependencies {
     api project(':CommonUtils')
-    //noinspection GradleDependency: 5.0.0 and newer requires minSdkVersion >= 26
-    api 'com.github.scribejava:scribejava-apis:4.2.0'
     api 'com.android.support:cardview-v7:27.1.1'
     api 'com.android.support:support-v13:27.1.1' // Overrides older version from another library
     api 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     api 'com.wdullaer:materialdatetimepicker:3.6.0'
+    api 'com.squareup.okhttp3:okhttp:3.10.0'
+    api 'com.github.scribejava:scribejava-core:5.5.0'
+    api 'com.github.scribejava:scribejava-httpclient-okhttp:5.5.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

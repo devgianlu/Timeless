@@ -2,7 +2,6 @@ package com.gianlu.timeless;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -14,33 +13,16 @@ import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.NetIO.WakaTime;
 
-public class GrantActivity extends ActivityWithDialog { // TODO: Can be prettier
+public class GrantActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
+    private WakaTime.Builder builder;
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if (intent.getDataString() != null) {
+        if (builder != null && intent.getDataString() != null) {
             showDialog(DialogUtils.progressDialog(this, R.string.checkingWakatimePermissions));
-            WakaTime.accessToken(this, intent.getDataString(), new WakaTime.OnAccessToken() {
-                @Override
-                public void onTokenAccepted(@NonNull WakaTime instance) {
-                    dismissDialog();
-
-                    try {
-                        startActivity(new Intent(GrantActivity.this, LoadingActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-                        Prefs.putBoolean(GrantActivity.this, PKeys.FIRST_RUN, false);
-                    } catch (ActivityNotFoundException ex) {
-                        Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
-                    }
-                }
-
-                @Override
-                public void onException(@NonNull Throwable ex) {
-                    dismissDialog();
-                    Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
-                }
-            });
+            builder.endFlow(intent.getDataString(), this);
         }
     }
 
@@ -49,12 +31,33 @@ public class GrantActivity extends ActivityWithDialog { // TODO: Can be prettier
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grant);
 
+        builder = new WakaTime.Builder(this);
+
         Button grant = findViewById(R.id.grantActivity_grant);
         grant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(WakaTime.authorizationUrl())));
+                builder.startFlow();
             }
         });
+    }
+
+    @Override
+    public void onWakatimeInitialized(@NonNull WakaTime instance) {
+        dismissDialog();
+
+        try {
+            startActivity(new Intent(GrantActivity.this, LoadingActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            Prefs.putBoolean(GrantActivity.this, PK.FIRST_RUN, false);
+        } catch (ActivityNotFoundException ex) {
+            Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
+        }
+    }
+
+    @Override
+    public void onException(@NonNull Exception ex) {
+        dismissDialog();
+        Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
     }
 }

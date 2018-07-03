@@ -1,6 +1,9 @@
--dontwarn javax.xml.bind.DatatypeConverter
--dontwarn org.apache.commons.codec.digest.DigestUtils
--dontwarn org.apache.commons.codec.CharEncoding
+-dontwarn okio.**
+-keep class okhttp3.internal.**
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.ParametersAreNonnullByDefault
+-dontwarn org.conscrypt.OpenSSLProvider
+-dontwarn org.conscrypt.Conscrypt
 
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable

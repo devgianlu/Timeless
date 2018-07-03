@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -18,7 +19,6 @@ import com.crashlytics.android.Crashlytics;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Preferences.Prefs;
-import com.gianlu.timeless.BuildConfig;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Durations;
@@ -27,22 +27,17 @@ import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Projects;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.Models.User;
-import com.gianlu.timeless.PKeys;
+import com.gianlu.timeless.PK;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.core.builder.api.BaseApi;
+import com.github.scribejava.core.builder.api.ClientAuthenticationType;
 import com.github.scribejava.core.builder.api.DefaultApi20;
-import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
-import com.github.scribejava.core.model.OAuthAsyncRequestCallback;
-import com.github.scribejava.core.model.OAuthConfig;
-import com.github.scribejava.core.model.OAuthRequest;
-import com.github.scribejava.core.model.Response;
-import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.github.scribejava.httpclient.okhttp.OkHttpHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,178 +53,47 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 public class WakaTime {
-    private static final String BASE_URL = "https://wakatime.com/api/v1/";
-    private static final String APP_ID = "TLCbAeUZV03mu854dptQPE0s";
-    private static final String APP_SECRET = "sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs";
-    private static final String CALLBACK = "timeless://grantActivity/";
+    private static final HttpUrl BASE_URL;
     private static final long MAX_CACHE_AGE = TimeUnit.MINUTES.toMillis(10);
     private static final int MAX_CACHE_SIZE = 20;
-    private static final OAuth20Service SERVICE;
-    private static final Object getTokenLock = new Object();
     private static WakaTime instance;
 
     static {
-        ServiceBuilder builder = new ServiceBuilder(APP_ID)
-                .apiSecret(APP_SECRET)
-                .callback(CALLBACK)
-                .userAgent(ThisApplication.USER_AGENT)
-                .scope("email,read_stats,read_logged_time,read_teams");
-
-        if (BuildConfig.DEBUG) builder.debug();
-
-        SERVICE = builder.build(new WakaTimeApi());
+        BASE_URL = HttpUrl.parse("https://wakatime.com/api/v1/");
+        if (BASE_URL == null) throw new IllegalStateException("WTF?!");
     }
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final OkHttpClient client;
     private final Handler handler;
-    private final LruCache<String, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
-    private final OAuth2AccessToken token;
+    private final LruCache<HttpUrl, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
     private final SharedPreferences prefs;
     private final Requester requester;
+    private final ExecutorService executorService;
+    private final OAuth20Service service;
     private volatile boolean skipCache = false;
     private volatile boolean skipNextCache = false;
+    private OAuth2AccessToken token;
 
-    private WakaTime(Context context, @Nullable OAuth2AccessToken token) {
-        this(PreferenceManager.getDefaultSharedPreferences(context), token);
-    }
+    private WakaTime(@NonNull Builder builder) throws ShouldGetAccessToken {
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(builder.context);
 
-    private WakaTime(SharedPreferences prefs, @Nullable OAuth2AccessToken token) {
-        this.token = token;
-        this.prefs = prefs;
-        handler = new Handler(Looper.getMainLooper());
-        requester = new Requester();
-    }
+        if (builder.token == null)
+            throw new ShouldGetAccessToken(new NullPointerException("Requested token is null!"));
+        Prefs.putString(prefs, PK.TOKEN, builder.token.getRefreshToken());
 
-    public static void accessToken(final Context context, String uri, final OnAccessToken listener) {
-        final Handler handler = new Handler(context.getMainLooper());
-        final OAuth2Authorization auth = SERVICE.extractAuthorization(uri);
-
-        new Thread() {
-            @Override
-            public void run() {
-                synchronized (getTokenLock) {
-                    SERVICE.getAccessToken(auth.getCode(), new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
-                        @Override
-                        public void onCompleted(OAuth2AccessToken response) {
-                            storeRefreshToken(context, response);
-                            instance = new WakaTime(context, response);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onTokenAccepted(instance);
-                                }
-                            });
-
-                            synchronized (getTokenLock) {
-                                getTokenLock.notifyAll();
-                            }
-                        }
-
-                        @Override
-                        public void onThrowable(final Throwable ex) {
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onException(ex);
-                                }
-                            });
-
-                            synchronized (getTokenLock) {
-                                getTokenLock.notifyAll();
-                            }
-                        }
-                    });
-
-                    try {
-                        getTokenLock.wait();
-                    } catch (InterruptedException ex) {
-                        Logging.log(ex);
-                    }
-                }
-            }
-        }.start();
-    }
-
-    public static void refreshToken(final Context context, final OnAccessToken listener) {
-        final Handler handler = new Handler(context.getMainLooper());
-
-        final String refreshToken = loadRefreshToken(context);
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            listener.onException(new ShouldGetAccessToken(new IllegalArgumentException("Refresh token is null or empty!")));
-            return;
-        }
-
-        new Thread() {
-            @Override
-            public void run() {
-                synchronized (getTokenLock) {
-                    try {
-                        SERVICE.refreshAccessToken(refreshToken, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
-                            @Override
-                            public void onCompleted(OAuth2AccessToken response) {
-                                storeRefreshToken(context, response);
-                                instance = new WakaTime(context, response);
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        listener.onTokenAccepted(instance);
-                                    }
-                                });
-
-                                synchronized (getTokenLock) {
-                                    getTokenLock.notifyAll();
-                                }
-                            }
-
-                            @Override
-                            public void onThrowable(final Throwable ex) {
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        listener.onException(ex);
-                                    }
-                                });
-
-                                synchronized (getTokenLock) {
-                                    getTokenLock.notifyAll();
-                                }
-                            }
-                        });
-                    } catch (OAuth2AccessTokenErrorResponse ex) {
-                        Logging.log(ex);
-                        listener.onException(new ShouldGetAccessToken(new IllegalArgumentException("Refresh token is invalid!")));
-                        return;
-                    }
-
-                    try {
-                        getTokenLock.wait();
-                    } catch (InterruptedException ex) {
-                        Logging.log(ex);
-                    }
-                }
-            }
-        }.start();
-    }
-
-    @WorkerThread
-    private static void refreshTokenSync(SharedPreferences prefs) throws InterruptedException, ExecutionException, IOException, ShouldGetAccessToken {
-        String refreshToken = loadRefreshToken(prefs);
-        if (refreshToken == null || refreshToken.isEmpty())
-            throw new ShouldGetAccessToken(new IllegalArgumentException("Refresh token is null or empty!"));
-
-        try {
-            synchronized (getTokenLock) {
-                getTokenLock.wait();
-                OAuth2AccessToken token = SERVICE.refreshAccessToken(refreshToken);
-                storeRefreshToken(prefs, token);
-                instance = new WakaTime(instance.prefs, token);
-                getTokenLock.notifyAll();
-            }
-        } catch (OAuth2AccessTokenErrorResponse ex) {
-            Crashlytics.setString("token", refreshToken);
-            throw ex;
-        }
+        this.client = builder.client;
+        this.handler = builder.handler;
+        this.executorService = builder.executorService;
+        this.token = builder.token;
+        this.service = builder.service;
+        this.requester = new Requester();
     }
 
     @NonNull
@@ -239,31 +103,9 @@ public class WakaTime {
         return instance;
     }
 
-    @Nullable
-    private static String loadRefreshToken(SharedPreferences prefs) {
-        return Prefs.getString(prefs, PKeys.TOKEN, null);
-    }
-
-    @Nullable
-    private static String loadRefreshToken(Context context) {
-        return loadRefreshToken(PreferenceManager.getDefaultSharedPreferences(context));
-    }
-
-    private static void storeRefreshToken(Context context, OAuth2AccessToken token) {
-        storeRefreshToken(PreferenceManager.getDefaultSharedPreferences(context), token);
-    }
-
-    private static void storeRefreshToken(SharedPreferences prefs, OAuth2AccessToken token) {
-        Prefs.putString(prefs, PKeys.TOKEN, token.getRefreshToken());
-    }
-
     @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat getAPIFormatter() {
         return new SimpleDateFormat("yyyy-MM-dd");
-    }
-
-    public static String authorizationUrl() {
-        return SERVICE.getAuthorizationUrl();
     }
 
     public void cacheEnabledChanged() {
@@ -272,52 +114,55 @@ public class WakaTime {
     }
 
     private boolean cacheEnabled() {
-        return Prefs.getBoolean(prefs, PKeys.CACHE_ENABLED, true);
+        return Prefs.getBoolean(prefs, PK.CACHE_ENABLED, true);
     }
 
     @NonNull
     @WorkerThread
-    private Response doRequestSync(Verb verb, String url) throws InterruptedException, ExecutionException, IOException, ShouldGetAccessToken {
+    private JSONObject doRequestSync(HttpUrl url) throws IOException, ShouldGetAccessToken, ExecutionException, InterruptedException, JSONException, WakaTimeException {
         CachedResponse cachedResponse;
-        if (verb == Verb.GET && cacheEnabled() && !skipCache && !skipNextCache)
-            cachedResponse = getFromCache(url);
+        if (cacheEnabled() && !skipCache && !skipNextCache) cachedResponse = getFromCache(url);
         else cachedResponse = null;
 
         if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
-            OAuthRequest request = new OAuthRequest(verb, url);
+            Request.Builder request = new Request.Builder().get().url(url);
 
             if (token == null) {
-                refreshTokenSync(prefs);
-                return instance.doRequestSync(verb, url);
+                String storedToken = Prefs.getString(prefs, PK.TOKEN, null);
+                if (storedToken == null)
+                    throw new ShouldGetAccessToken(new NullPointerException("Stored token is null!"));
+                token = service.refreshAccessToken(storedToken);
+                Prefs.putString(prefs, PK.TOKEN, token.getRefreshToken());
             }
 
-            synchronized (getTokenLock) {
-                SERVICE.signRequest(token, request);
+            request.addHeader("Authorization", String.format("Bearer %s", token.getAccessToken()));
+
+            try (Response resp = client.newCall(request.build()).execute()) {
+                ResponseBody body = resp.body();
+                if (body == null) throw new IOException("Body is empty!");
+
+                JSONObject obj = new JSONObject(body.string());
+                if (resp.code() == 200) {
+                    synchronized (memoryCache) {
+                        memoryCache.put(url, new CachedResponse(obj));
+                    }
+
+                    skipNextCache = false;
+
+                    return obj;
+                } else if (resp.code() == 400) {
+                    throw new WakaTimeException(obj);
+                } else {
+                    throw new StatusCodeException(resp);
+                }
             }
-
-            if (BuildConfig.DEBUG) Logging.log(request.toString(), false);
-
-            Response resp;
-            try {
-                resp = SERVICE.execute(request);
-            } catch (OAuthException ex) {
-                throw new IOException("Just a wrapper", ex);
-            }
-
-            synchronized (memoryCache) {
-                memoryCache.put(url, new CachedResponse(resp));
-            }
-
-            skipNextCache = false;
-
-            return resp;
         } else {
             return cachedResponse.response;
         }
     }
 
     @Nullable
-    private CachedResponse getFromCache(String url) {
+    private CachedResponse getFromCache(HttpUrl url) {
         synchronized (memoryCache) {
             return memoryCache.get(url);
         }
@@ -339,7 +184,7 @@ public class WakaTime {
                             listener.onResult(user);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException | ShouldGetAccessToken ex) {
+                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -363,7 +208,7 @@ public class WakaTime {
                             listener.onResult(leaders);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | JSONException | IOException | StatusCodeException | ShouldGetAccessToken ex) {
+                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -387,7 +232,7 @@ public class WakaTime {
                             listener.onResult(projects);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken ex) {
+                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -411,7 +256,7 @@ public class WakaTime {
                             listener.onResult(commits);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken | ParseException ex) {
+                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -435,7 +280,7 @@ public class WakaTime {
                             listener.onSummary(summaries);
                         }
                     });
-                } catch (InterruptedException | ExecutionException | IOException | JSONException | StatusCodeException | ShouldGetAccessToken | ParseException ex) {
+                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException ex) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -524,13 +369,13 @@ public class WakaTime {
         void onException(@NonNull Exception ex);
     }
 
-    public interface OnAccessToken {
+    public interface InitializationListener {
 
         @UiThread
-        void onTokenAccepted(@NonNull WakaTime instance);
+        void onWakatimeInitialized(@NonNull WakaTime instance);
 
         @UiThread
-        void onException(@NonNull Throwable ex);
+        void onException(@NonNull Exception ex);
     }
 
     public interface BatchStuff {
@@ -541,9 +386,130 @@ public class WakaTime {
         void somethingWentWrong(@NonNull Exception ex);
     }
 
+    private static class WakatimeApi extends DefaultApi20 {
+        @Override
+        public ClientAuthenticationType getClientAuthenticationType() {
+            return ClientAuthenticationType.REQUEST_BODY;
+        }
+
+        @Override
+        public String getAccessTokenEndpoint() {
+            return "https://wakatime.com/oauth/token";
+        }
+
+        @Override
+        protected String getAuthorizationBaseUrl() {
+            return "https://wakatime.com/oauth/authorize";
+        }
+    }
+
+    public static class Builder {
+        private final OAuth20Service service;
+        private final OkHttpClient client;
+        private final Context context;
+        private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+        private final Handler handler;
+        private OAuth2AccessToken token = null;
+
+        public Builder(Context context) {
+            this.context = context;
+            this.handler = new Handler(Looper.getMainLooper());
+            this.client = new OkHttpClient.Builder()
+                    .addInterceptor(new UserAgentInterceptor())
+                    .build();
+            this.service = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s")
+                    .apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
+                    .scope("email,read_stats,read_logged_time,read_teams")
+                    .callback("timeless://grantActivity/")
+                    .userAgent(ThisApplication.USER_AGENT)
+                    .httpClient(new OkHttpHttpClient(client))
+                    .build(new WakatimeApi());
+        }
+
+        public void startFlow() {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(service.getAuthorizationUrl())));
+        }
+
+        public void endFlow(@NonNull final String data, @NonNull final InitializationListener listener) {
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        OAuth2Authorization auth = service.extractAuthorization(data);
+                        token = service.getAccessToken(auth.getCode());
+
+                        final WakaTime w = build();
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onWakatimeInitialized(w);
+                            }
+                        });
+                    } catch (IOException | ShouldGetAccessToken | InterruptedException | ExecutionException ex) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(ex);
+                            }
+                        });
+
+                        if (ex instanceof ShouldGetAccessToken)
+                            ((ShouldGetAccessToken) ex).resolve(context);
+                    }
+                }
+            });
+        }
+
+        public void alreadyAuthorized(@NonNull final InitializationListener listener) {
+            if (WakaTime.instance != null) {
+                listener.onWakatimeInitialized(WakaTime.instance);
+                return;
+            }
+
+            final String storedToken = Prefs.getString(context, PK.TOKEN, null);
+            if (storedToken == null) {
+                listener.onException(new ShouldGetAccessToken(new NullPointerException("Stored token is null!")));
+                return;
+            }
+
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        token = service.refreshAccessToken(storedToken);
+                        final WakaTime w = build();
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onWakatimeInitialized(w);
+                            }
+                        });
+                    } catch (IOException | ShouldGetAccessToken | ExecutionException | InterruptedException | OAuth2AccessTokenErrorResponse ex) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onException(ex);
+                            }
+                        });
+
+                        if (ex instanceof ShouldGetAccessToken)
+                            ((ShouldGetAccessToken) ex).resolve(context);
+                    }
+                }
+            });
+        }
+
+        @NonNull
+        private WakaTime build() throws ShouldGetAccessToken {
+            WakaTime w = new WakaTime(this);
+            WakaTime.instance = w;
+            return w;
+        }
+    }
+
     public static class ShouldGetAccessToken extends Exception {
 
-        private ShouldGetAccessToken(Throwable cause) {
+        private ShouldGetAccessToken(@NonNull Throwable cause) {
             super(cause);
         }
 
@@ -555,32 +521,12 @@ public class WakaTime {
     }
 
     private static class CachedResponse {
-        private final Response response;
+        private final JSONObject response;
         private final long timestamp;
 
-        CachedResponse(Response response) {
+        CachedResponse(JSONObject response) {
             this.response = response;
             this.timestamp = System.currentTimeMillis();
-        }
-    }
-
-    private static class WakaTimeApi implements BaseApi<OAuth20Service> {
-
-        @Override
-        public OAuth20Service createService(OAuthConfig oAuthConfig) {
-            return new OAuth20Service(new Api20(), oAuthConfig);
-        }
-
-        private class Api20 extends DefaultApi20 {
-            @Override
-            public String getAccessTokenEndpoint() {
-                return "https://wakatime.com/oauth/token";
-            }
-
-            @Override
-            protected String getAuthorizationBaseUrl() {
-                return "https://wakatime.com/oauth/authorize";
-            }
         }
     }
 
@@ -626,72 +572,66 @@ public class WakaTime {
         }
 
         @NonNull
-        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, ShouldGetAccessToken {
-            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/durations?date=" + getAPIFormatter().format(day)
-                    + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
+        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+            HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/durations")
+                    .addQueryParameter("date", getAPIFormatter().format(day));
 
-            if (response.getCode() == 200)
-                return new Durations(new JSONObject(response.getBody()), project);
-            else throw new StatusCodeException(response);
+            if (branches != null)
+                builder.addQueryParameter("branches", CommonUtils.join(branches, ","));
+
+            return new Durations(doRequestSync(builder.build()), project);
         }
 
         @NonNull
-        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, WakaTimeException, ShouldGetAccessToken, ParseException {
+        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException {
             return summaries(startAndEnd.first, startAndEnd.second, project, branches);
         }
 
         @NonNull
-        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, StatusCodeException, WakaTimeException, ShouldGetAccessToken, ParseException {
+        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException {
             SimpleDateFormat formatter = getAPIFormatter();
-            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/summaries?start=" + formatter.format(start)
-                    + "&end=" + formatter.format(end)
-                    + (project != null ? ("&project=" + project.name) : "")
-                    + (branches != null ? ("&branches=" + CommonUtils.join(branches, ",")) : ""));
+            HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/summaries")
+                    .addQueryParameter("start", formatter.format(start))
+                    .addQueryParameter("end", formatter.format(end));
 
-            if (response.getCode() == 200) {
-                return new Summaries(new JSONObject(response.getBody()));
-            } else if (response.getCode() == 400) {
-                throw new WakaTimeException(response.getBody());
-            } else {
-                throw new StatusCodeException(response);
-            }
+            if (project != null)
+                builder.addQueryParameter("project", project.name);
+
+            if (branches != null)
+                builder.addQueryParameter("branches", CommonUtils.join(branches, ","));
+
+            return new Summaries(doRequestSync(builder.build()));
         }
 
         @NonNull
-        public Commits commits(Project project, int page) throws IOException, StatusCodeException, ExecutionException, InterruptedException, JSONException, ShouldGetAccessToken, ParseException {
-            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects/" + project.id + "/commits?page=" + page);
-
-            if (response.getCode() == 200) return new Commits(new JSONObject(response.getBody()));
-            else throw new StatusCodeException(response);
+        public Commits commits(Project project, int page) throws IOException, JSONException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException, WakaTimeException {
+            return new Commits(doRequestSync(BASE_URL.newBuilder()
+                    .addPathSegments("users/current/projects/" + project.id + "/commits")
+                    .addQueryParameter("page", String.valueOf(page)).build()));
         }
 
         @NonNull
-        public Leaders leaders(@Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, ShouldGetAccessToken {
-            Response response = doRequestSync(Verb.GET, BASE_URL + "leaders" +
-                    "?page=" + page +
-                    (language != null ? ("&language=" + language) : ""));
+        public Leaders leaders(@Nullable String language, int page) throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+            HttpUrl.Builder builder = BASE_URL.newBuilder()
+                    .addPathSegment("leaders")
+                    .addQueryParameter("page", String.valueOf(page));
 
-            if (response.getCode() == 200) return new Leaders(new JSONObject(response.getBody()));
-            else throw new StatusCodeException(response);
+            if (language != null)
+                builder.addQueryParameter("language", language);
+
+            return new Leaders(doRequestSync(builder.build()));
         }
 
         @NonNull
-        public Projects projects() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, ShouldGetAccessToken {
-            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current/projects");
-
-            if (response.getCode() == 200)
-                return new Projects(new JSONObject(response.getBody()));
-            else
-                throw new StatusCodeException(response);
+        public Projects projects() throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+            return new Projects(doRequestSync(BASE_URL.newBuilder()
+                    .addPathSegments("users/current/projects").build()));
         }
 
         @NonNull
-        public User user() throws InterruptedException, ExecutionException, IOException, JSONException, StatusCodeException, ShouldGetAccessToken {
-            Response response = doRequestSync(Verb.GET, BASE_URL + "users/current");
-            if (response.getCode() == 200)
-                return new User(new JSONObject(response.getBody()).getJSONObject("data"));
-            else
-                throw new StatusCodeException(response);
+        public User user() throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+            return new User(doRequestSync(BASE_URL.newBuilder()
+                    .addPathSegments("users/current").build()).getJSONObject("data"));
         }
     }
 }

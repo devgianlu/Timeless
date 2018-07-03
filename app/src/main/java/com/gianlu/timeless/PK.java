@@ -4,14 +4,17 @@ import android.support.annotation.NonNull;
 
 import com.gianlu.commonutils.Preferences.Prefs;
 
-public enum PKeys implements Prefs.PrefKey {
+public enum PK implements Prefs.PrefKey {
     FIRST_RUN("firstRun"),
+    /**
+     * Refresh token
+     */
     TOKEN("token"),
     CACHE_ENABLED("cacheEnabled");
 
     private final String key;
 
-    PKeys(String key) {
+    PK(String key) {
         this.key = key;
     }
 

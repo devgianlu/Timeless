@@ -34,11 +34,11 @@ public class ThisApplication extends AnalyticsApplication {
         });
 
         // Backward compatibility
-        if (!Prefs.has(this, PKeys.TOKEN)) {
+        if (!Prefs.has(this, PK.TOKEN)) {
             try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(openFileInput("token")));
                 String token = in.readLine();
-                if (token != null && !token.isEmpty()) Prefs.putString(this, PKeys.TOKEN, token);
+                if (token != null && !token.isEmpty()) Prefs.putString(this, PK.TOKEN, token);
                 deleteFile("token");
             } catch (IOException ex) {
                 Logging.log(ex);

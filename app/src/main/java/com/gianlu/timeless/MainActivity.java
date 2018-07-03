@@ -50,7 +50,6 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 .singleProfile(user, new DrawerManager.OnAction() {
                     @Override
                     public void drawerAction() {
-                        deleteFile("token");
                         PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("firstRun", true).apply();
                         startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         finish();
