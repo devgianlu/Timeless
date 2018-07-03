@@ -122,7 +122,8 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                 break;
             case R.id.leaders_me:
                 if (me != null && me.rank != -1) displayRankDialog(me);
-                else Toaster.with(this).message(R.string.userNotFound).extra(me.user).show();
+                else
+                    Toaster.with(this).message(R.string.userNotFound).extra(me != null ? me.user : null).show();
                 AnalyticsApplication.sendAnalytics(this, Utils.ACTION_SHOW_ME_LEADER);
                 break;
             case R.id.leaders_filter:
