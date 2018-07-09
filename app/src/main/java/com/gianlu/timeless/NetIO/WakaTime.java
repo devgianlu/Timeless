@@ -22,7 +22,9 @@ import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Durations;
+import com.gianlu.timeless.Models.Leaderboards;
 import com.gianlu.timeless.Models.Leaders;
+import com.gianlu.timeless.Models.LeadersWithMe;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Projects;
 import com.gianlu.timeless.Models.Summaries;
@@ -196,12 +198,12 @@ public class WakaTime {
         });
     }
 
-    public void getLeaders(@Nullable final String language, final int page, final OnResult<Leaders> listener) {
+    public void getLeaders(@Nullable final String language, final int page, final OnResult<LeadersWithMe> listener) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final Leaders leaders = requester.leaders(language, page);
+                    final LeadersWithMe leaders = requester.leaders(language, page);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -308,7 +310,8 @@ public class WakaTime {
         LAST_7_DAYS,
         LAST_30_DAYS;
 
-        public String getFormal(Context context) {
+        @NonNull
+        public String getFormal(@NonNull Context context) {
             switch (this) {
                 case TODAY:
                     return context.getString(R.string.today);
@@ -320,6 +323,7 @@ public class WakaTime {
             }
         }
 
+        @NonNull
         public Pair<Date, Date> getStartAndEnd() {
             Calendar cal = Calendar.getInstance();
             Date end = cal.getTime();
@@ -339,6 +343,7 @@ public class WakaTime {
             return new Pair<>(cal.getTime(), end);
         }
 
+        @NonNull
         public Pair<Date, Date> getWeekBefore() {
             if (this == TODAY) {
                 Calendar cal = Calendar.getInstance();
@@ -419,7 +424,7 @@ public class WakaTime {
                     .build();
             this.service = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s")
                     .apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
-                    .scope("email,read_stats,read_logged_time,read_teams")
+                    .scope("email,read_stats,read_logged_time,read_teams,read_private_leaderboards")
                     .callback("timeless://grantActivity/")
                     .userAgent(ThisApplication.USER_AGENT)
                     .httpClient(new OkHttpHttpClient(client))
@@ -477,6 +482,9 @@ public class WakaTime {
                 public void run() {
                     try {
                         token = service.refreshAccessToken(storedToken);
+                        if (!token.getScope().contains("read_private_leaderboards"))
+                            throw new ShouldGetAccessToken(new IllegalStateException("Missing `read_private_leaderboards` scope"));
+
                         final WakaTime w = build();
                         handler.post(new Runnable() {
                             @Override
@@ -542,9 +550,9 @@ public class WakaTime {
         @Override
         public void run() {
             try {
-                requester.skipCache(skipCache);
+                WakaTime.this.skipCache = skipCache;
                 stuff.request(requester, handler);
-                requester.resetSkipCache();
+                WakaTime.this.skipCache = false;
             } catch (final Exception ex) {
                 Logging.log(ex);
 
@@ -562,14 +570,6 @@ public class WakaTime {
 
     @WorkerThread
     public class Requester {
-
-        private void skipCache(boolean skipCache) {
-            WakaTime.this.skipCache = skipCache;
-        }
-
-        private void resetSkipCache() {
-            WakaTime.this.skipCache = false;
-        }
 
         @NonNull
         public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
@@ -611,7 +611,7 @@ public class WakaTime {
         }
 
         @NonNull
-        public Leaders leaders(@Nullable String language, int page) throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+        public LeadersWithMe leaders(@Nullable String language, int page) throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
             HttpUrl.Builder builder = BASE_URL.newBuilder()
                     .addPathSegment("leaders")
                     .addQueryParameter("page", String.valueOf(page));
@@ -619,7 +619,7 @@ public class WakaTime {
             if (language != null)
                 builder.addQueryParameter("language", language);
 
-            return new Leaders(doRequestSync(builder.build()));
+            return new LeadersWithMe(doRequestSync(builder.build()));
         }
 
         @NonNull
@@ -632,6 +632,24 @@ public class WakaTime {
         public User user() throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
             return new User(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current").build()).getJSONObject("data"));
+        }
+
+        @NonNull
+        public Leaderboards privateLeaderboards() throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
+            return new Leaderboards(doRequestSync(BASE_URL.newBuilder()
+                    .addPathSegments("users/current/leaderboards").build()));
+        }
+
+        @NonNull
+        public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
+            HttpUrl.Builder builder = BASE_URL.newBuilder()
+                    .addPathSegments("users/current/leaderboards/" + id)
+                    .addQueryParameter("page", String.valueOf(page));
+
+            if (language != null)
+                builder.addQueryParameter("language", language);
+
+            return new Leaders(doRequestSync(builder.build()));
         }
     }
 }

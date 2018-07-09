@@ -13,13 +13,13 @@ import com.gianlu.commonutils.FontsManager;
 import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.Leaders;
+import com.gianlu.timeless.Models.LeadersWithMe;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<LeadersAdapter.ViewHolder, Leader> {
@@ -28,14 +28,16 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     private final User me;
     private final WakaTime wakaTime;
 
-    public LeadersAdapter(Context context, List<Leader> items, int maxPages, @Nullable Leader me, @Nullable String language, @NonNull WakaTime wakaTime, Listener listener) {
-        super(new Config<Leader>(context).items(items).maxPages(maxPages).noSeparators());
+    public LeadersAdapter(Context context, @NonNull WakaTime wakaTime, @NonNull Leaders leaders, @Nullable User me, @Nullable String language, Listener listener) {
+        super(new Config<Leader>(context).items(leaders).maxPages(leaders.maxPages).noSeparators());
         this.language = language;
         this.listener = listener;
         this.wakaTime = wakaTime;
+        this.me = me;
+    }
 
-        if (me != null) this.me = me.user;
-        else this.me = null;
+    public LeadersAdapter(Context context, @NonNull WakaTime wakaTime, @NonNull LeadersWithMe leaders, @Nullable String language, Listener listener) {
+        this(context, wakaTime, leaders, leaders.me != null ? leaders.me.user : null, language, listener);
     }
 
     @Nullable
@@ -75,9 +77,9 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
 
     @Override
     protected void moreContent(int page, @NonNull final ContentProvider<Leader> provider) {
-        wakaTime.getLeaders(language, page, new WakaTime.OnResult<Leaders>() {
+        wakaTime.getLeaders(language, page, new WakaTime.OnResult<LeadersWithMe>() {
             @Override
-            public void onResult(@NonNull Leaders leaders) {
+            public void onResult(@NonNull LeadersWithMe leaders) {
                 maxPages(leaders.maxPages);
                 provider.onMoreContent(leaders);
             }

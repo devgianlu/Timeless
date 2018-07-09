@@ -23,7 +23,7 @@ import com.gianlu.timeless.Activities.Leaders.LeaderSheet;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
 import com.gianlu.timeless.Models.Leader;
-import com.gianlu.timeless.Models.Leaders;
+import com.gianlu.timeless.Models.LeadersWithMe;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
@@ -78,11 +78,11 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
     private void gatherAndUpdate(@Nullable final String language) {
         recyclerViewLayout.startLoading();
-        wakaTime.getLeaders(language, 1, new WakaTime.OnResult<Leaders>() {
+        wakaTime.getLeaders(language, 1, new WakaTime.OnResult<LeadersWithMe>() {
             @Override
-            public void onResult(@NonNull Leaders leaders) {
+            public void onResult(@NonNull LeadersWithMe leaders) {
                 me = leaders.me;
-                adapter = new LeadersAdapter(LeadersActivity.this, leaders, leaders.maxPages, me, language, wakaTime, LeadersActivity.this);
+                adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, language, LeadersActivity.this);
 
                 currFilter.setText(language == null ? getString(R.string.global_rank) : language);
                 recyclerViewLayout.loadListData(adapter);
