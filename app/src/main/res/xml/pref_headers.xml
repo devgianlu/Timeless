@@ -10,7 +10,7 @@
         android:title="@string/third_part" />
 
     <header
-        android:icon="@drawable/ic_announcement_black_24dp"
+        android:icon="@drawable/baseline_announcement_24"
         android:title="@string/logs" />
 
     <header
