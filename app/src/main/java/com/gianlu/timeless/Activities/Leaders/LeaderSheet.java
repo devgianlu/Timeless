@@ -95,7 +95,7 @@ public class LeaderSheet extends BaseModalBottomSheet<Leader, Void> {
     protected boolean onCustomizeAction(@NonNull final FloatingActionButton action, @NonNull final Leader leader) {
         if (leader.user.getWebsite() == null) return false;
 
-        action.setImageResource(R.drawable.ic_web_white_48dp);
+        action.setImageResource(R.drawable.baseline_web_24);
         action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

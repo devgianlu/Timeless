@@ -33,7 +33,7 @@
                 android:adjustViewBounds="true"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_keyboard_arrow_left_white_48dp" />
+                android:src="@drawable/baseline_keyboard_arrow_left_24" />
 
             <TextView
                 android:id="@+id/dailyStats_day"
@@ -57,7 +57,7 @@
                 android:adjustViewBounds="true"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_keyboard_arrow_right_white_48dp" />
+                android:src="@drawable/baseline_keyboard_arrow_right_24" />
         </LinearLayout>
     </android.support.design.widget.AppBarLayout>
 

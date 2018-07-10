@@ -69,7 +69,7 @@ public class CommitSheet extends BaseModalBottomSheet<Commit, Void> {
 
     @Override
     protected boolean onCustomizeAction(@NonNull FloatingActionButton action, @NonNull final Commit commit) {
-        action.setImageResource(R.drawable.ic_open_in_browser_white_48dp);
+        action.setImageResource(R.drawable.baseline_open_in_browser_24);
         action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -4,13 +4,13 @@
 
     <item
         android:id="@+id/leaders_filter"
-        android:icon="@drawable/ic_filter_list_white_48dp"
+        android:icon="@drawable/baseline_filter_list_24"
         android:title="@string/filterByLanguage"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/leaders_me"
-        android:icon="@drawable/ic_account_circle_white_48dp"
+        android:icon="@drawable/baseline_account_circle_24"
         android:title="@string/findMe"
         app:showAsAction="always" />
 </menu>

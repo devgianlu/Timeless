@@ -56,15 +56,15 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                         finish();
                     }
                 })
-                .addMenuItem(new BaseDrawerItem(DrawerConst.HOME, R.drawable.ic_home_black_48dp, getString(R.string.home)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.DAILY_STATS, R.drawable.ic_view_day_black_48dp, getString(R.string.dailyStats)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.PROJECTS, R.drawable.ic_view_module_black_48dp, getString(R.string.projects)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.COMMITS, R.drawable.ic_linear_scale_black_48dp, getString(R.string.commits)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.PUBLIC_LEADERBOARD, R.drawable.ic_show_chart_black_48dp, getString(R.string.publicLeaderboard)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.HOME, R.drawable.baseline_home_24, getString(R.string.home)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.DAILY_STATS, R.drawable.baseline_view_day_24, getString(R.string.dailyStats)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.PROJECTS, R.drawable.baseline_view_module_24, getString(R.string.projects)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.COMMITS, R.drawable.baseline_linear_scale_24, getString(R.string.commits)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.PUBLIC_LEADERBOARD, R.drawable.baseline_show_chart_24, getString(R.string.publicLeaderboard)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PRIVATE_LEADERBOARDS, R.drawable.baseline_vpn_lock_24, getString(R.string.privateLeaderboards)))
                 .addMenuItemSeparator()
-                .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.ic_settings_black_48dp, getString(R.string.preferences)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.ic_report_problem_black_48dp, getString(R.string.support))).build(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar);
+                .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.baseline_settings_24, getString(R.string.preferences)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.baseline_report_problem_24, getString(R.string.support))).build(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar);
 
         drawerManager.setActiveItem(DrawerConst.HOME);
 

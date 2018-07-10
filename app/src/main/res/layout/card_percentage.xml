@@ -36,8 +36,8 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginEnd="8dp"
-                android:alpha="0.54"
-                android:src="@drawable/ic_trending_up_black_48dp" />
+
+                android:src="@drawable/baseline_trending_flat_24" />
 
             <TextView
                 android:id="@+id/percentageCard_percentage"

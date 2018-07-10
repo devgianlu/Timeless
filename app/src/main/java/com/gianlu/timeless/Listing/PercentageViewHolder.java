@@ -29,13 +29,13 @@ class PercentageViewHolder extends RecyclerView.ViewHolder {
 
         if (roundedPercent == 0) {
             percentage.setText(String.format(Locale.getDefault(), "%.2f%%", roundedPercent));
-            trending.setImageResource(R.drawable.ic_trending_flat_black_48dp);
+            trending.setImageResource(R.drawable.baseline_trending_flat_24);
         } else if (roundedPercent > 0) {
             percentage.setText(String.format(Locale.getDefault(), "+%.2f%%", roundedPercent));
-            trending.setImageResource(R.drawable.ic_trending_up_black_48dp);
+            trending.setImageResource(R.drawable.baseline_trending_up_24);
         } else {
             percentage.setText(String.format(Locale.getDefault(), "%.2f%%", roundedPercent));
-            trending.setImageResource(R.drawable.ic_trending_down_black_48dp);
+            trending.setImageResource(R.drawable.baseline_trending_down_24);
         }
     }
 }
