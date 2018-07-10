@@ -1,7 +1,10 @@
 package com.gianlu.timeless.Activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -22,6 +25,11 @@ import java.util.List;
 public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnResult<Projects> {
     private final List<CommitsFragment> fragments = new ArrayList<>();
     private ViewPager pager;
+
+    public static void startActivity(Context context, @Nullable String projectId) {
+        context.startActivity(new Intent(context, CommitsActivity.class)
+                .putExtra("projectId", projectId));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +80,11 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
         pager.setOffscreenPageLimit(fragments.size());
         dismissDialog();
 
-        String projectId = getIntent().getStringExtra("project_id");
+        String projectId = getIntent().getStringExtra("projectId");
         if (projectId != null) {
             int pos = projects.indexOf(projectId);
             if (pos != -1) pager.setCurrentItem(pos, false);
+            getIntent().removeExtra("projectId");
         }
     }
 

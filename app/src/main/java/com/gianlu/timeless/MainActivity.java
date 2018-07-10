@@ -118,7 +118,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
                 return false;
             case DrawerConst.COMMITS:
-                startActivity(new Intent(MainActivity.this, CommitsActivity.class));
+                CommitsActivity.startActivity(this, null);
                 return false;
             case DrawerConst.PROJECTS:
                 startActivity(new Intent(MainActivity.this, ProjectsActivity.class));

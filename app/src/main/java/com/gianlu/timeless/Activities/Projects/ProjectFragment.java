@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Activities.Projects;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -65,8 +64,8 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.projectFragment_commits:
-                if (project == null) break;
-                startActivity(new Intent(getContext(), CommitsActivity.class).putExtra("project_id", project.id));
+                if (project == null || getContext() == null) break;
+                CommitsActivity.startActivity(getContext(), project.id);
                 break;
         }
 

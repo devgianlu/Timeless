@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities.Commits;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -70,6 +71,7 @@ public class CommitSheet extends BaseModalBottomSheet<Commit, Void> {
     @Override
     protected boolean onCustomizeAction(@NonNull FloatingActionButton action, @NonNull final Commit commit) {
         action.setImageResource(R.drawable.baseline_open_in_browser_24);
+        action.setColorFilter(Color.WHITE);
         action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

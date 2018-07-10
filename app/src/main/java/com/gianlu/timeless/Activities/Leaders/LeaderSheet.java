@@ -1,6 +1,7 @@
 package com.gianlu.timeless.Activities.Leaders;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -96,6 +97,7 @@ public class LeaderSheet extends BaseModalBottomSheet<Leader, Void> {
         if (leader.user.getWebsite() == null) return false;
 
         action.setImageResource(R.drawable.baseline_web_24);
+        action.setColorFilter(Color.WHITE);
         action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
