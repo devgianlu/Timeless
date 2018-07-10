@@ -51,8 +51,9 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
         });
     }
 
+    @NonNull
     @Override
-    protected ViewHolder createViewHolder(ViewGroup parent) {
+    protected ViewHolder createViewHolder(@NonNull ViewGroup parent) {
         return new ViewHolder(inflater.inflate(R.layout.item_commit, parent, false));
     }
 

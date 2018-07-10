@@ -19,6 +19,7 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Activities.DailyStatsActivity;
 import com.gianlu.timeless.Activities.LeadersActivity;
+import com.gianlu.timeless.Activities.PrivateLeaderboardsActivity;
 import com.gianlu.timeless.Activities.ProjectsActivity;
 import com.gianlu.timeless.Main.DrawerConst;
 import com.gianlu.timeless.Main.MainFragment;
@@ -59,7 +60,8 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 .addMenuItem(new BaseDrawerItem(DrawerConst.DAILY_STATS, R.drawable.ic_view_day_black_48dp, getString(R.string.dailyStats)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PROJECTS, R.drawable.ic_view_module_black_48dp, getString(R.string.projects)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.COMMITS, R.drawable.ic_linear_scale_black_48dp, getString(R.string.commits)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.LEADERS, R.drawable.ic_show_chart_black_48dp, getString(R.string.leaderboards)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.PUBLIC_LEADERBOARD, R.drawable.ic_show_chart_black_48dp, getString(R.string.publicLeaderboard)))
+                .addMenuItem(new BaseDrawerItem(DrawerConst.PRIVATE_LEADERBOARDS, R.drawable.baseline_vpn_lock_24, getString(R.string.privateLeaderboards)))
                 .addMenuItemSeparator()
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.ic_settings_black_48dp, getString(R.string.preferences)))
                 .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.ic_report_problem_black_48dp, getString(R.string.support))).build(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar);
@@ -121,8 +123,11 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
             case DrawerConst.PROJECTS:
                 startActivity(new Intent(MainActivity.this, ProjectsActivity.class));
                 return false;
-            case DrawerConst.LEADERS:
-                startActivity(new Intent(MainActivity.this, LeadersActivity.class));
+            case DrawerConst.PRIVATE_LEADERBOARDS:
+                startActivity(new Intent(MainActivity.this, PrivateLeaderboardsActivity.class));
+                return false;
+            case DrawerConst.PUBLIC_LEADERBOARD:
+                LeadersActivity.startActivity(this);
                 return false;
             case DrawerConst.PREFERENCES:
                 startActivity(new Intent(MainActivity.this, PreferencesActivity.class));

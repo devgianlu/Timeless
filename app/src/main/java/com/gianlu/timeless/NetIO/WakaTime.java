@@ -222,6 +222,30 @@ public class WakaTime {
         });
     }
 
+    public void getLeaders(@NonNull final String id, @Nullable final String language, final int page, final OnResult<Leaders> listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Leaders leaders = requester.leaders(id, language, page);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onResult(leaders);
+                        }
+                    });
+                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     public void getProjects(final OnResult<Projects> listener) {
         executorService.execute(new Runnable() {
             @Override
@@ -294,6 +318,30 @@ public class WakaTime {
                         @Override
                         public void run() {
                             listener.onWakaTimeError(ex);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void getPrivateLeaderboards(final int page, final OnResult<Leaderboards> listener) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Leaderboards leaderboards = requester.privateLeaderboards(page);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onResult(leaderboards);
+                        }
+                    });
+                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onException(ex);
                         }
                     });
                 }
@@ -635,8 +683,9 @@ public class WakaTime {
         }
 
         @NonNull
-        public Leaderboards privateLeaderboards() throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
+        public Leaderboards privateLeaderboards(int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
             return new Leaderboards(doRequestSync(BASE_URL.newBuilder()
+                    .addQueryParameter("page", String.valueOf(page))
                     .addPathSegments("users/current/leaderboards").build()));
         }
 

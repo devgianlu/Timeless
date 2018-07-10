@@ -14,7 +14,6 @@
     <string name="commits">Commits</string>
     <string name="projects">Projects</string>
     <string name="donate">Donate</string>
-    <string name="leaderboards">Leaderboards</string>
     <string name="loadingData">Loading data. Please wait…</string>
     <string name="dailyTimeSpent"><![CDATA[<b>Daily on average:</b>]]>  %s</string>
     <string name="last7DaysTimeSpent"><![CDATA[<b>Last 7 days:</b>]]> %s</string>
@@ -29,7 +28,6 @@
     <string name="writeExternalStorageRequest_message">To save the chart image, the app needs to write to the external storage</string>
     <string name="imageSavedTo">The image has been saved to %s</string>
     <string name="watermark">Made with Timeless, a Wakatime client</string>
-    <string name="global_rank">Global rank</string>
     <string name="filterByLanguage">Filter by language</string>
     <string name="unsetFilter">Remove filter</string>
     <string name="averageImprovement">Improvement to the week average</string>
@@ -73,4 +71,12 @@
     <string name="mpAndroidChart">MPAndroidChart</string>
     <string name="materialDateRangePicker">MaterialDateRangePicker</string>
     <string name="scribejava">ScribeJava</string>
+    <string name="allLanguages">All languages</string>
+    <string name="publicLeaderboard">Public leaderboard</string>
+    <string name="privateLeaderboards">Private leaderboards</string>
+    <string name="noPrivateLeaderboards">You have no private leaderboards.</string>
+    <plurals name="members">
+        <item quantity="one">%d member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
 </resources>

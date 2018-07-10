@@ -23,21 +23,27 @@ import java.util.Date;
 import java.util.Objects;
 
 public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<LeadersAdapter.ViewHolder, Leader> {
+    private final String id;
     private final String language;
     private final Listener listener;
     private final User me;
     private final WakaTime wakaTime;
 
-    public LeadersAdapter(Context context, @NonNull WakaTime wakaTime, @NonNull Leaders leaders, @Nullable User me, @Nullable String language, Listener listener) {
+    private LeadersAdapter(Context context, @NonNull WakaTime wakaTime, @NonNull Leaders leaders, @Nullable User me, @Nullable String id, @Nullable String language, Listener listener) {
         super(new Config<Leader>(context).items(leaders).maxPages(leaders.maxPages).noSeparators());
+        this.id = id;
         this.language = language;
         this.listener = listener;
         this.wakaTime = wakaTime;
         this.me = me;
     }
 
+    public LeadersAdapter(Context context, @NonNull WakaTime wakaTime, @NonNull Leaders leaders, @NonNull String id, @Nullable String language, Listener listener) {
+        this(context, wakaTime, leaders, null, id, language, listener);
+    }
+
     public LeadersAdapter(Context context, @NonNull WakaTime wakaTime, @NonNull LeadersWithMe leaders, @Nullable String language, Listener listener) {
-        this(context, wakaTime, leaders, leaders.me != null ? leaders.me.user : null, language, listener);
+        this(context, wakaTime, leaders, leaders.me != null ? leaders.me.user : null, null, language, listener);
     }
 
     @Nullable
@@ -70,25 +76,41 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
         });
     }
 
+    @NonNull
     @Override
-    protected RecyclerView.ViewHolder createViewHolder(ViewGroup parent) {
+    protected RecyclerView.ViewHolder createViewHolder(@NonNull ViewGroup parent) {
         return new ViewHolder(parent);
     }
 
     @Override
     protected void moreContent(int page, @NonNull final ContentProvider<Leader> provider) {
-        wakaTime.getLeaders(language, page, new WakaTime.OnResult<LeadersWithMe>() {
-            @Override
-            public void onResult(@NonNull LeadersWithMe leaders) {
-                maxPages(leaders.maxPages);
-                provider.onMoreContent(leaders);
-            }
+        if (id == null) {
+            wakaTime.getLeaders(language, page, new WakaTime.OnResult<LeadersWithMe>() {
+                @Override
+                public void onResult(@NonNull LeadersWithMe leaders) {
+                    maxPages(leaders.maxPages);
+                    provider.onMoreContent(leaders);
+                }
 
-            @Override
-            public void onException(@NonNull Exception ex) {
-                provider.onFailed(ex);
-            }
-        });
+                @Override
+                public void onException(@NonNull Exception ex) {
+                    provider.onFailed(ex);
+                }
+            });
+        } else {
+            wakaTime.getLeaders(id, language, page, new WakaTime.OnResult<Leaders>() {
+                @Override
+                public void onResult(@NonNull Leaders leaders) {
+                    maxPages(leaders.maxPages);
+                    provider.onMoreContent(leaders);
+                }
+
+                @Override
+                public void onException(@NonNull Exception ex) {
+                    provider.onFailed(ex);
+                }
+            });
+        }
     }
 
     public interface Listener {

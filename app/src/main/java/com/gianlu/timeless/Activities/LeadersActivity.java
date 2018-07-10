@@ -1,6 +1,8 @@
 package com.gianlu.timeless.Activities;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +25,7 @@ import com.gianlu.timeless.Activities.Leaders.LeaderSheet;
 import com.gianlu.timeless.Activities.Leaders.LeadersAdapter;
 import com.gianlu.timeless.Activities.Leaders.PickLanguageAdapter;
 import com.gianlu.timeless.Models.Leader;
+import com.gianlu.timeless.Models.Leaders;
 import com.gianlu.timeless.Models.LeadersWithMe;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -34,21 +37,35 @@ import com.gianlu.timeless.Utils;
 public class LeadersActivity extends ActivityWithDialog implements LeadersAdapter.Listener {
     private LeadersAdapter adapter;
     private TextView currFilter;
-    private String currLang;
-    private Leader me;
+    private String currLang = null;
+    private Leader me = null;
     private WakaTime wakaTime;
+    private String id = null;
     private RecyclerViewLayout recyclerViewLayout;
+
+    public static void startActivity(Context context, @Nullable String id, @Nullable String name) {
+        context.startActivity(new Intent(context, LeadersActivity.class)
+                .putExtra("id", id).putExtra("name", name));
+    }
+
+    public static void startActivity(Context context) {
+        startActivity(context, null, null);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leaders);
-        setTitle(R.string.leaderboards);
+
+        String name = getIntent().getStringExtra("name");
+        setTitle(name == null ? getString(R.string.publicLeaderboard) : name);
 
         Toolbar toolbar = findViewById(R.id.leaders_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
+        id = getIntent().getStringExtra("id");
 
         recyclerViewLayout = findViewById(R.id.leaders_recyclerViewLayout);
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -76,31 +93,60 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
         return true;
     }
 
-    private void gatherAndUpdate(@Nullable final String language) {
-        recyclerViewLayout.startLoading();
-        wakaTime.getLeaders(language, 1, new WakaTime.OnResult<LeadersWithMe>() {
-            @Override
-            public void onResult(@NonNull LeadersWithMe leaders) {
-                me = leaders.me;
-                adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, language, LeadersActivity.this);
-
-                currFilter.setText(language == null ? getString(R.string.global_rank) : language);
-                recyclerViewLayout.loadListData(adapter);
-
-                currLang = language;
-            }
-
-            @Override
-            public void onException(@NonNull Exception ex) {
-                if (ex instanceof WakaTimeException)
-                    recyclerViewLayout.showError(ex.getMessage());
-                else
-                    recyclerViewLayout.showError(R.string.failedLoading_reason, ex.getMessage());
-            }
-        });
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.leaders_me).setVisible(me != null);
+        return true;
     }
 
-    private void displayRankDialog(Leader leader) {
+    private void updateLanguage(@Nullable String language) {
+        currLang = language;
+        currFilter.setText(language == null ? getString(R.string.allLanguages) : language);
+    }
+
+    private void gatherAndUpdate(@Nullable final String language) {
+        recyclerViewLayout.startLoading();
+        if (id == null) {
+            wakaTime.getLeaders(language, 1, new WakaTime.OnResult<LeadersWithMe>() {
+                @Override
+                public void onResult(@NonNull LeadersWithMe leaders) {
+                    me = leaders.me;
+                    adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, language, LeadersActivity.this);
+
+                    updateLanguage(language);
+                    recyclerViewLayout.loadListData(adapter);
+                }
+
+                @Override
+                public void onException(@NonNull Exception ex) {
+                    if (ex instanceof WakaTimeException)
+                        recyclerViewLayout.showError(ex.getMessage());
+                    else
+                        recyclerViewLayout.showError(R.string.failedLoading_reason, ex.getMessage());
+                }
+            });
+        } else {
+            wakaTime.getLeaders(id, language, 1, new WakaTime.OnResult<Leaders>() {
+                @Override
+                public void onResult(@NonNull Leaders leaders) {
+                    adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, id, language, LeadersActivity.this);
+
+                    updateLanguage(language);
+                    recyclerViewLayout.loadListData(adapter);
+                }
+
+                @Override
+                public void onException(@NonNull Exception ex) {
+                    if (ex instanceof WakaTimeException)
+                        recyclerViewLayout.showError(ex.getMessage());
+                    else
+                        recyclerViewLayout.showError(R.string.failedLoading_reason, ex.getMessage());
+                }
+            });
+        }
+    }
+
+    private void displayRankDialog(@NonNull Leader leader) {
         LeaderSheet.get().show(this, leader);
     }
 
@@ -121,10 +167,11 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                 onBackPressed();
                 break;
             case R.id.leaders_me:
-                if (me != null && me.rank != -1) displayRankDialog(me);
+                AnalyticsApplication.sendAnalytics(this, Utils.ACTION_SHOW_ME_LEADER);
+                if (me != null && me.rank != -1)
+                    displayRankDialog(me);
                 else
                     Toaster.with(this).message(R.string.userNotFound).extra(me != null ? me.user : null).show();
-                AnalyticsApplication.sendAnalytics(this, Utils.ACTION_SHOW_ME_LEADER);
                 break;
             case R.id.leaders_filter:
                 showFilterDialog();

@@ -7,10 +7,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Leaderboards extends ArrayList<Leaderboards.Item> {
-    public final int totalPages;
+    public final int maxPages;
 
     public Leaderboards(JSONObject obj) throws JSONException {
-        totalPages = obj.getInt("total_pages");
+        maxPages = obj.getInt("total_pages");
 
         JSONArray data = obj.getJSONArray("data");
         for (int i = 0; i < data.length(); i++) add(new Item(data.getJSONObject(i)));

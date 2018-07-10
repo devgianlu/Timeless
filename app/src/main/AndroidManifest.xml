@@ -90,6 +90,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".Activities.PrivateLeaderboardsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
+
         <!-- Logs activity -->
         <activity
             android:name="com.gianlu.commonutils.LogsActivity"
