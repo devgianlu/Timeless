@@ -489,6 +489,8 @@ public class WakaTime {
                 public void run() {
                     try {
                         OAuth2Authorization auth = service.extractAuthorization(data);
+                        if (auth.getCode() == null)
+                            throw new ShouldGetAccessToken(new NullPointerException("Failed getting authorization code!"));
                         token = service.getAccessToken(auth.getCode());
 
                         final WakaTime w = build();
