@@ -59,7 +59,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
             @Override
             public void offline() {
-                OfflineActivity.startActivity(LoadingActivity.this, R.string.app_name, LoadingActivity.class);
+                OfflineActivity.startActivity(LoadingActivity.this, LoadingActivity.class);
             }
         });
     }

@@ -130,10 +130,10 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 LeadersActivity.startActivity(this);
                 return false;
             case DrawerConst.PREFERENCES:
-                startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
+                startActivity(new Intent(MainActivity.this, PreferenceActivity.class));
                 return false;
             case DrawerConst.SUPPORT:
-                CommonUtils.sendEmail(MainActivity.this, getString(R.string.app_name), null);
+                CommonUtils.sendEmail(MainActivity.this, null);
                 return true;
             default:
                 return true;
