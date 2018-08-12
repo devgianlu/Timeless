@@ -1,6 +1,7 @@
 package com.gianlu.timeless.NetIO;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -480,7 +481,11 @@ public class WakaTime {
         }
 
         public void startFlow() {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(service.getAuthorizationUrl())));
+            try {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(service.getAuthorizationUrl())));
+            } catch (ActivityNotFoundException ex) {
+                Logging.log(ex);
+            }
         }
 
         public void endFlow(@NonNull final String data, @NonNull final InitializationListener listener) {
