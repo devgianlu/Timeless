@@ -49,7 +49,7 @@ public class GrantActivity extends ActivityWithDialog implements WakaTime.Initia
         try {
             startActivity(new Intent(GrantActivity.this, LoadingActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-            Prefs.putBoolean(GrantActivity.this, PK.FIRST_RUN, false);
+            Prefs.putBoolean(PK.FIRST_RUN, false);
         } catch (ActivityNotFoundException ex) {
             Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
         }

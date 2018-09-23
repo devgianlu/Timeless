@@ -56,7 +56,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     protected void userBindViewHolder(@NonNull ViewHolder holder, @NonNull ItemEnclosure<Leader> item, int position) {
         final ItemEnclosure<Leader> leader = items.get(position);
 
-        holder.rank.setTypeface(FontsManager.get().get(getContext(), FontsManager.ROBOTO_LIGHT));
+        FontsManager.set(holder.rank, FontsManager.ROBOTO_LIGHT);
         holder.rank.setText(String.valueOf(leader.getItem().rank));
         holder.name.setText(leader.getItem().user.getDisplayName());
         holder.total.setText(Utils.timeFormatterHours(leader.getItem().total_seconds, true));

@@ -35,12 +35,17 @@ public class PreferenceActivity extends BasePreferenceActivity {
         return null;
     }
 
+    @Override
+    protected boolean disablePayPalOnGooglePlay() {
+        return false;
+    }
+
     public static class NetworkFragment extends BasePreferenceFragment {
 
         @Override
         protected void buildPreferences(@NonNull Context context) {
             MaterialCheckboxPreference cache = new MaterialCheckboxPreference.Builder(context)
-                    .key(PK.CACHE_ENABLED.getKey())
+                    .key(PK.CACHE_ENABLED.key())
                     .defaultValue(true)
                     .build();
             cache.setTitle(R.string.enableCache);

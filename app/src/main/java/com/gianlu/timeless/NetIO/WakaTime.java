@@ -4,11 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -76,7 +74,6 @@ public class WakaTime {
     private final OkHttpClient client;
     private final Handler handler;
     private final LruCache<HttpUrl, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
-    private final SharedPreferences prefs;
     private final Requester requester;
     private final ExecutorService executorService;
     private final OAuth20Service service;
@@ -85,11 +82,10 @@ public class WakaTime {
     private OAuth2AccessToken token;
 
     private WakaTime(@NonNull Builder builder) throws ShouldGetAccessToken {
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(builder.context);
-
         if (builder.token == null)
             throw new ShouldGetAccessToken(new NullPointerException("Requested token is null!"));
-        Prefs.putString(prefs, PK.TOKEN, builder.token.getRefreshToken());
+
+        Prefs.putString(PK.TOKEN, builder.token.getRefreshToken());
 
         this.client = builder.client;
         this.handler = builder.handler;
@@ -117,7 +113,7 @@ public class WakaTime {
     }
 
     private boolean cacheEnabled() {
-        return Prefs.getBoolean(prefs, PK.CACHE_ENABLED, true);
+        return Prefs.getBoolean(PK.CACHE_ENABLED, true);
     }
 
     @NonNull
@@ -131,11 +127,11 @@ public class WakaTime {
             Request.Builder request = new Request.Builder().get().url(url);
 
             if (token == null) {
-                String storedToken = Prefs.getString(prefs, PK.TOKEN, null);
+                String storedToken = Prefs.getString(PK.TOKEN, null);
                 if (storedToken == null)
                     throw new ShouldGetAccessToken(new NullPointerException("Stored token is null!"));
                 token = service.refreshAccessToken(storedToken);
-                Prefs.putString(prefs, PK.TOKEN, token.getRefreshToken());
+                Prefs.putString(PK.TOKEN, token.getRefreshToken());
             }
 
             request.addHeader("Authorization", String.format("Bearer %s", token.getAccessToken()));
@@ -526,7 +522,7 @@ public class WakaTime {
                 return;
             }
 
-            final String storedToken = Prefs.getString(context, PK.TOKEN, null);
+            final String storedToken = Prefs.getString(PK.TOKEN, null);
             if (storedToken == null) {
                 listener.onException(new ShouldGetAccessToken(new NullPointerException("Stored token is null!")));
                 return;

@@ -92,7 +92,7 @@ public class DurationsView extends LinearLayout {
             titleTextPaint.setColor(Color.BLACK);
             titleTextPaint.setAlpha(64);
             titleTextPaint.setAntiAlias(true);
-            titleTextPaint.setTypeface(FontsManager.get().get(context, FontsManager.ROBOTO_MEDIUM));
+            FontsManager.set(context, titleTextPaint, FontsManager.ROBOTO_MEDIUM);
             titleTextPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 40, context.getResources().getDisplayMetrics()));
 
             this.project = project;

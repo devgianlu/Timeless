@@ -37,11 +37,11 @@ public class ThisApplication extends AnalyticsApplication {
         });
 
         // Backward compatibility
-        if (!Prefs.has(this, PK.TOKEN)) {
+        if (!Prefs.has(PK.TOKEN)) {
             try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(openFileInput("token")));
                 String token = in.readLine();
-                if (token != null && !token.isEmpty()) Prefs.putString(this, PK.TOKEN, token);
+                if (token != null && !token.isEmpty()) Prefs.putString(PK.TOKEN, token);
                 deleteFile("token");
             } catch (IOException ex) {
                 Logging.log(ex);
@@ -51,7 +51,7 @@ public class ThisApplication extends AnalyticsApplication {
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(PK.CACHE_ENABLED.getKey())) {
+                if (key.equals(PK.CACHE_ENABLED.key())) {
                     try {
                         WakaTime.get().cacheEnabledChanged();
                     } catch (WakaTime.ShouldGetAccessToken ex) {

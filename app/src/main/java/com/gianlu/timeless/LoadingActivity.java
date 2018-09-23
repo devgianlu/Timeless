@@ -24,7 +24,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Prefs.getBoolean(this, PK.FIRST_RUN, true)) {
+        if (Prefs.getBoolean(PK.FIRST_RUN, true)) {
             startActivity(new Intent(this, GrantActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
