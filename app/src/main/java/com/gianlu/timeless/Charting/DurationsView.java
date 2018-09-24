@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class DurationsView extends LinearLayout {
+    private final Paint gridPaint;
+    private final Paint titleTextPaint;
+    private final Paint textPaint;
     private List<String> projects;
 
     public DurationsView(Context context) {
@@ -37,6 +40,21 @@ public class DurationsView extends LinearLayout {
     public DurationsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(VERTICAL);
+
+        titleTextPaint = new Paint();
+        titleTextPaint.setColor(Color.BLACK);
+        titleTextPaint.setAlpha(64);
+        titleTextPaint.setAntiAlias(true);
+        FontsManager.set(context, titleTextPaint, FontsManager.ROBOTO_MEDIUM);
+        titleTextPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 40, context.getResources().getDisplayMetrics()));
+
+        textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
+
+        gridPaint = new Paint();
+        gridPaint.setColor(Color.GRAY);
     }
 
     public void setDurations(Durations durations) {
@@ -65,10 +83,7 @@ public class DurationsView extends LinearLayout {
         private final long[] data;
         private final Rect textBounds = new Rect();
         private final Rect titleTextBounds = new Rect();
-        private final Paint titleTextPaint;
         private final Paint durationPaint;
-        private final Paint gridPaint;
-        private final Paint textPaint;
         private final Paint hiddenSpacePaint;
         private final int mPadding;
         private final int mHeight;
@@ -82,24 +97,9 @@ public class DurationsView extends LinearLayout {
             durationPaint = new Paint();
             durationPaint.setColor(color);
 
-            gridPaint = new Paint();
-            gridPaint.setColor(Color.GRAY);
-
-            textPaint = new Paint();
-            textPaint.setColor(Color.BLACK);
-            textPaint.setAntiAlias(true);
-            textPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
-
             hiddenSpacePaint = new Paint();
             hiddenSpacePaint.setColor(color);
             hiddenSpacePaint.setAlpha(32);
-
-            titleTextPaint = new Paint();
-            titleTextPaint.setColor(Color.BLACK);
-            titleTextPaint.setAlpha(64);
-            titleTextPaint.setAntiAlias(true);
-            FontsManager.set(context, titleTextPaint, FontsManager.ROBOTO_MEDIUM);
-            titleTextPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 40, context.getResources().getDisplayMetrics()));
 
             this.project = project;
             this.lonely = lonely;
@@ -173,7 +173,7 @@ public class DurationsView extends LinearLayout {
             float secPerPixel = ((float) canvas.getWidth() - (mInternalPadding * 2)) / 86400f;
             adjustTextSize(canvas);
 
-            int bottomPadding = canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - mPadding;
+            float bottomPadding = canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - mPadding;
 
             for (int i = 0; i <= 24; i++) {
                 String hour = String.valueOf(i);
@@ -186,7 +186,9 @@ public class DurationsView extends LinearLayout {
             }
 
             if (hiddenSince != -1)
-                canvas.drawRect(mInternalPadding, mPadding, secPerPixel * hiddenSince, bottomPadding, hiddenSpacePaint);
+                canvas.drawRect(mInternalPadding, mPadding, secPerPixel * hiddenSince + mInternalPadding, bottomPadding, hiddenSpacePaint);
+            else
+                canvas.drawRect(mInternalPadding, mPadding, 24 * 3600 * secPerPixel + mInternalPadding, bottomPadding, hiddenSpacePaint);
 
             adjustTitleTextSize(canvas);
             titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
@@ -198,11 +200,20 @@ public class DurationsView extends LinearLayout {
                     long key = data[i * 2];
                     long val = data[i * 2 + 1];
 
-                    if (val * secPerPixel >= 1) {
+                    if (val * secPerPixel > 1) {
                         canvas.drawRect((key * secPerPixel) + mInternalPadding, mPadding, ((key + val) * secPerPixel) + mInternalPadding, bottomPadding, durationPaint);
                         if (!drawn) drawn = true;
                     }
                 }
+            }
+
+            if (!drawn) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        DurationsView.this.removeView(ChartView.this);
+                    }
+                });
             }
         }
     }
