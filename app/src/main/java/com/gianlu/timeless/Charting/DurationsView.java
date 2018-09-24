@@ -91,7 +91,7 @@ public class DurationsView extends LinearLayout {
             textPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
 
             hiddenSpacePaint = new Paint();
-            hiddenSpacePaint.setColor(Color.BLACK);
+            hiddenSpacePaint.setColor(color);
             hiddenSpacePaint.setAlpha(32);
 
             titleTextPaint = new Paint();
@@ -185,11 +185,8 @@ public class DurationsView extends LinearLayout {
                     canvas.drawText(hour, pos - (textBounds.width() / 2), canvas.getHeight() - mPadding, textPaint);
             }
 
-            if (hiddenSince != -1) {
-                float hiddenFromPos = secPerPixel * hiddenSince + mInternalPadding;
-                float hiddenToPos = secPerPixel * 24 * 3600 + mInternalPadding;
-                canvas.drawRect(hiddenFromPos, mPadding, hiddenToPos, bottomPadding, hiddenSpacePaint);
-            }
+            if (hiddenSince != -1)
+                canvas.drawRect(mInternalPadding, mPadding, secPerPixel * hiddenSince, bottomPadding, hiddenSpacePaint);
 
             adjustTitleTextSize(canvas);
             titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
