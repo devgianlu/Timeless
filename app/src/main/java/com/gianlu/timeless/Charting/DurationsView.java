@@ -55,7 +55,7 @@ public class DurationsView extends LinearLayout {
         } else {
             MaterialColors colors = MaterialColors.getShuffledInstance();
             for (int i = 0; i < projects.size(); i++)
-                addView(new ChartView(getContext(), projects.get(i), durations.filter(projects.get(i)), ContextCompat.getColor(getContext(), colors.getColor(i)), projects.size() <= 1));
+                addView(new ChartView(getContext(), projects.get(i), durations.filter(projects.get(i)), ContextCompat.getColor(getContext(), colors.getColor(i)), projects.size() <= 1, durations.isToday()));
         }
     }
 
@@ -69,11 +69,13 @@ public class DurationsView extends LinearLayout {
         private final Paint durationPaint;
         private final Paint gridPaint;
         private final Paint textPaint;
+        private final Paint hiddenSpacePaint;
         private final int mPadding;
         private final int mHeight;
+        private final float hiddenSince;
         private float mInternalPadding;
 
-        public ChartView(Context context, String project, List<Duration> durations, int color, boolean lonely) {
+        public ChartView(Context context, String project, List<Duration> durations, int color, boolean lonely, boolean isToday) {
             super(context);
             mHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, context.getResources().getDisplayMetrics());
 
@@ -87,6 +89,10 @@ public class DurationsView extends LinearLayout {
             textPaint.setColor(Color.BLACK);
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
+
+            hiddenSpacePaint = new Paint();
+            hiddenSpacePaint.setColor(Color.BLACK);
+            hiddenSpacePaint.setAlpha(32);
 
             titleTextPaint = new Paint();
             titleTextPaint.setColor(Color.BLACK);
@@ -120,6 +126,8 @@ public class DurationsView extends LinearLayout {
                 mPadding = 0;
             else
                 mPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+
+            hiddenSince = isToday ? (System.currentTimeMillis() - cal.getTimeInMillis()) / 1000 : -1;
         }
 
         @Override
@@ -165,14 +173,22 @@ public class DurationsView extends LinearLayout {
             float secPerPixel = ((float) canvas.getWidth() - (mInternalPadding * 2)) / 86400f;
             adjustTextSize(canvas);
 
+            int bottomPadding = canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - mPadding;
+
             for (int i = 0; i <= 24; i++) {
                 String hour = String.valueOf(i);
                 float pos = (i * 3600 * secPerPixel) + mInternalPadding;
 
                 textPaint.getTextBounds(hour, 0, hour.length(), textBounds);
-                canvas.drawLine(pos, mPadding, pos, canvas.getHeight() - textBounds.height() - 5 - mPadding, gridPaint);
+                canvas.drawLine(pos, mPadding, pos, bottomPadding, gridPaint);
                 if (i % 2 == 0)
                     canvas.drawText(hour, pos - (textBounds.width() / 2), canvas.getHeight() - mPadding, textPaint);
+            }
+
+            if (hiddenSince != -1) {
+                float hiddenFromPos = secPerPixel * hiddenSince + mInternalPadding;
+                float hiddenToPos = secPerPixel * 24 * 3600 + mInternalPadding;
+                canvas.drawRect(hiddenFromPos, mPadding, hiddenToPos, bottomPadding, hiddenSpacePaint);
             }
 
             adjustTitleTextSize(canvas);
@@ -186,7 +202,7 @@ public class DurationsView extends LinearLayout {
                     long val = data[i * 2 + 1];
 
                     if (val * secPerPixel >= 1) {
-                        canvas.drawRect((key * secPerPixel) + mInternalPadding, mPadding, ((key + val) * secPerPixel) + mInternalPadding, canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - mPadding, durationPaint);
+                        canvas.drawRect((key * secPerPixel) + mInternalPadding, mPadding, ((key + val) * secPerPixel) + mInternalPadding, bottomPadding, durationPaint);
                         if (!drawn) drawn = true;
                     }
                 }
