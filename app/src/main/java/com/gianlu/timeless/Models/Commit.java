@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Models;
 
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import com.gianlu.commonutils.CommonUtils;
@@ -23,7 +22,6 @@ public class Commit implements Serializable {
     public final String html_url;
     public final String ref;
 
-    @Keep
     public Commit(JSONObject obj) throws JSONException, ParseException {
         message = obj.getString("message").replace("\n", " ");
         total_seconds = obj.getLong("total_seconds");
