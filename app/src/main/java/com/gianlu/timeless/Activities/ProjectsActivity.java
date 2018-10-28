@@ -196,6 +196,6 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
             }
         });
 
-        ThisApplication.sendAnalytics(this, Utils.ACTION_DATE_RANGE);
+        ThisApplication.sendAnalytics(Utils.ACTION_DATE_RANGE);
     }
 }

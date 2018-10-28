@@ -38,5 +38,3 @@ dependencies {
     api 'com.github.scribejava:scribejava-core:5.5.0'
     api 'com.github.scribejava:scribejava-httpclient-okhttp:5.5.0'
 }
-
-apply plugin: 'com.google.gms.google-services'

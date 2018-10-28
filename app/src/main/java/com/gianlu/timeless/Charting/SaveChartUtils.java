@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Charting;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -35,7 +34,7 @@ public class SaveChartUtils {
         String name = view.getContext().getString(title) + " (" + new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault()).format(new Date()) + ")";
 
         try {
-            return save(view.getContext(), view, project, name);
+            return save(view, project, name);
         } catch (IOException ex) {
             Logging.log(ex);
             return null;
@@ -43,14 +42,14 @@ public class SaveChartUtils {
     }
 
     @NonNull
-    static File save(Context context, View chart, @Nullable Project project, String name) throws IOException {
+    static File save(View chart, @Nullable Project project, String name) throws IOException {
         File dest = new File(getImageDirectory(project), name + ".png");
         try (OutputStream out = new FileOutputStream(dest)) {
             Bitmap bitmap = createBitmap(chart);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
         }
 
-        ThisApplication.sendAnalytics(context, Utils.ACTION_SAVED_CHART);
+        ThisApplication.sendAnalytics(Utils.ACTION_SAVED_CHART);
         return dest;
     }
 

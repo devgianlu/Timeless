@@ -167,7 +167,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                 onBackPressed();
                 break;
             case R.id.leaders_me:
-                AnalyticsApplication.sendAnalytics(this, Utils.ACTION_SHOW_ME_LEADER);
+                AnalyticsApplication.sendAnalytics(Utils.ACTION_SHOW_ME_LEADER);
                 if (me != null && me.rank != -1)
                     displayRankDialog(me);
                 else
@@ -194,7 +194,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 gatherAndUpdate(adapter.getItem(which).name);
-                                ThisApplication.sendAnalytics(LeadersActivity.this, Utils.ACTION_FILTER_LEADERS);
+                                ThisApplication.sendAnalytics(Utils.ACTION_FILTER_LEADERS);
                             }
                         })
                         .setNeutralButton(R.string.unsetFilter, new DialogInterface.OnClickListener() {

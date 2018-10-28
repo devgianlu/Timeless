@@ -83,7 +83,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
                 .setNegativeButton(android.R.string.cancel, null);
 
         if (listener != null) listener.showDialog(builder);
-        ThisApplication.sendAnalytics(context, Utils.ACTION_CHANGE_SELECTED_BRANCHES);
+        ThisApplication.sendAnalytics(Utils.ACTION_CHANGE_SELECTED_BRANCHES);
     }
 
     static class Config {
