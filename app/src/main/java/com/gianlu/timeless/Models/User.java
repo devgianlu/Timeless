@@ -1,8 +1,6 @@
 package com.gianlu.timeless.Models;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Drawer.BaseDrawerProfile;
@@ -11,6 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class User implements Serializable, BaseDrawerProfile {
     public final String email;

@@ -1,14 +1,14 @@
 package com.gianlu.timeless.Models;
 
 
-import android.support.annotation.Nullable;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
+import androidx.annotation.Nullable;
 
 public class Project implements Serializable {
     public final String id;

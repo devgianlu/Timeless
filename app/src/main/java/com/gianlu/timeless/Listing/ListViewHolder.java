@@ -1,9 +1,6 @@
 package com.gianlu.timeless.Listing;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -11,6 +8,10 @@ import android.widget.TextView;
 import com.gianlu.timeless.Activities.Projects.FilesAdapter;
 import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.R;
+
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 class ListViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
@@ -26,7 +27,7 @@ class ListViewHolder extends RecyclerView.ViewHolder {
     void bind(Context context, @StringRes int title, LoggedEntities entities) {
         this.title.setText(title);
 
-        list.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        list.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
         list.setAdapter(new FilesAdapter(context, entities));
     }
 }

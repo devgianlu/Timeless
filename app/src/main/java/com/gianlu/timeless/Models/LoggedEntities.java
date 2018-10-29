@@ -1,11 +1,11 @@
 package com.gianlu.timeless.Models;
 
-import android.support.annotation.NonNull;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 public class LoggedEntities extends ArrayList<LoggedEntity> {
 

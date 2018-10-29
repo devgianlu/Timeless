@@ -2,10 +2,6 @@ package com.gianlu.timeless.Activities.Projects;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +24,12 @@ import com.gianlu.timeless.R;
 
 import java.util.Date;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class ProjectFragment extends SaveChartFragment implements CardsAdapter.OnBranches, WakaTime.BatchStuff, CardsAdapter.Listener {
     private Date start;
@@ -83,7 +85,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(requireContext());
-        layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        layout.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
         Bundle args = getArguments();
         if (args == null

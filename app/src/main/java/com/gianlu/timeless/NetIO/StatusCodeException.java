@@ -1,9 +1,8 @@
 package com.gianlu.timeless.NetIO;
 
-import android.support.annotation.NonNull;
-
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
 import okhttp3.Response;
 
 public class StatusCodeException extends IOException {

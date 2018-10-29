@@ -1,7 +1,5 @@
 package com.gianlu.timeless.Listing;
 
-import android.support.annotation.StringRes;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -9,6 +7,9 @@ import android.widget.TextView;
 import com.gianlu.timeless.Charting.DurationsView;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.R;
+
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 class DurationsViewHolder extends RecyclerView.ViewHolder {
     public final DurationsView durationsView;

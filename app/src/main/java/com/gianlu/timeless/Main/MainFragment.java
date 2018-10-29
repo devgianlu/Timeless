@@ -3,10 +3,6 @@ package com.gianlu.timeless.Main;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +20,12 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 
 import java.util.Date;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, CardsAdapter.Listener {
     private WakaTime.Range range;
@@ -44,7 +46,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerViewLayout(requireContext());
-        layout.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        layout.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
         Bundle args = getArguments();
         if (args == null || (range = (WakaTime.Range) args.getSerializable("range")) == null) {

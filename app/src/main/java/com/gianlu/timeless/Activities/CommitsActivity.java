@@ -3,12 +3,6 @@ package com.gianlu.timeless.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
@@ -18,9 +12,16 @@ import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Projects;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnResult<Projects> {
     private final List<CommitsFragment> fragments = new ArrayList<>();

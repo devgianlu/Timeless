@@ -1,9 +1,6 @@
 package com.gianlu.timeless.Activities.PrivateLeaderboards;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,6 +11,10 @@ import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
 
 import java.util.Date;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<LeaderboardsAdapter.ViewHolder, Leaderboards.Item> {
     private final Context context;

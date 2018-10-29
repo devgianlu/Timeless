@@ -1,7 +1,5 @@
 package com.gianlu.timeless.Listing;
 
-import android.support.annotation.StringRes;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,6 +8,9 @@ import android.widget.TextView;
 import com.gianlu.timeless.R;
 
 import java.util.Locale;
+
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 class PercentageViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;

@@ -1,7 +1,5 @@
 package com.gianlu.timeless.Models;
 
-import android.support.annotation.NonNull;
-
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Utils;
 
@@ -10,6 +8,8 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.text.ParseException;
+
+import androidx.annotation.NonNull;
 
 public class Commit implements Serializable {
     public final String message;

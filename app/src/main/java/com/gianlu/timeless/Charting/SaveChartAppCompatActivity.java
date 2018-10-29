@@ -1,8 +1,6 @@
 package com.gianlu.timeless.Charting;
 
 import android.Manifest;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.gianlu.commonutils.AskPermission;
@@ -11,6 +9,9 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.R;
 
 import java.io.File;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements OnSaveChart, AskPermission.Listener {
     private View chart;

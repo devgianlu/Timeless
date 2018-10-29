@@ -3,8 +3,6 @@ package com.gianlu.timeless.Activities.Leaders;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +14,9 @@ import com.gianlu.timeless.R;
 
 import java.util.List;
 import java.util.Objects;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 public class PickLanguageAdapter extends BaseAdapter {
     private final LayoutInflater inflater;

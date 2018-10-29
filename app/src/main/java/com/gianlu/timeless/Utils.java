@@ -1,11 +1,11 @@
 package com.gianlu.timeless;
 
-import android.support.annotation.NonNull;
-
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
 
 public class Utils {
     public static final String ACTION_DATE_RANGE = "changed_date_range";

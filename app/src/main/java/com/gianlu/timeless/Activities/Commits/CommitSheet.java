@@ -3,9 +3,6 @@ package com.gianlu.timeless.Activities.Commits;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +13,12 @@ import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 
 public class CommitSheet extends BaseModalBottomSheet<Commit, Void> {
     @NonNull
