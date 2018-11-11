@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
@@ -58,8 +59,12 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         chart.setTouchEnabled(false);
         chart.setNoDataText(context.getString(R.string.noData));
 
+        int textColor = CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorPrimary);
+        chart.getLegend().setTextColor(textColor);
+
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(textColor);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             private final SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
 
@@ -73,6 +78,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
 
         chart.getAxisRight().setEnabled(false);
         YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setTextColor(textColor);
         leftAxis.setEnabled(true);
         leftAxis.setAxisMinimum(0f);
         leftAxis.setValueFormatter(new IAxisValueFormatter() {

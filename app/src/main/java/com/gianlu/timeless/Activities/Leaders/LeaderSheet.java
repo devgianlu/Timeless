@@ -7,7 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gianlu.commonutils.BottomSheet.BaseModalBottomSheet;
+import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Charting.SquarePieChart;
@@ -32,7 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
-public class LeaderSheet extends BaseModalBottomSheet<Leader, Void> {
+public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
     @NonNull
     public static LeaderSheet get() {
         return new LeaderSheet();
@@ -58,11 +59,13 @@ public class LeaderSheet extends BaseModalBottomSheet<Leader, Void> {
 
         chart.clear();
         chart.setDescription(null);
+        chart.setHoleColor(Color.argb(0, 0, 0, 0));
         chart.setDrawEntryLabels(false);
         chart.setRotationEnabled(false);
 
         Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
+        legend.setTextColor(CommonUtils.resolveAttrAsColor(requireContext(), android.R.attr.textColorPrimary));
 
         List<PieEntry> entries = new ArrayList<>();
         for (Map.Entry<String, Long> entry : leader.languages.entrySet())

@@ -61,12 +61,14 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         this.title.setText(title);
 
         chart.setDescription(null);
+        chart.setHoleColor(Color.argb(0, 0, 0, 0));
         chart.setNoDataText(context.getString(R.string.noData));
         chart.setDrawEntryLabels(false);
         chart.setRotationEnabled(false);
 
         final Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
+        legend.setTextColor(CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorPrimary));
 
         final List<PieEntry> entries = new ArrayList<>();
         for (LoggedEntity entity : entities)

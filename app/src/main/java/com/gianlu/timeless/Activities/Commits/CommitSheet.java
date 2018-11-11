@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gianlu.commonutils.BottomSheet.BaseModalBottomSheet;
+import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Models.Commit;
@@ -20,7 +20,7 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
-public class CommitSheet extends BaseModalBottomSheet<Commit, Void> {
+public class CommitSheet extends ThemedModalBottomSheet<Commit, Void> {
     @NonNull
     public static CommitSheet get() {
         return new CommitSheet();

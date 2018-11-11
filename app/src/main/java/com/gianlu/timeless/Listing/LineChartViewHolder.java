@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
@@ -55,7 +56,11 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         chart.setDescription(null);
         chart.setTouchEnabled(false);
 
+        int textColor = CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorPrimary);
+        chart.getLegend().setTextColor(textColor);
+
         XAxis xAxis = chart.getXAxis();
+        xAxis.setTextColor(textColor);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             private final SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
@@ -71,6 +76,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         chart.getAxisRight().setEnabled(false);
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setEnabled(true);
+        leftAxis.setTextColor(textColor);
         leftAxis.setAxisMinimum(0f);
         leftAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
@@ -89,7 +95,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
                     int color = ContextCompat.getColor(context, colors.getColor(i));
                     i++;
 
-                    set = new LineDataSet(new ArrayList<Entry>(), branch.name);
+                    set = new LineDataSet(new ArrayList<>(), branch.name);
                     set.setDrawValues(false);
                     set.setDrawCircles(true);
                     set.setCircleColor(color);
@@ -104,7 +110,6 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
                 }
 
                 set.addEntry(new Entry(set.getEntryCount() + 1, branch.total_seconds));
-                if (set.getEntryCount() > 1) set.setDrawCircles(false);
             }
         }
 

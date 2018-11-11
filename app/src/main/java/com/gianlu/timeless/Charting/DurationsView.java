@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.FontsManager;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Models.Duration;
@@ -42,20 +43,22 @@ public class DurationsView extends LinearLayout {
         super(context, attrs, defStyleAttr);
         setOrientation(VERTICAL);
 
+        int primaryText = CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorPrimary);
+
         titleTextPaint = new Paint();
-        titleTextPaint.setColor(Color.BLACK);
+        titleTextPaint.setColor(primaryText);
         titleTextPaint.setAlpha(64);
         titleTextPaint.setAntiAlias(true);
         FontsManager.set(context, titleTextPaint, FontsManager.ROBOTO_MEDIUM);
         titleTextPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 40, context.getResources().getDisplayMetrics()));
 
         textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
+        textPaint.setColor(primaryText);
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, context.getResources().getDisplayMetrics()));
 
         gridPaint = new Paint();
-        gridPaint.setColor(Color.GRAY);
+        gridPaint.setColor(CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorSecondary));
     }
 
     public void setDurations(Durations durations) {
@@ -128,7 +131,7 @@ public class DurationsView extends LinearLayout {
             else
                 mPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
 
-            hiddenSince = isToday ? (System.currentTimeMillis() - cal.getTimeInMillis()) / 1000 : -1;
+            hiddenSince = isToday ? (System.currentTimeMillis() - cal.getTimeInMillis()) / 1000f : -1;
         }
 
         @Override
@@ -138,7 +141,7 @@ public class DurationsView extends LinearLayout {
 
         private void calcInternalPadding() {
             textPaint.getTextBounds("24", 0, 2, textBounds);
-            mInternalPadding = textBounds.width() / 2;
+            mInternalPadding = textBounds.width() / 2f;
         }
 
         private void adjustTextSize(Canvas canvas) {
@@ -183,7 +186,7 @@ public class DurationsView extends LinearLayout {
                 textPaint.getTextBounds(hour, 0, hour.length(), textBounds);
                 canvas.drawLine(pos, mPadding, pos, bottomPadding, gridPaint);
                 if (i % 2 == 0)
-                    canvas.drawText(hour, pos - (textBounds.width() / 2), canvas.getHeight() - mPadding, textPaint);
+                    canvas.drawText(hour, pos - (textBounds.width() / 2f), canvas.getHeight() - mPadding, textPaint);
             }
 
             if (hiddenSince != -1)
@@ -193,7 +196,7 @@ public class DurationsView extends LinearLayout {
 
             adjustTitleTextSize(canvas);
             titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
-            canvas.drawText(project, (canvas.getWidth() - titleTextBounds.width()) / 2, ((canvas.getHeight() + titleTextBounds.height()) / 2) - textBounds.height() - 5, titleTextPaint);
+            canvas.drawText(project, (canvas.getWidth() - titleTextBounds.width()) / 2f, ((canvas.getHeight() + titleTextBounds.height()) / 2) - textBounds.height() - 5, titleTextPaint);
 
             boolean drawn = false;
             if (data.length != 0) {
@@ -209,12 +212,7 @@ public class DurationsView extends LinearLayout {
             }
 
             if (!drawn) {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        DurationsView.this.removeView(ChartView.this);
-                    }
-                });
+                post(() -> DurationsView.this.removeView(ChartView.this));
             }
         }
     }

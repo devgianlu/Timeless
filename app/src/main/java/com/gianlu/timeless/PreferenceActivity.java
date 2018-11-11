@@ -7,7 +7,7 @@ import com.gianlu.commonutils.Preferences.BasePreferenceFragment;
 import com.gianlu.commonutils.Preferences.MaterialAboutPreferenceItem;
 import com.yarolegovich.mp.MaterialCheckboxPreference;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -17,7 +17,8 @@ public class PreferenceActivity extends BasePreferenceActivity {
     @NonNull
     @Override
     protected List<MaterialAboutPreferenceItem> getPreferencesItems() {
-        return Collections.singletonList(new MaterialAboutPreferenceItem(R.string.network, R.drawable.baseline_wifi_24, NetworkFragment.class));
+        return Arrays.asList(new MaterialAboutPreferenceItem(R.string.general, R.drawable.baseline_settings_24, GeneralFragment.class),
+                new MaterialAboutPreferenceItem(R.string.network, R.drawable.baseline_wifi_24, NetworkFragment.class));
     }
 
     @Override
@@ -39,6 +40,25 @@ public class PreferenceActivity extends BasePreferenceActivity {
     @Override
     protected boolean disablePayPalOnGooglePlay() {
         return false;
+    }
+
+    public static class GeneralFragment extends BasePreferenceFragment {
+
+        @Override
+        protected void buildPreferences(@NonNull Context context) {
+            MaterialCheckboxPreference nightMode = new MaterialCheckboxPreference.Builder(context)
+                    .defaultValue(PK.NIGHT_MODE.fallback())
+                    .key(PK.NIGHT_MODE.key())
+                    .build();
+            nightMode.setTitle(R.string.prefs_nightMode);
+            nightMode.setSummary(R.string.prefs_nightMode_summary);
+            addPreference(nightMode);
+        }
+
+        @Override
+        public int getTitleRes() {
+            return R.string.general;
+        }
     }
 
     public static class NetworkFragment extends BasePreferenceFragment {
