@@ -140,7 +140,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
                         start.get(Calendar.DAY_OF_MONTH));
 
                 dialog.setTitle(getString(R.string.selectStartDate));
-                dialog.show(getFragmentManager(), "START");
+                dialog.show(getSupportFragmentManager(), "START");
                 break;
         }
 
@@ -164,7 +164,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
                     end.get(Calendar.DAY_OF_MONTH));
 
             dialog.setTitle(getString(R.string.selectEndDate));
-            dialog.show(getFragmentManager(), "END");
+            dialog.show(getSupportFragmentManager(), "END");
             return;
         }
 

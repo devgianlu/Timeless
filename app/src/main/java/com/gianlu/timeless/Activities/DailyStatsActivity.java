@@ -73,7 +73,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 DatePickerDialog.newInstance(this,
                         now.get(Calendar.YEAR),
                         now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)).show(getFragmentManager(), null);
+                        now.get(Calendar.DAY_OF_MONTH)).show(getSupportFragmentManager(), null);
                 break;
         }
 

@@ -28,12 +28,13 @@ import com.gianlu.timeless.PK;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.core.builder.api.ClientAuthenticationType;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.github.scribejava.core.oauth2.clientauthentication.ClientAuthentication;
+import com.github.scribejava.core.oauth2.clientauthentication.RequestBodyAuthenticationScheme;
 import com.github.scribejava.httpclient.okhttp.OkHttpHttpClient;
 
 import org.json.JSONException;
@@ -438,8 +439,8 @@ public class WakaTime {
 
     private static class WakatimeApi extends DefaultApi20 {
         @Override
-        public ClientAuthenticationType getClientAuthenticationType() {
-            return ClientAuthenticationType.REQUEST_BODY;
+        public ClientAuthentication getClientAuthentication() {
+            return RequestBodyAuthenticationScheme.instance();
         }
 
         @Override

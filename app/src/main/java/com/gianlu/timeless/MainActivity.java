@@ -5,10 +5,10 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Drawer.BaseDrawerItem;
 import com.gianlu.commonutils.Drawer.DrawerManager;
+import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.CommitsActivity;
 import com.gianlu.timeless.Activities.DailyStatsActivity;
@@ -25,7 +25,6 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends ActivityWithDialog implements DrawerManager.MenuDrawerListener {
@@ -65,7 +64,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PRIVATE_LEADERBOARDS, R.drawable.baseline_vpn_lock_24, getString(R.string.privateLeaderboards)))
                 .addMenuItemSeparator()
                 .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.baseline_settings_24, getString(R.string.preferences)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.baseline_report_problem_24, getString(R.string.support))).build(this, (DrawerLayout) findViewById(R.id.main_drawer), toolbar);
+                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.baseline_report_problem_24, getString(R.string.support))).build(this, findViewById(R.id.main_drawer), toolbar);
 
         drawerManager.setActiveItem(DrawerConst.HOME);
 
@@ -134,7 +133,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 startActivity(new Intent(MainActivity.this, PreferenceActivity.class));
                 return false;
             case DrawerConst.SUPPORT:
-                CommonUtils.sendEmail(MainActivity.this, null);
+                Logging.sendEmail(MainActivity.this, null);
                 return true;
             default:
                 return true;

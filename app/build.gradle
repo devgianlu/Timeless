@@ -26,13 +26,18 @@ android {
             dimension 'main'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     api project(':CommonUtils')
-    api 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-    api 'com.wdullaer:materialdatetimepicker:3.6.0'
+    api 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
+    api 'com.wdullaer:materialdatetimepicker:4.0.1'
     api 'com.squareup.okhttp3:okhttp:3.11.0'
-    api 'com.github.scribejava:scribejava-core:5.5.0'
-    api 'com.github.scribejava:scribejava-httpclient-okhttp:5.5.0'
+    api 'com.github.scribejava:scribejava-core:6.0.0'
+    api 'com.github.scribejava:scribejava-httpclient-okhttp:6.0.0'
 }
