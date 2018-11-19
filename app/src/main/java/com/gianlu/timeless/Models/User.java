@@ -33,6 +33,7 @@ public class User implements Serializable, BaseDrawerProfile {
         return website == null || website.isEmpty() ? null : website.trim();
     }
 
+    @NonNull
     public String getDisplayName() {
         if (full_name != null && !full_name.isEmpty()) {
             return full_name;
@@ -47,32 +48,7 @@ public class User implements Serializable, BaseDrawerProfile {
 
     @NonNull
     @Override
-    public String getInitials(@NonNull Context context) {
-        if (username == null && email == null && full_name == null)
-            return "??";
-
-        if (full_name != null) {
-            StringBuilder letters = new StringBuilder();
-            boolean getNext = false;
-            for (int i = 0; i < full_name.length(); i++) {
-                if (i == 0 || getNext) {
-                    letters.append(full_name.charAt(i));
-                    getNext = false;
-                } else if (full_name.charAt(i) == ' ') {
-                    getNext = true;
-                }
-            }
-            return letters.toString();
-        } else if (username != null) {
-            return username.substring(0, 2);
-        } else {
-            return email.substring(0, 2);
-        }
-    }
-
-    @NonNull
-    @Override
-    public String getProfileName(@NonNull Context context) {
+    public String getPrimaryText(@NonNull Context context) {
         return getDisplayName();
     }
 

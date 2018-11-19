@@ -1,8 +1,6 @@
 package com.gianlu.timeless.Activities.Leaders;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -64,16 +62,11 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
 
         if (me != null && Objects.equals(leader.getItem().user.id, me.id)) {
             holder.setIsRecyclable(false);
-            holder.itemView.setBackgroundResource(R.color.colorAccent_shadow);
+            holder.itemView.setBackgroundResource(R.color.colorAccent_translucent);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @SuppressWarnings("deprecation")
-            @SuppressLint("InflateParams")
-            @Override
-            public void onClick(View v) {
-                if (listener != null) listener.onLeaderSelected(leader.getItem());
-            }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onLeaderSelected(leader.getItem());
         });
     }
 

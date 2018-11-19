@@ -15,7 +15,7 @@ import com.gianlu.timeless.Activities.DailyStatsActivity;
 import com.gianlu.timeless.Activities.LeadersActivity;
 import com.gianlu.timeless.Activities.PrivateLeaderboardsActivity;
 import com.gianlu.timeless.Activities.ProjectsActivity;
-import com.gianlu.timeless.Main.DrawerConst;
+import com.gianlu.timeless.Main.DrawerItem;
 import com.gianlu.timeless.Main.MainFragment;
 import com.gianlu.timeless.Main.PagerAdapter;
 import com.gianlu.timeless.Models.User;
@@ -27,8 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-public class MainActivity extends ActivityWithDialog implements DrawerManager.MenuDrawerListener {
-    private DrawerManager<User> drawerManager;
+public class MainActivity extends ActivityWithDialog implements DrawerManager.MenuDrawerListener<DrawerItem> {
+    private DrawerManager<User, DrawerItem> drawerManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,26 +47,23 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
             return;
         }
 
-        drawerManager = new DrawerManager.Config<User>(this, R.drawable.drawer_background)
-                .singleProfile(user, new DrawerManager.OnAction() {
-                    @Override
-                    public void drawerAction() {
-                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("firstRun", true).apply();
-                        startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        finish();
-                    }
+        drawerManager = new DrawerManager.Config<User, DrawerItem>(this)
+                .singleProfile(user, () -> {
+                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("firstRun", true).apply();
+                    startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    finish();
                 })
-                .addMenuItem(new BaseDrawerItem(DrawerConst.HOME, R.drawable.baseline_home_24, getString(R.string.home)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.DAILY_STATS, R.drawable.baseline_view_day_24, getString(R.string.dailyStats)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.PROJECTS, R.drawable.baseline_view_module_24, getString(R.string.projects)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.COMMITS, R.drawable.baseline_linear_scale_24, getString(R.string.commits)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.PUBLIC_LEADERBOARD, R.drawable.baseline_show_chart_24, getString(R.string.publicLeaderboard)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.PRIVATE_LEADERBOARDS, R.drawable.baseline_vpn_lock_24, getString(R.string.privateLeaderboards)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.HOME, R.drawable.baseline_home_24, getString(R.string.home)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.DAILY_STATS, R.drawable.baseline_view_day_24, getString(R.string.dailyStats)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.PROJECTS, R.drawable.baseline_view_module_24, getString(R.string.projects)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.COMMITS, R.drawable.baseline_linear_scale_24, getString(R.string.commits)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.PUBLIC_LEADERBOARD, R.drawable.baseline_show_chart_24, getString(R.string.publicLeaderboard)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.PRIVATE_LEADERBOARDS, R.drawable.baseline_vpn_lock_24, getString(R.string.privateLeaderboards)))
                 .addMenuItemSeparator()
-                .addMenuItem(new BaseDrawerItem(DrawerConst.PREFERENCES, R.drawable.baseline_settings_24, getString(R.string.preferences)))
-                .addMenuItem(new BaseDrawerItem(DrawerConst.SUPPORT, R.drawable.baseline_report_problem_24, getString(R.string.support))).build(this, findViewById(R.id.main_drawer), toolbar);
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.PREFERENCES, R.drawable.baseline_settings_24, getString(R.string.preferences)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.SUPPORT, R.drawable.baseline_report_problem_24, getString(R.string.support))).build(this, findViewById(R.id.main_drawer), toolbar);
 
-        drawerManager.setActiveItem(DrawerConst.HOME);
+        drawerManager.setActiveItem(DrawerItem.HOME);
 
         pager.setOffscreenPageLimit(3);
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
@@ -110,29 +107,29 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
     }
 
     @Override
-    public boolean onDrawerMenuItemSelected(@NonNull BaseDrawerItem item) {
+    public boolean onDrawerMenuItemSelected(@NonNull BaseDrawerItem<DrawerItem> item) {
         switch (item.id) {
-            case DrawerConst.HOME:
+            case HOME:
                 return true;
-            case DrawerConst.DAILY_STATS:
+            case DAILY_STATS:
                 startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
                 return false;
-            case DrawerConst.COMMITS:
+            case COMMITS:
                 CommitsActivity.startActivity(this, null);
                 return false;
-            case DrawerConst.PROJECTS:
+            case PROJECTS:
                 startActivity(new Intent(MainActivity.this, ProjectsActivity.class));
                 return false;
-            case DrawerConst.PRIVATE_LEADERBOARDS:
+            case PRIVATE_LEADERBOARDS:
                 startActivity(new Intent(MainActivity.this, PrivateLeaderboardsActivity.class));
                 return false;
-            case DrawerConst.PUBLIC_LEADERBOARD:
+            case PUBLIC_LEADERBOARD:
                 LeadersActivity.startActivity(this);
                 return false;
-            case DrawerConst.PREFERENCES:
+            case PREFERENCES:
                 startActivity(new Intent(MainActivity.this, PreferenceActivity.class));
                 return false;
-            case DrawerConst.SUPPORT:
+            case SUPPORT:
                 Logging.sendEmail(MainActivity.this, null);
                 return true;
             default:
