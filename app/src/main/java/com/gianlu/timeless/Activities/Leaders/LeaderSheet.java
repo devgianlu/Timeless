@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
@@ -16,12 +15,9 @@ import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -75,12 +71,9 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
         set.setValueTextSize(15);
         set.setSliceSpace(0);
         set.setValueTextColor(ContextCompat.getColor(parent.getContext(), android.R.color.white));
-        set.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                if (value < 10) return "";
-                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
-            }
+        set.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            if (value < 10) return "";
+            else return String.format(Locale.getDefault(), "%.2f", value) + "%";
         });
         set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), parent.getContext());
         chart.setData(new PieData(set));
@@ -102,12 +95,7 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
 
         action.setImageResource(R.drawable.baseline_web_24);
         action.setColorFilter(Color.WHITE);
-        action.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(leader.user.getWebsite())));
-            }
-        });
+        action.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(leader.user.getWebsite()))));
         return true;
     }
 }

@@ -24,10 +24,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,43 +76,30 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         set.setValueTextSize(15);
         set.setSliceSpace(0);
         set.setValueTextColor(ContextCompat.getColor(context, android.R.color.white));
-        set.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                if (value < 10) return "";
-                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
-            }
+        set.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            if (value < 10) return "";
+            else return String.format(Locale.getDefault(), "%.2f", value) + "%";
         });
         set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), context);
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
 
-        save.setOnClickListener(new View.OnClickListener() {
+        save.setOnClickListener(v -> listener.saveImage(chart, title));
+
+        expand.setOnClickListener(v -> CommonUtils.handleCollapseClick(expand, details, new Animation.AnimationListener() {
             @Override
-            public void onClick(View v) {
-                listener.saveImage(chart, title);
+            public void onAnimationStart(Animation animation) {
             }
-        });
 
-        expand.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                CommonUtils.handleCollapseClick(expand, details, new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        if (!CommonUtils.isExpanded(details)) deselectDetails();
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
+            public void onAnimationEnd(Animation animation) {
+                if (!CommonUtils.isExpanded(details)) deselectDetails();
             }
-        });
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        }));
 
         details.removeAllViews();
         long total_seconds = LoggedEntity.sumSeconds(entities);

@@ -2,7 +2,6 @@ package com.gianlu.timeless.Listing;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -81,12 +80,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         leftAxis.setTextColor(textColor);
         leftAxis.setEnabled(true);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return Utils.timeFormatterHours((long) value, false);
-            }
-        });
+        leftAxis.setValueFormatter((value, axis) -> Utils.timeFormatterHours((long) value, false));
 
         final Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
@@ -135,11 +129,6 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
 
         if (legendEntries.isEmpty()) chart.clear();
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.saveImage(chart, title);
-            }
-        });
+        save.setOnClickListener(v -> listener.saveImage(chart, title));
     }
 }

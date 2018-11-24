@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commits>, CommitsAdapter.Listener {
     private RecyclerViewLayout layout;
@@ -65,12 +64,9 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
             return layout;
         }
 
-        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                wakaTime.skipNextRequestCache();
-                wakaTime.getCommits(project, 1, CommitsFragment.this);
-            }
+        layout.enableSwipeRefresh(() -> {
+            wakaTime.skipNextRequestCache();
+            wakaTime.getCommits(project, 1, CommitsFragment.this);
         }, MaterialColors.getInstance().getColorsRes());
 
         wakaTime.getCommits(project, 1, this);

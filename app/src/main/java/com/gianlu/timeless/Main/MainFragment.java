@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, CardsAdapter.Listener {
     private WakaTime.Range range;
@@ -61,13 +60,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
             return layout;
         }
 
-        layout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                wakaTime.batch(MainFragment.this, true);
-            }
-        }, MaterialColors.getInstance().getColorsRes());
-
+        layout.enableSwipeRefresh(() -> wakaTime.batch(MainFragment.this, true), MaterialColors.getInstance().getColorsRes());
         wakaTime.batch(this, false);
 
         return layout;
@@ -102,12 +95,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
 
         if (getContext() == null) return;
         final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this, this);
-        ui.post(new Runnable() {
-            @Override
-            public void run() {
-                layout.loadListData(adapter);
-            }
-        });
+        ui.post(() -> layout.loadListData(adapter));
     }
 
     @Override

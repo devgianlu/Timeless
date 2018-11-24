@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -31,7 +30,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, CardsAdapter.Listener {
     private TextView currDay;
@@ -93,41 +91,30 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
 
         recyclerViewLayout = findViewById(R.id.dailyStats_recyclerViewLayout);
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        recyclerViewLayout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                updatePage(currentDate == null ? new Date() : currentDate, true);
-            }
-        }, MaterialColors.getInstance().getColorsRes());
+        recyclerViewLayout.enableSwipeRefresh(() -> updatePage(currentDate == null ? new Date() : currentDate, true), MaterialColors.getInstance().getColorsRes());
 
         ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
         ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
         currDay = findViewById(R.id.dailyStats_day);
 
-        nextDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentDate == null) return;
+        nextDay.setOnClickListener(v -> {
+            if (currentDate == null) return;
 
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(currentDate);
-                cal.add(Calendar.DATE, 1);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(currentDate);
+            cal.add(Calendar.DATE, 1);
 
-                updatePage(cal.getTime(), false);
-            }
+            updatePage(cal.getTime(), false);
         });
 
-        prevDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentDate == null) return;
+        prevDay.setOnClickListener(v -> {
+            if (currentDate == null) return;
 
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(currentDate);
-                cal.add(Calendar.DATE, -1);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(currentDate);
+            cal.add(Calendar.DATE, -1);
 
-                updatePage(cal.getTime(), false);
-            }
+            updatePage(cal.getTime(), false);
         });
 
         updatePage(new Date(), false);
@@ -163,12 +150,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)
                 .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems), this, this);
 
-        ui.post(new Runnable() {
-            @Override
-            public void run() {
-                recyclerViewLayout.loadListData(adapter);
-            }
-        });
+        ui.post(() -> recyclerViewLayout.loadListData(adapter));
     }
 
     @Override

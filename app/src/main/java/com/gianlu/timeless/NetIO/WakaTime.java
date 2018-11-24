@@ -173,176 +173,80 @@ public class WakaTime {
     }
 
     public void getCurrentUser(final OnResult<User> listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final User user = requester.user();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onResult(user);
-                        }
-                    });
-                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
+        executorService.execute(() -> {
+            try {
+                final User user = requester.user();
+                handler.post(() -> listener.onResult(user));
+            } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                handler.post(() -> listener.onException(ex));
             }
         });
     }
 
     public void getLeaders(@Nullable final String language, final int page, final OnResult<LeadersWithMe> listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final LeadersWithMe leaders = requester.leaders(language, page);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onResult(leaders);
-                        }
-                    });
-                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
+        executorService.execute(() -> {
+            try {
+                final LeadersWithMe leaders = requester.leaders(language, page);
+                handler.post(() -> listener.onResult(leaders));
+            } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                handler.post(() -> listener.onException(ex));
             }
         });
     }
 
     public void getLeaders(@NonNull final String id, @Nullable final String language, final int page, final OnResult<Leaders> listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Leaders leaders = requester.leaders(id, language, page);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onResult(leaders);
-                        }
-                    });
-                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
+        executorService.execute(() -> {
+            try {
+                final Leaders leaders = requester.leaders(id, language, page);
+                handler.post(() -> listener.onResult(leaders));
+            } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                handler.post(() -> listener.onException(ex));
             }
         });
     }
 
     public void getProjects(final OnResult<Projects> listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Projects projects = requester.projects();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onResult(projects);
-                        }
-                    });
-                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
+        executorService.execute(() -> {
+            try {
+                final Projects projects = requester.projects();
+                handler.post(() -> listener.onResult(projects));
+            } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                handler.post(() -> listener.onException(ex));
             }
         });
     }
 
     public void getCommits(final Project project, final int page, final OnResult<Commits> listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Commits commits = requester.commits(project, page);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onResult(commits);
-                        }
-                    });
-                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
+        executorService.execute(() -> {
+            try {
+                final Commits commits = requester.commits(project, page);
+                handler.post(() -> listener.onResult(commits));
+            } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                handler.post(() -> listener.onException(ex));
             }
         });
     }
 
     public void getRangeSummary(final Pair<Date, Date> startAndEnd, final OnSummary listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onSummary(summaries);
-                        }
-                    });
-                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                } catch (final WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onWakaTimeError(ex);
-                        }
-                    });
-                }
+        executorService.execute(() -> {
+            try {
+                final Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
+                handler.post(() -> listener.onSummary(summaries));
+            } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException ex) {
+                handler.post(() -> listener.onException(ex));
+            } catch (final WakaTimeException ex) {
+                handler.post(() -> listener.onWakaTimeError(ex));
             }
         });
     }
 
     public void getPrivateLeaderboards(final int page, final OnResult<Leaderboards> listener) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final Leaderboards leaderboards = requester.privateLeaderboards(page);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onResult(leaderboards);
-                        }
-                    });
-                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onException(ex);
-                        }
-                    });
-                }
+        executorService.execute(() -> {
+            try {
+                final Leaderboards leaderboards = requester.privateLeaderboards(page);
+                handler.post(() -> listener.onResult(leaderboards));
+            } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                handler.post(() -> listener.onException(ex));
             }
         });
     }
@@ -486,33 +390,20 @@ public class WakaTime {
         }
 
         public void endFlow(@NonNull final String data, @NonNull final InitializationListener listener) {
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        OAuth2Authorization auth = service.extractAuthorization(data);
-                        if (auth.getCode() == null)
-                            throw new ShouldGetAccessToken(new NullPointerException("Failed getting authorization code!"));
-                        token = service.getAccessToken(auth.getCode());
+            executorService.execute(() -> {
+                try {
+                    OAuth2Authorization auth = service.extractAuthorization(data);
+                    if (auth.getCode() == null)
+                        throw new ShouldGetAccessToken(new NullPointerException("Failed getting authorization code!"));
+                    token = service.getAccessToken(auth.getCode());
 
-                        final WakaTime w = build();
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onWakatimeInitialized(w);
-                            }
-                        });
-                    } catch (IOException | ShouldGetAccessToken | InterruptedException | ExecutionException ex) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(ex);
-                            }
-                        });
+                    final WakaTime w = build();
+                    handler.post(() -> listener.onWakatimeInitialized(w));
+                } catch (IOException | ShouldGetAccessToken | InterruptedException | ExecutionException ex) {
+                    handler.post(() -> listener.onException(ex));
 
-                        if (ex instanceof ShouldGetAccessToken)
-                            ((ShouldGetAccessToken) ex).resolve(context);
-                    }
+                    if (ex instanceof ShouldGetAccessToken)
+                        ((ShouldGetAccessToken) ex).resolve(context);
                 }
             });
         }
@@ -529,32 +420,19 @@ public class WakaTime {
                 return;
             }
 
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        token = service.refreshAccessToken(storedToken);
-                        if (!token.getScope().contains("read_private_leaderboards"))
-                            throw new ShouldGetAccessToken(new IllegalStateException("Missing `read_private_leaderboards` scope"));
+            executorService.execute(() -> {
+                try {
+                    token = service.refreshAccessToken(storedToken);
+                    if (!token.getScope().contains("read_private_leaderboards"))
+                        throw new ShouldGetAccessToken(new IllegalStateException("Missing `read_private_leaderboards` scope"));
 
-                        final WakaTime w = build();
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onWakatimeInitialized(w);
-                            }
-                        });
-                    } catch (IOException | ShouldGetAccessToken | ExecutionException | InterruptedException | OAuth2AccessTokenErrorResponse ex) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onException(ex);
-                            }
-                        });
+                    final WakaTime w = build();
+                    handler.post(() -> listener.onWakatimeInitialized(w));
+                } catch (IOException | ShouldGetAccessToken | ExecutionException | InterruptedException | OAuth2AccessTokenErrorResponse ex) {
+                    handler.post(() -> listener.onException(ex));
 
-                        if (ex instanceof ShouldGetAccessToken)
-                            ((ShouldGetAccessToken) ex).resolve(context);
-                    }
+                    if (ex instanceof ShouldGetAccessToken)
+                        ((ShouldGetAccessToken) ex).resolve(context);
                 }
             });
         }
@@ -610,12 +488,7 @@ public class WakaTime {
 
                 if (ex instanceof RuntimeException) Crashlytics.logException(ex);
 
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        stuff.somethingWentWrong(ex);
-                    }
-                });
+                handler.post(() -> stuff.somethingWentWrong(ex));
             }
         }
     }

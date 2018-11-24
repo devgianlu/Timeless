@@ -1,7 +1,6 @@
 package com.gianlu.timeless.Activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -34,7 +33,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class LeadersActivity extends ActivityWithDialog implements LeadersAdapter.Listener {
     private LeadersAdapter adapter;
@@ -71,12 +69,9 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
         recyclerViewLayout = findViewById(R.id.leaders_recyclerViewLayout);
         recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        recyclerViewLayout.enableSwipeRefresh(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                wakaTime.skipNextRequestCache();
-                gatherAndUpdate(currLang);
-            }
+        recyclerViewLayout.enableSwipeRefresh(() -> {
+            wakaTime.skipNextRequestCache();
+            gatherAndUpdate(currLang);
         }, MaterialColors.getInstance().getColorsRes());
 
         currFilter = findViewById(R.id.leaders_rankingText);
@@ -192,19 +187,11 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                 final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, summaries.globalSummary.languages);
                 AlertDialog.Builder builder = new AlertDialog.Builder(LeadersActivity.this);
                 builder.setTitle(R.string.filterByLanguage)
-                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                gatherAndUpdate(adapter.getItem(which).name);
-                                ThisApplication.sendAnalytics(Utils.ACTION_FILTER_LEADERS);
-                            }
+                        .setAdapter(adapter, (dialog, which) -> {
+                            gatherAndUpdate(adapter.getItem(which).name);
+                            ThisApplication.sendAnalytics(Utils.ACTION_FILTER_LEADERS);
                         })
-                        .setNeutralButton(R.string.unsetFilter, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                gatherAndUpdate(null);
-                            }
-                        })
+                        .setNeutralButton(R.string.unsetFilter, (dialog, which) -> gatherAndUpdate(null))
                         .setNegativeButton(android.R.string.cancel, null);
 
                 dismissDialog();

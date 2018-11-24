@@ -36,7 +36,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         return new ViewHolder(inflater.inflate(R.layout.item_logged_entity, parent, false));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final LoggedEntity file = files.get(position);

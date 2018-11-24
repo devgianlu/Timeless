@@ -101,7 +101,7 @@ public class SaveChartUtils {
         rectPaint.setColor(ContextCompat.getColor(view.getContext(), R.color.colorPrimaryDark));
 
         canvas.drawRect(0, view.getHeight() + 10, canvas.getWidth(), canvas.getHeight(), rectPaint);
-        canvas.drawText(text, (canvas.getWidth() - textBounds.width()) / 2, view.getHeight() + ((canvas.getHeight() - view.getHeight() - 10 + textBounds.height()) / 2) + 6, textPaint);
+        canvas.drawText(text, (canvas.getWidth() - textBounds.width()) / 2f, view.getHeight() + ((canvas.getHeight() - view.getHeight() - 10 + textBounds.height()) / 2) + 6, textPaint);
 
         return bitmap;
     }

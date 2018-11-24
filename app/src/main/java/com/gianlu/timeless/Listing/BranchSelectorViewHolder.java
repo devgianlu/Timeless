@@ -2,9 +2,7 @@ package com.gianlu.timeless.Listing;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
@@ -40,12 +38,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         else selectedBranches = new ArrayList<>(config.selectedBranches);
 
         selected.setHtml(R.string.selectedBranches, CommonUtils.join(selectedBranches, ", "));
-        select.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showBranchesDialog(context, config.branches, config.listener, listener);
-            }
-        });
+        select.setOnClickListener(v -> showBranchesDialog(context, config.branches, config.listener, listener));
     }
 
     private void showBranchesDialog(@NonNull final Context context, final List<String> allBranches, final CardsAdapter.OnBranches branchesListener, CardsAdapter.Listener listener) {
@@ -55,31 +48,23 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.selectBranches)
-                .setMultiChoiceItems(allBranches.toArray(new String[0]), selectedBranchesBoolean, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        selectedBranchesBoolean[which] = isChecked;
+                .setMultiChoiceItems(allBranches.toArray(new String[0]), selectedBranchesBoolean, (dialog, which, isChecked) -> selectedBranchesBoolean[which] = isChecked)
+                .setPositiveButton(R.string.apply, (dialog, which) -> {
+                    List<String> selectedBranchesTemp = new ArrayList<>();
+                    for (int i = 0; i < selectedBranchesBoolean.length; i++)
+                        if (selectedBranchesBoolean[i])
+                            selectedBranchesTemp.add(allBranches.get(i));
+
+                    if (selectedBranchesTemp.isEmpty()) {
+                        Toaster.with(context).message(R.string.noBranchesSelected).show();
+                        return;
                     }
-                })
-                .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        List<String> selectedBranchesTemp = new ArrayList<>();
-                        for (int i = 0; i < selectedBranchesBoolean.length; i++)
-                            if (selectedBranchesBoolean[i])
-                                selectedBranchesTemp.add(allBranches.get(i));
 
-                        if (selectedBranchesTemp.isEmpty()) {
-                            Toaster.with(context).message(R.string.noBranchesSelected).show();
-                            return;
-                        }
+                    selectedBranches.clear();
+                    selectedBranches.addAll(selectedBranchesTemp);
 
-                        selectedBranches.clear();
-                        selectedBranches.addAll(selectedBranchesTemp);
-
-                        if (branchesListener != null)
-                            branchesListener.onBranchesChanged(selectedBranches);
-                    }
+                    if (branchesListener != null)
+                        branchesListener.onBranchesChanged(selectedBranches);
                 })
                 .setNegativeButton(android.R.string.cancel, null);
 

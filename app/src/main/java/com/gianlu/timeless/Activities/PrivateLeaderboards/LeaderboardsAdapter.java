@@ -1,7 +1,6 @@
 package com.gianlu.timeless.Activities.PrivateLeaderboards;
 
 import android.content.Context;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -34,11 +33,8 @@ public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Le
         holder.name.setText(l.name);
         holder.members.setText(context.getResources().getQuantityString(R.plurals.members, l.members, l.members));
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) listener.onLeaderboardSelected(l);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onLeaderboardSelected(l);
         });
     }
 

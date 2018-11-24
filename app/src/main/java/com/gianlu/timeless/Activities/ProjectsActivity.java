@@ -111,16 +111,13 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
 
     @SuppressLint("SetTextI18n")
     public void updateRangeText() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd MMM", Locale.getDefault());
-                TextView rangeTextView = findViewById(R.id.projects_rangeText);
-                if (currentRange.first.getTime() == currentRange.second.getTime())
-                    rangeTextView.setText(formatter.format(currentRange.first));
-                else
-                    rangeTextView.setText(formatter.format(currentRange.first) + " - " + formatter.format(currentRange.second));
-            }
+        runOnUiThread(() -> {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd MMM", Locale.getDefault());
+            TextView rangeTextView = findViewById(R.id.projects_rangeText);
+            if (currentRange.first.getTime() == currentRange.second.getTime())
+                rangeTextView.setText(formatter.format(currentRange.first));
+            else
+                rangeTextView.setText(formatter.format(currentRange.first) + " - " + formatter.format(currentRange.second));
         });
     }
 

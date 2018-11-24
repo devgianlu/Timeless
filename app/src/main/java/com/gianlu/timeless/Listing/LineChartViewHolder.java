@@ -2,7 +2,6 @@ package com.gianlu.timeless.Listing;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -78,12 +77,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         leftAxis.setEnabled(true);
         leftAxis.setTextColor(textColor);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return Utils.timeFormatterHours((long) value, false);
-            }
-        });
+        leftAxis.setValueFormatter((value, axis) -> Utils.timeFormatterHours((long) value, false));
 
         MaterialColors colors = MaterialColors.getShuffledInstance();
         Map<String, ILineDataSet> branchToSets = new HashMap<>(summaries.availableBranches.size());
@@ -116,11 +110,6 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         if (branchToSets.isEmpty()) chart.clear();
         else chart.setData(new LineData(new ArrayList<>(branchToSets.values())));
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.saveImage(chart, title);
-            }
-        });
+        save.setOnClickListener(v -> listener.saveImage(chart, title));
     }
 }

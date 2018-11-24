@@ -174,10 +174,10 @@ public class DurationsView extends LinearLayout {
         @Override
         protected void onDraw(Canvas canvas) {
             calcInternalPadding();
-            float secPerPixel = ((float) canvas.getWidth() - (mInternalPadding * 2)) / 86400f;
+            float secPerPixel = ((float) getWidth() - (mInternalPadding * 2)) / 86400f;
             adjustTextSize(canvas);
 
-            float bottomPadding = canvas.getHeight() - textBounds.height() - (lonely ? 10 : 5) - mPadding;
+            float bottomPadding = getHeight() - textBounds.height() - (lonely ? 10 : 5) - mPadding;
 
             for (int i = 0; i <= 24; i++) {
                 String hour = String.valueOf(i);
@@ -186,7 +186,7 @@ public class DurationsView extends LinearLayout {
                 textPaint.getTextBounds(hour, 0, hour.length(), textBounds);
                 canvas.drawLine(pos, mPadding, pos, bottomPadding, gridPaint);
                 if (i % 2 == 0)
-                    canvas.drawText(hour, pos - (textBounds.width() / 2f), canvas.getHeight() - mPadding, textPaint);
+                    canvas.drawText(hour, pos - (textBounds.width() / 2f), getHeight() - mPadding, textPaint);
             }
 
             if (hiddenSince != -1)
@@ -196,7 +196,7 @@ public class DurationsView extends LinearLayout {
 
             adjustTitleTextSize(canvas);
             titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
-            canvas.drawText(project, (canvas.getWidth() - titleTextBounds.width()) / 2f, ((canvas.getHeight() + titleTextBounds.height()) / 2) - textBounds.height() - 5, titleTextPaint);
+            canvas.drawText(project, (getWidth() - titleTextBounds.width()) / 2f, ((getHeight() + titleTextBounds.height()) / 2) - textBounds.height() - 5, titleTextPaint);
 
             boolean drawn = false;
             if (data.length != 0) {

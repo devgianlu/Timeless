@@ -73,13 +73,7 @@ public class CommitSheet extends ThemedModalBottomSheet<Commit, Void> {
     protected boolean onCustomizeAction(@NonNull FloatingActionButton action, @NonNull final Commit commit) {
         action.setImageResource(R.drawable.baseline_open_in_browser_24);
         action.setColorFilter(Color.WHITE);
-        action.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url)));
-            }
-        });
-
+        action.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(commit.html_url))));
         return true;
     }
 }
