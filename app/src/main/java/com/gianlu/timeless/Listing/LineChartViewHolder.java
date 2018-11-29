@@ -81,6 +81,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
 
         MaterialColors colors = MaterialColors.getShuffledInstance();
         Map<String, ILineDataSet> branchToSets = new HashMap<>(summaries.availableBranches.size());
+        int maxEntries = 0;
         int i = 0;
         for (Summary summary : summaries) {
             for (LoggedEntity branch : summary.branches) {
@@ -104,8 +105,12 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
                 }
 
                 set.addEntry(new Entry(set.getEntryCount() + 1, branch.total_seconds));
+                if (set.getEntryCount() > maxEntries)
+                    maxEntries = set.getEntryCount();
             }
         }
+
+        xAxis.setLabelCount(maxEntries, true);
 
         if (branchToSets.isEmpty()) chart.clear();
         else chart.setData(new LineData(new ArrayList<>(branchToSets.values())));
