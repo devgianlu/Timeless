@@ -1,5 +1,6 @@
 package com.gianlu.timeless.Activities.Leaders;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -8,8 +9,10 @@ import android.view.ViewGroup;
 
 import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.SuperTextView;
+import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.SquarePieChart;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.R;
@@ -95,7 +98,13 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
 
         action.setImageResource(R.drawable.baseline_web_24);
         action.setColorFilter(Color.WHITE);
-        action.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(leader.user.getWebsite()))));
+        action.setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(leader.user.getWebsite())));
+            } catch (ActivityNotFoundException ex) {
+                DialogUtils.showToast(getContext(), Toaster.build().message(R.string.failedLoading).ex(ex));
+            }
+        });
         return true;
     }
 }
