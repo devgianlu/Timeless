@@ -374,7 +374,7 @@ public class WakaTime {
                     .build();
             this.service = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s")
                     .apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
-                    .scope("email,read_stats,read_logged_time,read_teams,read_private_leaderboards")
+                    .scope("email,read_stats,read_logged_time,read_private_leaderboards")
                     .callback("timeless://grantActivity/")
                     .userAgent(ThisApplication.USER_AGENT)
                     .httpClient(new OkHttpHttpClient(client))
