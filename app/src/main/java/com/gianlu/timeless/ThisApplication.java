@@ -1,6 +1,5 @@
 package com.gianlu.timeless;
 
-import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
@@ -48,15 +47,12 @@ public class ThisApplication extends AnalyticsApplication {
             }
         }
 
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(PK.CACHE_ENABLED.key())) {
-                    try {
-                        WakaTime.get().cacheEnabledChanged();
-                    } catch (WakaTime.ShouldGetAccessToken ex) {
-                        ex.resolve(ThisApplication.this);
-                    }
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
+            if (key.equals(PK.CACHE_ENABLED.key())) {
+                try {
+                    WakaTime.get().cacheEnabledChanged();
+                } catch (WakaTime.ShouldGetAccessToken ex) {
+                    ex.resolve(ThisApplication.this);
                 }
             }
         });

@@ -44,12 +44,9 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finished = true;
-                if (goTo != null) startActivity(goTo);
-            }
+        new Handler().postDelayed(() -> {
+            finished = true;
+            if (goTo != null) startActivity(goTo);
         }, 1000);
 
         ConnectivityChecker.checkAsync(new ConnectivityChecker.OnCheck() {
