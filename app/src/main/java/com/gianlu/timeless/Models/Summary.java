@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class Summary {
-    private static final SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     public final LoggedEntities projects;
     public final LoggedEntities languages;
     public final LoggedEntities editors;
@@ -34,6 +33,8 @@ public class Summary {
     }
 
     public Summary(JSONObject obj) throws JSONException, ParseException {
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
         total_seconds = obj.getJSONObject("grand_total").getLong("total_seconds");
         date = parser.parse(obj.getJSONObject("range").getString("date")).getTime();
 
