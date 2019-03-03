@@ -12,6 +12,8 @@ import android.util.LruCache;
 import android.util.Pair;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
+import com.gianlu.commonutils.Lifecycle.LifecycleAwareRunnable;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.timeless.GrantActivity;
@@ -55,7 +57,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.Fragment;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -174,7 +175,7 @@ public class WakaTime {
     }
 
     public void getCurrentUser(@Nullable Activity activity, @NonNull OnResult<User> listener) {
-        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
             @Override
             public void run() {
                 try {
@@ -188,7 +189,7 @@ public class WakaTime {
     }
 
     public void getLeaders(@Nullable String language, int page, @Nullable Activity activity, @NonNull OnResult<LeadersWithMe> listener) {
-        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
             @Override
             public void run() {
                 try {
@@ -202,7 +203,7 @@ public class WakaTime {
     }
 
     public void getLeaders(@NonNull String id, @Nullable String language, int page, @Nullable Activity activity, @NonNull OnResult<Leaders> listener) {
-        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
             @Override
             public void run() {
                 try {
@@ -216,7 +217,7 @@ public class WakaTime {
     }
 
     public void getProjects(@Nullable Activity activity, @NonNull OnResult<Projects> listener) {
-        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
             @Override
             public void run() {
                 try {
@@ -230,7 +231,7 @@ public class WakaTime {
     }
 
     public void getCommits(@NonNull Project project, int page, @Nullable Activity activity, @NonNull OnResult<Commits> listener) {
-        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
             @Override
             public void run() {
                 try {
@@ -244,7 +245,7 @@ public class WakaTime {
     }
 
     public void getRangeSummary(@NonNull Pair<Date, Date> startAndEnd, @Nullable Activity activity, @NonNull OnSummary listener) {
-        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
             @Override
             public void run() {
                 try {
@@ -260,7 +261,7 @@ public class WakaTime {
     }
 
     public void getPrivateLeaderboards(int page, @Nullable Activity activity, @NonNull OnResult<Leaderboards> listener) {
-        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
             @Override
             public void run() {
                 try {
@@ -361,32 +362,6 @@ public class WakaTime {
 
         @UiThread
         void somethingWentWrong(@NonNull Exception ex);
-    }
-
-    public static class LifecycleAwareHandler {
-        private final Handler handler;
-
-        LifecycleAwareHandler(@NonNull Handler handler) {
-            this.handler = handler;
-        }
-
-        static boolean canPost(@Nullable Object ctx) {
-            if (ctx instanceof Activity) {
-                return !((Activity) ctx).isDestroyed() && !((Activity) ctx).isFinishing();
-            } else if (ctx instanceof Fragment) {
-                return canPost(((Fragment) ctx).getActivity());
-            } else {
-                return true;
-            }
-        }
-
-        private void doPost(Runnable r) {
-            handler.post(r);
-        }
-
-        public void post(Object ctx, Runnable r) {
-            if (canPost(ctx)) doPost(r);
-        }
     }
 
     private static class WakatimeApi extends DefaultApi20 {
@@ -513,18 +488,6 @@ public class WakaTime {
         CachedResponse(JSONObject response) {
             this.response = response;
             this.timestamp = System.currentTimeMillis();
-        }
-    }
-
-    private abstract class LifecycleAwareRunnable implements Runnable {
-        private final Object ctx;
-
-        LifecycleAwareRunnable(@NonNull Object ctx) {
-            this.ctx = ctx;
-        }
-
-        protected void post(@NonNull Runnable r) {
-            handler.post(ctx, r);
         }
     }
 

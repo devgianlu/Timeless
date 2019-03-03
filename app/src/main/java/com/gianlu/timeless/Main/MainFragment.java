@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Charting.SaveChartFragment;
@@ -72,7 +73,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     }
 
     @Override
-    public void request(@NonNull WakaTime.Requester requester, @NonNull WakaTime.LifecycleAwareHandler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(range.getStartAndEnd(), null, null);
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()

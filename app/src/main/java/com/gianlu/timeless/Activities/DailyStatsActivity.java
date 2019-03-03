@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.commonutils.Toaster;
@@ -137,7 +138,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     }
 
     @Override
-    public void request(@NonNull WakaTime.Requester requester, @NonNull WakaTime.LifecycleAwareHandler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(currentDate, currentDate, null, null);
         Durations durations = requester.durations(currentDate, null, null);
 

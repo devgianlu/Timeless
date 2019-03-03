@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Activities.CommitsActivity;
@@ -115,7 +116,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     }
 
     @Override
-    public void request(@NonNull WakaTime.Requester requester, @NonNull WakaTime.LifecycleAwareHandler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(start, end, project, currentBranches);
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList();
