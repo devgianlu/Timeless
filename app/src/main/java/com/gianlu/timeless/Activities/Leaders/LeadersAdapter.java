@@ -29,7 +29,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     private final WakaTime wakaTime;
 
     private LeadersAdapter(Context context, @NonNull WakaTime wakaTime, @NonNull Leaders leaders, @Nullable User me, @Nullable String id, @Nullable String language, Listener listener) {
-        super(new Config<Leader>(context).items(leaders).maxPages(leaders.maxPages).noSeparators());
+        super(context, new Config<Leader>().items(leaders).maxPages(leaders.maxPages).noSeparators());
         this.id = id;
         this.language = language;
         this.listener = listener;
@@ -77,9 +77,9 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     }
 
     @Override
-    protected void moreContent(int page, @NonNull final ContentProvider<Leader> provider) {
+    protected void moreContent(int page, @NonNull ContentProvider<Leader> provider) {
         if (id == null) {
-            wakaTime.getLeaders(language, page, new WakaTime.OnResult<LeadersWithMe>() {
+            wakaTime.getLeaders(language, page, null, new WakaTime.OnResult<LeadersWithMe>() {
                 @Override
                 public void onResult(@NonNull LeadersWithMe leaders) {
                     maxPages(leaders.maxPages);
@@ -92,7 +92,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
                 }
             });
         } else {
-            wakaTime.getLeaders(id, language, page, new WakaTime.OnResult<Leaders>() {
+            wakaTime.getLeaders(id, language, page, null, new WakaTime.OnResult<Leaders>() {
                 @Override
                 public void onResult(@NonNull Leaders leaders) {
                     maxPages(leaders.maxPages);

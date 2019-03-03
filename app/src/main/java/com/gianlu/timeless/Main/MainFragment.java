@@ -2,7 +2,6 @@ package com.gianlu.timeless.Main;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,8 +59,8 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
             return layout;
         }
 
-        layout.enableSwipeRefresh(() -> wakaTime.batch(MainFragment.this, true), MaterialColors.getInstance().getColorsRes());
-        wakaTime.batch(this, false);
+        layout.enableSwipeRefresh(() -> wakaTime.batch(null, MainFragment.this, true), MaterialColors.getInstance().getColorsRes());
+        wakaTime.batch(null, this, false);
 
         return layout;
     }
@@ -73,7 +72,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     }
 
     @Override
-    public void request(@NonNull WakaTime.Requester requester, @NonNull Handler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull WakaTime.LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(range.getStartAndEnd(), null, null);
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
@@ -95,7 +94,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
 
         if (getContext() == null) return;
         final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this, this);
-        ui.post(() -> layout.loadListData(adapter));
+        ui.post(this, () -> layout.loadListData(adapter));
     }
 
     @Override

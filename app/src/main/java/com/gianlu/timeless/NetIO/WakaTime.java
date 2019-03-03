@@ -1,6 +1,7 @@
 package com.gianlu.timeless.NetIO;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,6 @@ import android.os.Looper;
 import android.util.LruCache;
 import android.util.Pair;
 
-import com.crashlytics.android.Crashlytics;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Preferences.Prefs;
@@ -55,6 +55,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.Fragment;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -73,7 +74,7 @@ public class WakaTime {
     }
 
     private final OkHttpClient client;
-    private final Handler handler;
+    private final LifecycleAwareHandler handler;
     private final LruCache<HttpUrl, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
     private final Requester requester;
     private final ExecutorService executorService;
@@ -89,7 +90,7 @@ public class WakaTime {
         Prefs.putString(PK.TOKEN, builder.token.getRefreshToken());
 
         this.client = builder.client;
-        this.handler = builder.handler;
+        this.handler = new LifecycleAwareHandler(builder.handler);
         this.executorService = builder.executorService;
         this.token = builder.token;
         this.service = builder.service;
@@ -168,85 +169,106 @@ public class WakaTime {
         }
     }
 
-    public void batch(BatchStuff listener, boolean skipCache) {
-        executorService.execute(new BatchRequest(listener, skipCache));
+    public void batch(@Nullable Activity activity, @NonNull BatchStuff listener, boolean skipCache) {
+        executorService.execute(new BatchRequest(activity == null ? listener : activity, listener, skipCache));
     }
 
-    public void getCurrentUser(final OnResult<User> listener) {
-        executorService.execute(() -> {
-            try {
-                final User user = requester.user();
-                handler.post(() -> listener.onResult(user));
-            } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                handler.post(() -> listener.onException(ex));
+    public void getCurrentUser(@Nullable Activity activity, @NonNull OnResult<User> listener) {
+        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    final User user = requester.user();
+                    post(() -> listener.onResult(user));
+                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    post(() -> listener.onException(ex));
+                }
             }
         });
     }
 
-    public void getLeaders(@Nullable final String language, final int page, final OnResult<LeadersWithMe> listener) {
-        executorService.execute(() -> {
-            try {
-                final LeadersWithMe leaders = requester.leaders(language, page);
-                handler.post(() -> listener.onResult(leaders));
-            } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                handler.post(() -> listener.onException(ex));
+    public void getLeaders(@Nullable String language, int page, @Nullable Activity activity, @NonNull OnResult<LeadersWithMe> listener) {
+        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    final LeadersWithMe leaders = requester.leaders(language, page);
+                    post(() -> listener.onResult(leaders));
+                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    post(() -> listener.onException(ex));
+                }
             }
         });
     }
 
-    public void getLeaders(@NonNull final String id, @Nullable final String language, final int page, final OnResult<Leaders> listener) {
-        executorService.execute(() -> {
-            try {
-                final Leaders leaders = requester.leaders(id, language, page);
-                handler.post(() -> listener.onResult(leaders));
-            } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                handler.post(() -> listener.onException(ex));
+    public void getLeaders(@NonNull String id, @Nullable String language, int page, @Nullable Activity activity, @NonNull OnResult<Leaders> listener) {
+        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    final Leaders leaders = requester.leaders(id, language, page);
+                    post(() -> listener.onResult(leaders));
+                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    post(() -> listener.onException(ex));
+                }
             }
         });
     }
 
-    public void getProjects(final OnResult<Projects> listener) {
-        executorService.execute(() -> {
-            try {
-                final Projects projects = requester.projects();
-                handler.post(() -> listener.onResult(projects));
-            } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                handler.post(() -> listener.onException(ex));
+    public void getProjects(@Nullable Activity activity, @NonNull OnResult<Projects> listener) {
+        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    final Projects projects = requester.projects();
+                    post(() -> listener.onResult(projects));
+                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    post(() -> listener.onException(ex));
+                }
             }
         });
     }
 
-    public void getCommits(final Project project, final int page, final OnResult<Commits> listener) {
-        executorService.execute(() -> {
-            try {
-                final Commits commits = requester.commits(project, page);
-                handler.post(() -> listener.onResult(commits));
-            } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
-                handler.post(() -> listener.onException(ex));
+    public void getCommits(@NonNull Project project, int page, @Nullable Activity activity, @NonNull OnResult<Commits> listener) {
+        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    final Commits commits = requester.commits(project, page);
+                    post(() -> listener.onResult(commits));
+                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    post(() -> listener.onException(ex));
+                }
             }
         });
     }
 
-    public void getRangeSummary(final Pair<Date, Date> startAndEnd, final OnSummary listener) {
-        executorService.execute(() -> {
-            try {
-                final Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
-                handler.post(() -> listener.onSummary(summaries));
-            } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException ex) {
-                handler.post(() -> listener.onException(ex));
-            } catch (final WakaTimeException ex) {
-                handler.post(() -> listener.onWakaTimeError(ex));
+    public void getRangeSummary(@NonNull Pair<Date, Date> startAndEnd, @Nullable Activity activity, @NonNull OnSummary listener) {
+        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    final Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
+                    post(() -> listener.onSummary(summaries));
+                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException ex) {
+                    post(() -> listener.onException(ex));
+                } catch (WakaTimeException ex) {
+                    post(() -> listener.onWakaTimeError(ex));
+                }
             }
         });
     }
 
-    public void getPrivateLeaderboards(final int page, final OnResult<Leaderboards> listener) {
-        executorService.execute(() -> {
-            try {
-                final Leaderboards leaderboards = requester.privateLeaderboards(page);
-                handler.post(() -> listener.onResult(leaderboards));
-            } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
-                handler.post(() -> listener.onException(ex));
+    public void getPrivateLeaderboards(int page, @Nullable Activity activity, @NonNull OnResult<Leaderboards> listener) {
+        executorService.execute(new LifecycleAwareRunnable(activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    final Leaderboards leaderboards = requester.privateLeaderboards(page);
+                    post(() -> listener.onResult(leaderboards));
+                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    post(() -> listener.onException(ex));
+                }
             }
         });
     }
@@ -335,10 +357,36 @@ public class WakaTime {
 
     public interface BatchStuff {
         @WorkerThread
-        void request(@NonNull Requester requester, @NonNull Handler ui) throws Exception;
+        void request(@NonNull Requester requester, @NonNull LifecycleAwareHandler ui) throws Exception;
 
         @UiThread
         void somethingWentWrong(@NonNull Exception ex);
+    }
+
+    public static class LifecycleAwareHandler {
+        private final Handler handler;
+
+        LifecycleAwareHandler(@NonNull Handler handler) {
+            this.handler = handler;
+        }
+
+        static boolean canPost(@Nullable Object ctx) {
+            if (ctx instanceof Activity) {
+                return !((Activity) ctx).isDestroyed() && !((Activity) ctx).isFinishing();
+            } else if (ctx instanceof Fragment) {
+                return canPost(((Fragment) ctx).getActivity());
+            } else {
+                return true;
+            }
+        }
+
+        private void doPost(Runnable r) {
+            handler.post(r);
+        }
+
+        public void post(Object ctx, Runnable r) {
+            if (canPost(ctx)) doPost(r);
+        }
     }
 
     private static class WakatimeApi extends DefaultApi20 {
@@ -451,7 +499,7 @@ public class WakaTime {
             super(cause);
         }
 
-        public void resolve(Context context) {
+        public void resolve(@Nullable Context context) {
             if (context == null) throw new RuntimeException(this);
             context.startActivity(new Intent(context, GrantActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -468,11 +516,25 @@ public class WakaTime {
         }
     }
 
+    private abstract class LifecycleAwareRunnable implements Runnable {
+        private final Object ctx;
+
+        LifecycleAwareRunnable(@NonNull Object ctx) {
+            this.ctx = ctx;
+        }
+
+        protected void post(@NonNull Runnable r) {
+            handler.post(ctx, r);
+        }
+    }
+
     public class BatchRequest implements Runnable {
+        private final Object ctx;
         private final BatchStuff stuff;
         private final boolean skipCache;
 
-        private BatchRequest(@NonNull BatchStuff stuff, boolean skipCache) {
+        private BatchRequest(@Nullable Object ctx, @NonNull BatchStuff stuff, boolean skipCache) {
+            this.ctx = ctx;
             this.stuff = stuff;
             this.skipCache = skipCache;
         }
@@ -483,12 +545,9 @@ public class WakaTime {
                 WakaTime.this.skipCache = skipCache;
                 stuff.request(requester, handler);
                 WakaTime.this.skipCache = false;
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 Logging.log(ex);
-
-                if (ex instanceof RuntimeException) Crashlytics.logException(ex);
-
-                handler.post(() -> stuff.somethingWentWrong(ex));
+                handler.post(ctx, () -> stuff.somethingWentWrong(ex));
             }
         }
     }
@@ -548,6 +607,18 @@ public class WakaTime {
         }
 
         @NonNull
+        public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
+            HttpUrl.Builder builder = BASE_URL.newBuilder()
+                    .addPathSegments("users/current/leaderboards/" + id)
+                    .addQueryParameter("page", String.valueOf(page));
+
+            if (language != null)
+                builder.addQueryParameter("language", language);
+
+            return new Leaders(doRequestSync(builder.build()));
+        }
+
+        @NonNull
         public Projects projects() throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
             return new Projects(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current/projects").build()));
@@ -564,18 +635,6 @@ public class WakaTime {
             return new Leaderboards(doRequestSync(BASE_URL.newBuilder()
                     .addQueryParameter("page", String.valueOf(page))
                     .addPathSegments("users/current/leaderboards").build()));
-        }
-
-        @NonNull
-        public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
-            HttpUrl.Builder builder = BASE_URL.newBuilder()
-                    .addPathSegments("users/current/leaderboards/" + id)
-                    .addQueryParameter("page", String.valueOf(page));
-
-            if (language != null)
-                builder.addQueryParameter("language", language);
-
-            return new Leaders(doRequestSync(builder.build()));
         }
     }
 }

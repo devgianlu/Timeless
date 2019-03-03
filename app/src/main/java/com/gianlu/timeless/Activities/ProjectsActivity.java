@@ -84,7 +84,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         }
 
         updateRangeText();
-        wakaTime.getProjects(this);
+        wakaTime.getProjects(null, this);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         updateRangeText();
 
         showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
-        wakaTime.getProjects(new WakaTime.OnResult<Projects>() {
+        wakaTime.getProjects(this, new WakaTime.OnResult<Projects>() {
             @Override
             public void onResult(@NonNull Projects projects) {
                 final List<Fragment> fragments = new ArrayList<>();

@@ -34,7 +34,7 @@ public class PrivateLeaderboardsActivity extends AppCompatActivity implements Wa
             return;
         }
 
-        wakaTime.getPrivateLeaderboards(1, this);
+        wakaTime.getPrivateLeaderboards(1, null, this);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.gianlu.timeless.Activities.Projects;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -102,8 +101,8 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
             return layout;
         }
 
-        layout.enableSwipeRefresh(() -> wakaTime.batch(ProjectFragment.this, true), MaterialColors.getInstance().getColorsRes());
-        wakaTime.batch(this, false);
+        layout.enableSwipeRefresh(() -> wakaTime.batch(null, ProjectFragment.this, true), MaterialColors.getInstance().getColorsRes());
+        wakaTime.batch(null, this, false);
 
         return layout;
     }
@@ -112,11 +111,11 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     public void onBranchesChanged(@NonNull List<String> branches) {
         currentBranches = branches;
         layout.startLoading();
-        wakaTime.batch(this, false);
+        wakaTime.batch(null, this, false);
     }
 
     @Override
-    public void request(@NonNull WakaTime.Requester requester, @NonNull Handler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull WakaTime.LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(start, end, project, currentBranches);
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList();
@@ -135,7 +134,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
 
         if (getContext() == null) return;
         final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this, this);
-        ui.post(() -> layout.loadListData(adapter));
+        ui.post(this, () -> layout.loadListData(adapter));
     }
 
     @Override

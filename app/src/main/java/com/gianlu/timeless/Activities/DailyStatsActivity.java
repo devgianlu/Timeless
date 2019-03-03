@@ -1,7 +1,6 @@
 package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
@@ -48,7 +47,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         recyclerViewLayout.startLoading();
 
         try {
-            WakaTime.get().batch(this, refresh);
+            WakaTime.get().batch(null, this, refresh);
         } catch (WakaTime.ShouldGetAccessToken ex) {
             ex.resolve(this);
         }
@@ -138,7 +137,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     }
 
     @Override
-    public void request(@NonNull WakaTime.Requester requester, @NonNull Handler ui) throws Exception {
+    public void request(@NonNull WakaTime.Requester requester, @NonNull WakaTime.LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(currentDate, currentDate, null, null);
         Durations durations = requester.durations(currentDate, null, null);
 
@@ -150,7 +149,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)
                 .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems), this, this);
 
-        ui.post(() -> recyclerViewLayout.loadListData(adapter));
+        ui.post(this, () -> recyclerViewLayout.loadListData(adapter));
     }
 
     @Override

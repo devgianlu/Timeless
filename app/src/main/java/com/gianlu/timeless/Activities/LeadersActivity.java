@@ -101,10 +101,10 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
         currFilter.setText(language == null ? getString(R.string.allLanguages) : language);
     }
 
-    private void gatherAndUpdate(@Nullable final String language) {
+    private void gatherAndUpdate(@Nullable String language) {
         recyclerViewLayout.startLoading();
         if (id == null) {
-            wakaTime.getLeaders(language, 1, new WakaTime.OnResult<LeadersWithMe>() {
+            wakaTime.getLeaders(language, 1, this, new WakaTime.OnResult<LeadersWithMe>() {
                 @Override
                 public void onResult(@NonNull LeadersWithMe leaders) {
                     me = leaders.me;
@@ -123,7 +123,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                 }
             });
         } else {
-            wakaTime.getLeaders(id, language, 1, new WakaTime.OnResult<Leaders>() {
+            wakaTime.getLeaders(id, language, 1, this, new WakaTime.OnResult<Leaders>() {
                 @Override
                 public void onResult(@NonNull Leaders leaders) {
                     adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, id, language, LeadersActivity.this);
@@ -181,7 +181,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     private void showFilterDialog() {
         showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
 
-        wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), new WakaTime.OnSummary() {
+        wakaTime.getRangeSummary(WakaTime.Range.LAST_7_DAYS.getStartAndEnd(), this, new WakaTime.OnSummary() {
             @Override
             public void onSummary(@NonNull Summaries summaries) {
                 final PickLanguageAdapter adapter = new PickLanguageAdapter(LeadersActivity.this, currLang, summaries.globalSummary.languages);

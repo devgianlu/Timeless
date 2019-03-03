@@ -66,10 +66,10 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
 
         layout.enableSwipeRefresh(() -> {
             wakaTime.skipNextRequestCache();
-            wakaTime.getCommits(project, 1, CommitsFragment.this);
+            wakaTime.getCommits(project, 1, null, this);
         }, MaterialColors.getInstance().getColorsRes());
 
-        wakaTime.getCommits(project, 1, this);
+        wakaTime.getCommits(project, 1, null, this);
 
         return layout;
     }

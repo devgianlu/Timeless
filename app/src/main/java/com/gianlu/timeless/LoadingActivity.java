@@ -71,7 +71,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
     @Override
     public void onWakatimeInitialized(@NonNull WakaTime instance) {
-        instance.getCurrentUser(new WakaTime.OnResult<User>() {
+        instance.getCurrentUser(this, new WakaTime.OnResult<User>() {
             @Override
             public void onResult(@NonNull User user) {
                 goTo(MainActivity.class, user);

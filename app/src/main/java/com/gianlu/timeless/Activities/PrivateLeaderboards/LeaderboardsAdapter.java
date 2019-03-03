@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Leaderboards;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -16,13 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<LeaderboardsAdapter.ViewHolder, Leaderboards.Item> {
-    private final Context context;
     private final WakaTime wakaTime;
     private final Listener listener;
 
     public LeaderboardsAdapter(Context context, WakaTime wakaTime, Leaderboards leaderboards, Listener listener) {
-        super(new Config<Leaderboards.Item>(context).items(leaderboards).noSeparators().maxPages(leaderboards.maxPages));
-        this.context = context;
+        super(context, new Config<Leaderboards.Item>().items(leaderboards).noSeparators().maxPages(leaderboards.maxPages));
         this.wakaTime = wakaTime;
         this.listener = listener;
     }
@@ -31,7 +30,7 @@ public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Le
     protected void userBindViewHolder(@NonNull ViewHolder holder, @NonNull ItemEnclosure<Leaderboards.Item> item, int position) {
         final Leaderboards.Item l = item.getItem();
         holder.name.setText(l.name);
-        holder.members.setText(context.getResources().getQuantityString(R.plurals.members, l.members, l.members));
+        CommonUtils.setText(holder.members, R.plurals.members, l.members, l.members);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onLeaderboardSelected(l);
@@ -45,8 +44,8 @@ public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Le
     }
 
     @Override
-    protected void moreContent(int page, @NonNull final ContentProvider<Leaderboards.Item> provider) {
-        wakaTime.getPrivateLeaderboards(page, new WakaTime.OnResult<Leaderboards>() {
+    protected void moreContent(int page, @NonNull ContentProvider<Leaderboards.Item> provider) {
+        wakaTime.getPrivateLeaderboards(page, null, new WakaTime.OnResult<Leaderboards>() {
             @Override
             public void onResult(@NonNull Leaderboards result) {
                 maxPages(result.maxPages);
