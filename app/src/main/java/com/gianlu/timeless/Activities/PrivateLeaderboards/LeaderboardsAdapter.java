@@ -30,7 +30,7 @@ public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Le
     protected void userBindViewHolder(@NonNull ViewHolder holder, @NonNull ItemEnclosure<Leaderboards.Item> item, int position) {
         final Leaderboards.Item l = item.getItem();
         holder.name.setText(l.name);
-        CommonUtils.setText(holder.members, R.plurals.members, l.members, l.members);
+        CommonUtils.setTextPlural(holder.members, R.plurals.members, l.members, l.members);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onLeaderboardSelected(l);

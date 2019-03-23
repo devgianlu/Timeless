@@ -15,13 +15,12 @@ import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +30,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +48,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         save = itemView.findViewById(R.id.lineChartCard_save);
     }
 
-    void bind(final Context context, final @StringRes int title, final Summaries summaries, final OnSaveChart listener) {
+    void bind(@NonNull Context context, @StringRes int title, @NonNull Summaries summaries, OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setNoDataText(context.getString(R.string.noData));
@@ -61,11 +61,11 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         XAxis xAxis = chart.getXAxis();
         xAxis.setTextColor(textColor);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
+        xAxis.setValueFormatter(new ValueFormatter() {
             private final SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
 
             @Override
-            public String getFormattedValue(float value, AxisBase axis) {
+            public String getFormattedValue(float value) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.DATE, (int) value - summaries.size() + 1);
                 return formatter.format(calendar.getTime());
@@ -77,7 +77,12 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         leftAxis.setEnabled(true);
         leftAxis.setTextColor(textColor);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setValueFormatter((value, axis) -> Utils.timeFormatterHours((long) value, false));
+        leftAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return Utils.timeFormatterHours((long) value, false);
+            }
+        });
 
         MaterialColors colors = MaterialColors.getShuffledInstance();
         Map<String, ILineDataSet> branchToSets = new HashMap<>(summaries.availableBranches.size());

@@ -21,6 +21,7 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -74,9 +75,12 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
         set.setValueTextSize(15);
         set.setSliceSpace(0);
         set.setValueTextColor(ContextCompat.getColor(parent.getContext(), android.R.color.white));
-        set.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            if (value < 10) return "";
-            else return String.format(Locale.getDefault(), "%.2f", value) + "%";
+        set.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                if (value < 10) return "";
+                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
+            }
         });
         set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), parent.getContext());
         chart.setData(new PieData(set));

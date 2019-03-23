@@ -15,7 +15,6 @@ import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
@@ -23,7 +22,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,11 +65,11 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(textColor);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
+        xAxis.setValueFormatter(new ValueFormatter() {
             private final SimpleDateFormat formatter = new SimpleDateFormat("EEE", Locale.getDefault());
 
             @Override
-            public String getFormattedValue(float value, AxisBase axis) {
+            public String getFormattedValue(float value) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.DATE, (int) value - summaries.size() + 1);
                 return formatter.format(calendar.getTime());
@@ -82,7 +81,12 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         leftAxis.setTextColor(textColor);
         leftAxis.setEnabled(true);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setValueFormatter((value, axis) -> Utils.timeFormatterHours((long) value, false));
+        leftAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return Utils.timeFormatterHours((long) value, false);
+            }
+        });
 
         final Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);

@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,7 +57,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         colorAccent = ContextCompat.getColor(parent.getContext(), R.color.colorAccent);
     }
 
-    void bind(final Context context, final @StringRes int title, LoggedEntities entities, final OnSaveChart listener) {
+    void bind(@NonNull Context context, @StringRes int title, @NonNull LoggedEntities entities, OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -76,9 +78,12 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         set.setValueTextSize(15);
         set.setSliceSpace(0);
         set.setValueTextColor(ContextCompat.getColor(context, android.R.color.white));
-        set.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            if (value < 10) return "";
-            else return String.format(Locale.getDefault(), "%.2f", value) + "%";
+        set.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                if (value < 10) return "";
+                else return String.format(Locale.getDefault(), "%.2f", value) + "%";
+            }
         });
         set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), context);
         chart.setData(new PieData(set));

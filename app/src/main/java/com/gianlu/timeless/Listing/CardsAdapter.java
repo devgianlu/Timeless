@@ -96,7 +96,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         if (!(holder instanceof BranchSelectorViewHolder))
-            CommonUtils.setRecyclerViewTopMargin(context, holder);
+            CommonUtils.setRecyclerViewTopMargin(holder);
     }
 
     @Override
