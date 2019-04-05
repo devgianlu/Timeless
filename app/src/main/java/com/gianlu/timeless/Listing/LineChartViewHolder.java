@@ -25,7 +25,6 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -66,9 +65,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
 
             @Override
             public String getFormattedValue(float value) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.DATE, (int) value - summaries.size() + 1);
-                return formatter.format(calendar.getTime());
+                return formatter.format(value);
             }
         });
 
@@ -109,12 +106,13 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
                     branchToSets.put(branch.name, set);
                 }
 
-                set.addEntry(new Entry(set.getEntryCount() + 1, branch.total_seconds));
+                set.addEntry(new Entry(summary.date, branch.total_seconds));
                 if (set.getEntryCount() > maxEntries)
                     maxEntries = set.getEntryCount();
             }
         }
 
+        if (maxEntries > 10) maxEntries = 10;
         xAxis.setLabelCount(maxEntries, true);
 
         if (branchToSets.isEmpty()) chart.clear();
