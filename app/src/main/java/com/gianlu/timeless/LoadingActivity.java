@@ -2,9 +2,13 @@ package com.gianlu.timeless;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+
+import com.gianlu.commonutils.CasualViews.FakeLoadingWithLogoView;
 import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.OfflineActivity;
@@ -13,13 +17,8 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-
 public class LoadingActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
-    private Intent goTo;
-    private boolean finished = false;
+    private FakeLoadingWithLogoView view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,23 +31,19 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
             return;
         }
 
-        setContentView(R.layout.activity_loading);
+        view = new FakeLoadingWithLogoView(this);
+        view.setLogoRes(R.drawable.ic_launcher);
+
+        setContentView(view);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
             actionBar.hide();
 
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-        new Handler().postDelayed(() -> {
-            finished = true;
-            if (goTo != null) startActivity(goTo);
-        }, 1000);
-
+        view.startFakeAnimation(false);
         ConnectivityChecker.checkAsync(new ConnectivityChecker.OnCheck() {
             @Override
             public void goodToGo() {
@@ -57,16 +52,15 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
             @Override
             public void offline() {
-                OfflineActivity.startActivity(LoadingActivity.this, LoadingActivity.class);
+                view.endFakeAnimation(() -> OfflineActivity.startActivity(LoadingActivity.this, LoadingActivity.class));
             }
         });
     }
 
-    private void goTo(Class goTo, @Nullable User user) {
+    private void start(@NonNull Class goTo, @Nullable User user) {
         Intent intent = new Intent(LoadingActivity.this, goTo).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         if (user != null) intent.putExtra("user", user);
-        if (finished) startActivity(intent);
-        else this.goTo = intent;
+        startActivity(intent);
     }
 
     @Override
@@ -74,20 +68,24 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
         instance.getCurrentUser(this, new WakaTime.OnResult<User>() {
             @Override
             public void onResult(@NonNull User user) {
-                goTo(MainActivity.class, user);
+                view.endFakeAnimation(() -> start(MainActivity.class, user));
             }
 
             @Override
             public void onException(@NonNull Exception ex) {
-                Toaster.with(LoadingActivity.this).message(R.string.failedLoading).ex(ex).show();
-                finish();
+                view.endFakeAnimation(() -> {
+                    Toaster.with(LoadingActivity.this).message(R.string.failedLoading).ex(ex).show();
+                    finish();
+                });
             }
         });
     }
 
     @Override
     public void onException(@NonNull Exception ex) {
-        Toaster.with(LoadingActivity.this).message(R.string.failedRefreshingToken).ex(ex).show();
-        goTo(GrantActivity.class, null);
+        view.endFakeAnimation(() -> {
+            Toaster.with(this).message(R.string.failedRefreshingToken).ex(ex).show();
+            start(GrantActivity.class, null);
+        });
     }
 }
