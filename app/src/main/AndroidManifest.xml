@@ -68,6 +68,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- Custom range stats activity -->
+        <activity
+            android:name=".Activities.CustomRangeStatsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!-- Commits activity -->
         <activity
             android:name=".Activities.CommitsActivity"

@@ -76,6 +76,7 @@
     <string name="privateLeaderboards">Private leaderboards</string>
     <string name="noPrivateLeaderboards">You have no private leaderboards.</string>
     <string name="general">General</string>
+    <string name="customRangeStats">Custom range stats</string>
     <plurals name="members">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>

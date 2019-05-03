@@ -2,77 +2,72 @@ package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
-import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
-import com.gianlu.commonutils.Dialogs.DialogUtils;
+import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
+import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.Toaster;
-import com.gianlu.timeless.Activities.Projects.ProjectFragment;
+import com.gianlu.timeless.Charting.OnSaveChart;
+import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
+import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Project;
-import com.gianlu.timeless.Models.Projects;
+import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
-import com.google.android.material.tabs.TabLayout;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class ProjectsActivity extends ActivityWithDialog implements DatePickerDialog.OnDateSetListener, WakaTime.OnResult<Projects> {
+public class CustomRangeStatsActivity extends SaveChartAppCompatActivity implements WakaTime.OnSummary, DatePickerDialog.OnDateSetListener, CardsAdapter.Listener, OnSaveChart {
     private Pair<Date, Date> currentRange;
-    private ViewPager pager;
     private Date tmpStart;
     private WakaTime wakaTime;
+    private RecyclerViewLayout layout;
     private TextView rangeText;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_projects);
-        setTitle(R.string.projects);
+    public void updateRangeText() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM", Locale.getDefault());
+        if (currentRange.first.getTime() == currentRange.second.getTime())
+            rangeText.setText(formatter.format(currentRange.first));
+        else
+            rangeText.setText(formatter.format(currentRange.first) + " - " + formatter.format(currentRange.second));
+    }
 
-        Toolbar toolbar = findViewById(R.id.projects_toolbar);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_custom_range_stats);
+        setTitle(R.string.customRangeStats);
+
+        Toolbar toolbar = findViewById(R.id.customRangeStats_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        rangeText = findViewById(R.id.projects_rangeText);
+        layout = findViewById(R.id.customRangeStats_recyclerViewLayout);
+        layout.useVerticalLinearLayoutManager();
+        layout.enableSwipeRefresh(() -> {
+            wakaTime.skipNextRequestCache();
+            wakaTime.getRangeSummary(currentRange, null, this);
+        }, MaterialColors.getInstance().getColorsRes());
 
-        pager = findViewById(R.id.projects_pager);
-        pager.setOffscreenPageLimit(4);
-        TabLayout tabLayout = findViewById(R.id.projects_tabs);
+        rangeText = findViewById(R.id.customRangeStats_rangeText);
 
-        tabLayout.setupWithViewPager(pager);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                pager.setCurrentItem(tab.getPosition(), true);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-
-        showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
+        showProgress(R.string.loadingData);
 
         Date date = (Date) getIntent().getSerializableExtra("date");
         if (date != null) currentRange = new Pair<>(date, date);
@@ -86,23 +81,27 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         }
 
         updateRangeText();
-        wakaTime.getProjects(null, this);
+        wakaTime.getRangeSummary(currentRange, null, this);
     }
 
     @Override
-    public void onResult(@NonNull final Projects projects) {
-        final List<Fragment> fragments = new ArrayList<>();
-        for (Project project : projects)
-            fragments.add(ProjectFragment.getInstance(project, currentRange));
+    public void onSummary(@NonNull Summaries summaries) {
+        CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+                .addGlobalSummary(summaries.globalSummary)
+                .addProjectsBarChart(R.string.periodActivity, summaries)
+                .addPieChart(R.string.projects, summaries.globalSummary.projects)
+                .addPieChart(R.string.languages, summaries.globalSummary.languages)
+                .addPieChart(R.string.editors, summaries.globalSummary.editors)
+                .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems);
 
-        pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
+        layout.loadListData(new CardsAdapter(this, cards, this, this));
         dismissDialog();
+    }
 
-        String projectId = getIntent().getStringExtra("project_id");
-        if (projectId != null) {
-            int pos = projects.indexOf(projectId);
-            if (pos != -1) pager.setCurrentItem(pos, false);
-        }
+    @Override
+    public void onWakaTimeError(@NonNull WakaTimeException ex) {
+        layout.showError(ex.getMessage());
+        dismissDialog();
     }
 
     @Override
@@ -111,12 +110,10 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         onBackPressed();
     }
 
-    public void updateRangeText() {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM", Locale.getDefault());
-        if (currentRange.first.getTime() == currentRange.second.getTime())
-            rangeText.setText(formatter.format(currentRange.first));
-        else
-            rangeText.setText(formatter.format(currentRange.first) + " - " + formatter.format(currentRange.second));
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.custom_range_stats, menu);
+        return true;
     }
 
     @Override
@@ -125,7 +122,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
             case android.R.id.home:
                 onBackPressed();
                 break;
-            case R.id.projects_range:
+            case R.id.customRangeStats_range:
                 Calendar start = Calendar.getInstance();
                 start.setTime(currentRange.first);
 
@@ -170,28 +167,15 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         currentRange = new Pair<>(tmpStart, end.getTime());
         updateRangeText();
 
-        showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
-        wakaTime.getProjects(this, new WakaTime.OnResult<Projects>() {
-            @Override
-            public void onResult(@NonNull Projects projects) {
-                final List<Fragment> fragments = new ArrayList<>();
-                for (Project project : projects)
-                    fragments.add(ProjectFragment.getInstance(project, currentRange));
-
-                int sel = pager.getCurrentItem();
-                pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
-                pager.setCurrentItem(sel, false);
-                dismissDialog();
-            }
-
-            @Override
-            public void onException(@NonNull Exception ex) {
-                dismissDialog();
-                Toaster.with(ProjectsActivity.this).message(R.string.failedLoading).ex(ex).show();
-                onBackPressed();
-            }
-        });
+        showProgress(R.string.loadingData);
+        wakaTime.getRangeSummary(currentRange, null, this);
 
         ThisApplication.sendAnalytics(Utils.ACTION_DATE_RANGE);
+    }
+
+    @Nullable
+    @Override
+    public Project getProject() {
+        return null;
     }
 }

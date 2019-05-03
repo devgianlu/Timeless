@@ -5,12 +5,18 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Drawer.BaseDrawerItem;
 import com.gianlu.commonutils.Drawer.DrawerManager;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Activities.CommitsActivity;
+import com.gianlu.timeless.Activities.CustomRangeStatsActivity;
 import com.gianlu.timeless.Activities.DailyStatsActivity;
 import com.gianlu.timeless.Activities.LeadersActivity;
 import com.gianlu.timeless.Activities.PrivateLeaderboardsActivity;
@@ -21,11 +27,6 @@ import com.gianlu.timeless.Main.PagerAdapter;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.google.android.material.tabs.TabLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends ActivityWithDialog implements DrawerManager.MenuDrawerListener<DrawerItem> {
     private DrawerManager<User, DrawerItem> drawerManager;
@@ -55,6 +56,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 })
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.HOME, R.drawable.baseline_home_24, getString(R.string.home)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.DAILY_STATS, R.drawable.baseline_view_day_24, getString(R.string.dailyStats)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.CUSTOM_RANGE_STATS, R.drawable.baseline_date_range_24, getString(R.string.customRangeStats)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.PROJECTS, R.drawable.baseline_view_module_24, getString(R.string.projects)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.COMMITS, R.drawable.baseline_linear_scale_24, getString(R.string.commits)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.PUBLIC_LEADERBOARD, R.drawable.baseline_show_chart_24, getString(R.string.publicLeaderboard)))
@@ -113,6 +115,9 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 return true;
             case DAILY_STATS:
                 startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
+                return false;
+            case CUSTOM_RANGE_STATS:
+                startActivity(new Intent(MainActivity.this, CustomRangeStatsActivity.class));
                 return false;
             case COMMITS:
                 CommitsActivity.startActivity(this, null);
