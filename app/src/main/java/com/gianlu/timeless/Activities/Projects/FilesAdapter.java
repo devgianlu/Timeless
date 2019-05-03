@@ -6,16 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.gianlu.commonutils.SuperTextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> {
     private final List<LoggedEntity> files;

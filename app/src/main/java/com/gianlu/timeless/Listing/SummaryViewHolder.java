@@ -5,12 +5,12 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.gianlu.commonutils.SuperTextView;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 class SummaryViewHolder extends RecyclerView.ViewHolder {
     private final LinearLayout container;

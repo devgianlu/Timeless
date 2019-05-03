@@ -5,7 +5,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.gianlu.commonutils.InfiniteRecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gianlu.commonutils.CasualViews.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Project;
@@ -14,10 +18,6 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<CommitsAdapter.ViewHolder, Commit> {
     private final Project project;

@@ -9,7 +9,7 @@
     android:paddingStart="24dp"
     android:paddingTop="8dp">
 
-    <com.gianlu.commonutils.SuperTextView
+    <com.gianlu.commonutils.CasualViews.SuperTextView
         android:id="@+id/branchSelectorItem_selected"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -4,17 +4,17 @@ import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gianlu.commonutils.CasualViews.InfiniteRecyclerView;
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Leaderboards;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.R;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<LeaderboardsAdapter.ViewHolder, Leaderboards.Item> {
     private final WakaTime wakaTime;

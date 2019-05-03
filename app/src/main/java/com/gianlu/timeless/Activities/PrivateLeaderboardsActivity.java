@@ -2,17 +2,17 @@ package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
 
-import com.gianlu.commonutils.RecyclerViewLayout;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
 import com.gianlu.timeless.Activities.PrivateLeaderboards.LeaderboardsAdapter;
 import com.gianlu.timeless.Models.Leaderboards;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class PrivateLeaderboardsActivity extends AppCompatActivity implements WakaTime.OnResult<Leaderboards>, LeaderboardsAdapter.Listener {
     private WakaTime wakaTime;

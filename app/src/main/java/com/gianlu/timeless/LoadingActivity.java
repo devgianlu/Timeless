@@ -52,7 +52,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
             @Override
             public void offline() {
-                view.endFakeAnimation(() -> OfflineActivity.startActivity(LoadingActivity.this, LoadingActivity.class));
+                view.endFakeAnimation(() -> OfflineActivity.startActivity(LoadingActivity.this, LoadingActivity.class), false);
             }
         });
     }
@@ -68,7 +68,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
         instance.getCurrentUser(this, new WakaTime.OnResult<User>() {
             @Override
             public void onResult(@NonNull User user) {
-                view.endFakeAnimation(() -> start(MainActivity.class, user));
+                view.endFakeAnimation(() -> start(MainActivity.class, user), false);
             }
 
             @Override
@@ -76,7 +76,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
                 view.endFakeAnimation(() -> {
                     Toaster.with(LoadingActivity.this).message(R.string.failedLoading).ex(ex).show();
                     finish();
-                });
+                }, false);
             }
         });
     }
@@ -86,6 +86,6 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
         view.endFakeAnimation(() -> {
             Toaster.with(this).message(R.string.failedRefreshingToken).ex(ex).show();
             start(GrantActivity.class, null);
-        });
+        }, false);
     }
 }

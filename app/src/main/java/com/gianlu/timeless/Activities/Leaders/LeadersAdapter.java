@@ -4,8 +4,12 @@ import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gianlu.commonutils.CasualViews.InfiniteRecyclerView;
 import com.gianlu.commonutils.FontsManager;
-import com.gianlu.commonutils.InfiniteRecyclerView;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.Models.Leaders;
 import com.gianlu.timeless.Models.LeadersWithMe;
@@ -16,10 +20,6 @@ import com.gianlu.timeless.Utils;
 
 import java.util.Date;
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<LeadersAdapter.ViewHolder, Leader> {
     private final String id;

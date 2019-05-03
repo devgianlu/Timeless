@@ -6,9 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
 import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.commonutils.RecyclerViewLayout;
 import com.gianlu.timeless.Charting.SaveChartFragment;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Durations;
@@ -20,11 +25,6 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, CardsAdapter.Listener {
     private WakaTime.Range range;

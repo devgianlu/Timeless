@@ -7,18 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+
 import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
+import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.SuperTextView;
 import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 
 public class CommitSheet extends ThemedModalBottomSheet<Commit, Void> {
     @NonNull
