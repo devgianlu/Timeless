@@ -9,15 +9,17 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
+        android:layout_margin="24dp"
         android:layout_weight="0.5"
-        android:src="@drawable/ic_wakatime" />
+        android:src="@drawable/ic_wakatime"
+        android:tint="?android:textColorPrimary" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/grant_hello"
         android:textAlignment="center"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="40sp"
         android:textStyle="bold" />
 
@@ -26,7 +28,7 @@
         android:layout_height="wrap_content"
         android:text="@string/grant_help"
         android:textAlignment="center"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold" />
 
