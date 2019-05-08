@@ -2,6 +2,9 @@ package com.gianlu.timeless;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.gianlu.commonutils.Preferences.BasePreferenceActivity;
 import com.gianlu.commonutils.Preferences.BasePreferenceFragment;
 import com.gianlu.commonutils.Preferences.MaterialAboutPreferenceItem;
@@ -9,9 +12,6 @@ import com.yarolegovich.mp.MaterialCheckboxPreference;
 
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class PreferenceActivity extends BasePreferenceActivity {
     @NonNull
@@ -23,7 +23,7 @@ public class PreferenceActivity extends BasePreferenceActivity {
 
     @Override
     protected int getAppIconRes() {
-        return R.mipmap.ic_launcher;
+        return R.mipmap.ic_launcher_round;
     }
 
     @Override
