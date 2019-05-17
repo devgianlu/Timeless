@@ -4,6 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.Durations;
@@ -15,11 +20,6 @@ import com.gianlu.timeless.Models.Summary;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_SUMMARY = 0;
@@ -152,8 +152,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             BigDecimal bd = new BigDecimal(today);
             if (beforeAverage > 0)
                 bd = bd.divide(new BigDecimal(beforeAverage), 10, BigDecimal.ROUND_HALF_UP);
-            bd = bd.subtract(new BigDecimal(1));
             bd = bd.multiply(new BigDecimal(100));
+            bd = bd.subtract(new BigDecimal(100));
 
             titles.add(index, title);
             types.add(index, TYPE_PERCENTAGE);
