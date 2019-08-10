@@ -26,7 +26,7 @@ deploy:
     script: "./.travis/github-release.sh"
     skip_cleanup: true
     on:
-      repo: devgianlu/DNSHero
+      repo: devgianlu/Timeless
       branch: master
       tags: true
 
