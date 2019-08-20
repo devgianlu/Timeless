@@ -12,11 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
-import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
+import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.MaterialColors;
@@ -41,7 +40,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     private Leader me = null;
     private WakaTime wakaTime;
     private String id = null;
-    private RecyclerViewLayout recyclerViewLayout;
+    private RecyclerMessageView recyclerMessageView;
 
     public static void startActivity(Context context, @Nullable String id, @Nullable String name) {
         context.startActivity(new Intent(context, LeadersActivity.class)
@@ -67,9 +66,9 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
         id = getIntent().getStringExtra("id");
 
-        recyclerViewLayout = findViewById(R.id.leaders_recyclerViewLayout);
-        recyclerViewLayout.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        recyclerViewLayout.enableSwipeRefresh(() -> {
+        recyclerMessageView = findViewById(R.id.leaders_recyclerViewLayout);
+        recyclerMessageView.linearLayoutManager(RecyclerView.VERTICAL, false);
+        recyclerMessageView.enableSwipeRefresh(() -> {
             wakaTime.skipNextRequestCache();
             gatherAndUpdate(currLang);
         }, MaterialColors.getInstance().getColorsRes());
@@ -102,7 +101,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     }
 
     private void gatherAndUpdate(@Nullable String language) {
-        recyclerViewLayout.startLoading();
+        recyclerMessageView.startLoading();
         if (id == null) {
             wakaTime.getLeaders(language, 1, this, new WakaTime.OnResult<LeadersWithMe>() {
                 @Override
@@ -111,15 +110,15 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                     adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, language, LeadersActivity.this);
 
                     updateLanguage(language);
-                    recyclerViewLayout.loadListData(adapter);
+                    recyclerMessageView.loadListData(adapter);
                 }
 
                 @Override
                 public void onException(@NonNull Exception ex) {
                     if (ex instanceof WakaTimeException)
-                        recyclerViewLayout.showError(ex.getMessage());
+                        recyclerMessageView.showError(ex.getMessage());
                     else
-                        recyclerViewLayout.showError(R.string.failedLoading_reason, ex.getMessage());
+                        recyclerMessageView.showError(R.string.failedLoading_reason, ex.getMessage());
                 }
             });
         } else {
@@ -129,15 +128,15 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                     adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, id, language, LeadersActivity.this);
 
                     updateLanguage(language);
-                    recyclerViewLayout.loadListData(adapter);
+                    recyclerMessageView.loadListData(adapter);
                 }
 
                 @Override
                 public void onException(@NonNull Exception ex) {
                     if (ex instanceof WakaTimeException)
-                        recyclerViewLayout.showError(ex.getMessage());
+                        recyclerMessageView.showError(ex.getMessage());
                     else
-                        recyclerViewLayout.showError(R.string.failedLoading_reason, ex.getMessage());
+                        recyclerMessageView.showError(R.string.failedLoading_reason, ex.getMessage());
                 }
             });
         }

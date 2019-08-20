@@ -11,10 +11,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
+import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Activities.CommitsActivity;
@@ -34,7 +33,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     private Date start;
     private Date end;
     private Project project;
-    private RecyclerViewLayout layout;
+    private RecyclerMessageView layout;
     private List<String> currentBranches = null;
     private WakaTime wakaTime;
 
@@ -83,8 +82,8 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
-        layout = new RecyclerViewLayout(requireContext());
-        layout.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+        layout = new RecyclerMessageView(requireContext());
+        layout.linearLayoutManager(RecyclerView.VERTICAL, false);
 
         Bundle args = getArguments();
         if (args == null

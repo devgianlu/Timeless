@@ -31,7 +31,7 @@
             android:textStyle="bold" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.gianlu.commonutils.CasualViews.RecyclerViewLayout
+    <com.gianlu.commonutils.CasualViews.RecyclerMessageView
         android:id="@+id/customRangeStats_recyclerViewLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

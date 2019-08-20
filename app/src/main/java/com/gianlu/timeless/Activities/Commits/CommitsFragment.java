@@ -8,10 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
+import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Models.Commit;
@@ -22,7 +21,7 @@ import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 
 public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commits>, CommitsAdapter.Listener {
-    private RecyclerViewLayout layout;
+    private RecyclerMessageView layout;
     private WakaTime wakaTime;
 
     @NonNull
@@ -47,8 +46,8 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        layout = new RecyclerViewLayout(requireContext());
-        layout.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+        layout = new RecyclerMessageView(requireContext());
+        layout.linearLayoutManager(RecyclerView.VERTICAL, false);
 
         final Project project;
         Bundle args = getArguments();

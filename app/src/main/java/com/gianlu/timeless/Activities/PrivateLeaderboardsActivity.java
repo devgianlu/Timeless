@@ -4,10 +4,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
+import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.timeless.Activities.PrivateLeaderboards.LeaderboardsAdapter;
 import com.gianlu.timeless.Models.Leaderboards;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -16,16 +15,16 @@ import com.gianlu.timeless.R;
 
 public class PrivateLeaderboardsActivity extends AppCompatActivity implements WakaTime.OnResult<Leaderboards>, LeaderboardsAdapter.Listener {
     private WakaTime wakaTime;
-    private RecyclerViewLayout layout;
+    private RecyclerMessageView layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        layout = new RecyclerViewLayout(this);
+        layout = new RecyclerMessageView(this);
         setContentView(layout);
         setTitle(R.string.privateLeaderboards);
 
-        layout.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        layout.linearLayoutManager(RecyclerView.VERTICAL, false);
 
         try {
             wakaTime = WakaTime.get();

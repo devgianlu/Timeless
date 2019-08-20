@@ -2,6 +2,8 @@ package com.gianlu.timeless;
 
 import android.preference.PreferenceManager;
 
+import androidx.annotation.NonNull;
+
 import com.gianlu.commonutils.Analytics.AnalyticsApplication;
 import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Logging;
@@ -30,7 +32,7 @@ public class ThisApplication extends AnalyticsApplication {
             }
 
             @Override
-            public boolean validateResponse(HttpURLConnection connection) throws IOException {
+            public boolean validateResponse(@NonNull HttpURLConnection connection) throws IOException {
                 return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
             }
         });

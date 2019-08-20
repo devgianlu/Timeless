@@ -10,8 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerViewLayout;
+import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.OnSaveChart;
@@ -36,7 +37,7 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
     private Pair<Date, Date> currentRange;
     private Date tmpStart;
     private WakaTime wakaTime;
-    private RecyclerViewLayout layout;
+    private RecyclerMessageView layout;
     private TextView rangeText;
 
     public void updateRangeText() {
@@ -59,7 +60,7 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         layout = findViewById(R.id.customRangeStats_recyclerViewLayout);
-        layout.useVerticalLinearLayoutManager();
+        layout.linearLayoutManager(RecyclerView.VERTICAL, false);
         layout.enableSwipeRefresh(() -> {
             wakaTime.skipNextRequestCache();
             wakaTime.getRangeSummary(currentRange, null, this);
