@@ -3,6 +3,7 @@ package com.gianlu.timeless.Activities;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -15,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
 import com.gianlu.timeless.Models.Durations;
@@ -33,18 +33,23 @@ import java.util.Date;
 public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, CardsAdapter.Listener {
     private TextView currDay;
     private Date currentDate;
-    private RecyclerMessageView recyclerMessageView;
+    private RecyclerMessageView rmv;
+    private ImageButton nextDay;
 
     private void updatePage(@NonNull Date newDate, boolean refresh) {
-        if (newDate.after(new Date())) {
-            Toaster.with(this).message(R.string.cannotGoFuture).extra(newDate).show();
-            return;
-        }
+        if (newDate.after(new Date())) return;
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(newDate);
+        cal.add(Calendar.DATE, +1);
+
+        if (cal.getTime().after(new Date())) nextDay.setVisibility(View.INVISIBLE);
+        else nextDay.setVisibility(View.VISIBLE);
 
         currentDate = newDate;
         currDay.setText(Utils.getVerbalDateFormatter().format(newDate));
 
-        recyclerMessageView.startLoading();
+        rmv.startLoading();
 
         try {
             WakaTime.get().batch(null, this, refresh);
@@ -88,11 +93,12 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        recyclerMessageView = findViewById(R.id.dailyStats_recyclerViewLayout);
-        recyclerMessageView.linearLayoutManager(RecyclerView.VERTICAL, false);
-        recyclerMessageView.enableSwipeRefresh(() -> updatePage(currentDate == null ? new Date() : currentDate, true), MaterialColors.getInstance().getColorsRes());
+        rmv = findViewById(R.id.dailyStats_recyclerViewLayout);
+        rmv.linearLayoutManager(RecyclerView.VERTICAL, false);
+        rmv.enableSwipeRefresh(() -> updatePage(currentDate == null ? new Date() : currentDate, true), MaterialColors.getInstance().getColorsRes());
 
-        ImageButton nextDay = findViewById(R.id.dailyStats_nextDay);
+
+        nextDay = findViewById(R.id.dailyStats_nextDay);
         ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
         currDay = findViewById(R.id.dailyStats_day);
 
@@ -149,12 +155,12 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)
                 .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems), this, this);
 
-        ui.post(this, () -> recyclerMessageView.loadListData(adapter));
+        ui.post(this, () -> rmv.loadListData(adapter));
     }
 
     @Override
     public void somethingWentWrong(@NonNull Exception ex) {
-        if (ex instanceof WakaTimeException) recyclerMessageView.showError(ex.getMessage());
-        else recyclerMessageView.showError(R.string.failedLoading_reason, ex.getMessage());
+        if (ex instanceof WakaTimeException) rmv.showError(ex.getMessage());
+        else rmv.showError(R.string.failedLoading_reason, ex.getMessage());
     }
 }

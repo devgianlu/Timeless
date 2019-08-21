@@ -54,7 +54,6 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                     startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     finish();
                 })
-                .addMenuItem(new BaseDrawerItem<>(DrawerItem.HOME, R.drawable.baseline_home_24, getString(R.string.home)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.DAILY_STATS, R.drawable.baseline_view_day_24, getString(R.string.dailyStats)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.CUSTOM_RANGE_STATS, R.drawable.baseline_date_range_24, getString(R.string.customRangeStats)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.PROJECTS, R.drawable.baseline_view_module_24, getString(R.string.projects)))
@@ -64,8 +63,6 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 .addMenuItemSeparator()
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.PREFERENCES, R.drawable.baseline_settings_24, getString(R.string.preferences)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.SUPPORT, R.drawable.baseline_report_problem_24, getString(R.string.support))).build(this, findViewById(R.id.main_drawer), toolbar);
-
-        drawerManager.setActiveItem(DrawerItem.HOME);
 
         pager.setOffscreenPageLimit(3);
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
@@ -91,7 +88,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (drawerManager != null) drawerManager.onTogglerConfigurationChanged(newConfig);
     }
@@ -111,31 +108,29 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
     @Override
     public boolean onDrawerMenuItemSelected(@NonNull BaseDrawerItem<DrawerItem> item) {
         switch (item.id) {
-            case HOME:
-                return true;
             case DAILY_STATS:
-                startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
+                startActivity(new Intent(this, DailyStatsActivity.class));
                 return false;
             case CUSTOM_RANGE_STATS:
-                startActivity(new Intent(MainActivity.this, CustomRangeStatsActivity.class));
+                startActivity(new Intent(this, CustomRangeStatsActivity.class));
                 return false;
             case COMMITS:
                 CommitsActivity.startActivity(this, null);
                 return false;
             case PROJECTS:
-                startActivity(new Intent(MainActivity.this, ProjectsActivity.class));
+                startActivity(new Intent(this, ProjectsActivity.class));
                 return false;
             case PRIVATE_LEADERBOARDS:
-                startActivity(new Intent(MainActivity.this, PrivateLeaderboardsActivity.class));
+                startActivity(new Intent(this, PrivateLeaderboardsActivity.class));
                 return false;
             case PUBLIC_LEADERBOARD:
                 LeadersActivity.startActivity(this);
                 return false;
             case PREFERENCES:
-                startActivity(new Intent(MainActivity.this, PreferenceActivity.class));
+                startActivity(new Intent(this, PreferenceActivity.class));
                 return false;
             case SUPPORT:
-                Logging.sendEmail(MainActivity.this, null);
+                Logging.sendEmail(this, null);
                 return true;
             default:
                 return true;

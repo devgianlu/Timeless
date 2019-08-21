@@ -9,6 +9,7 @@ public class LeadersWithMe extends Leaders {
     public LeadersWithMe(JSONObject obj) throws JSONException {
         super(obj);
 
-        me = new Leader(obj.getJSONObject("current_user"));
+        if (obj.isNull("current_user")) me = null;
+        else me = new Leader(obj.getJSONObject("current_user"));
     }
 }

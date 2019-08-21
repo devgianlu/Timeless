@@ -40,7 +40,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     private Leader me = null;
     private WakaTime wakaTime;
     private String id = null;
-    private RecyclerMessageView recyclerMessageView;
+    private RecyclerMessageView rmv;
 
     public static void startActivity(Context context, @Nullable String id, @Nullable String name) {
         context.startActivity(new Intent(context, LeadersActivity.class)
@@ -66,9 +66,9 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
         id = getIntent().getStringExtra("id");
 
-        recyclerMessageView = findViewById(R.id.leaders_recyclerViewLayout);
-        recyclerMessageView.linearLayoutManager(RecyclerView.VERTICAL, false);
-        recyclerMessageView.enableSwipeRefresh(() -> {
+        rmv = findViewById(R.id.leaders_recyclerViewLayout);
+        rmv.linearLayoutManager(RecyclerView.VERTICAL, false);
+        rmv.enableSwipeRefresh(() -> {
             wakaTime.skipNextRequestCache();
             gatherAndUpdate(currLang);
         }, MaterialColors.getInstance().getColorsRes());
@@ -101,7 +101,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
     }
 
     private void gatherAndUpdate(@Nullable String language) {
-        recyclerMessageView.startLoading();
+        rmv.startLoading();
         if (id == null) {
             wakaTime.getLeaders(language, 1, this, new WakaTime.OnResult<LeadersWithMe>() {
                 @Override
@@ -110,15 +110,15 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                     adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, language, LeadersActivity.this);
 
                     updateLanguage(language);
-                    recyclerMessageView.loadListData(adapter);
+                    rmv.loadListData(adapter);
                 }
 
                 @Override
                 public void onException(@NonNull Exception ex) {
                     if (ex instanceof WakaTimeException)
-                        recyclerMessageView.showError(ex.getMessage());
+                        rmv.showError(ex.getMessage());
                     else
-                        recyclerMessageView.showError(R.string.failedLoading_reason, ex.getMessage());
+                        rmv.showError(R.string.failedLoading_reason, ex.getMessage());
                 }
             });
         } else {
@@ -128,15 +128,15 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
                     adapter = new LeadersAdapter(LeadersActivity.this, wakaTime, leaders, id, language, LeadersActivity.this);
 
                     updateLanguage(language);
-                    recyclerMessageView.loadListData(adapter);
+                    rmv.loadListData(adapter);
                 }
 
                 @Override
                 public void onException(@NonNull Exception ex) {
                     if (ex instanceof WakaTimeException)
-                        recyclerMessageView.showError(ex.getMessage());
+                        rmv.showError(ex.getMessage());
                     else
-                        recyclerMessageView.showError(R.string.failedLoading_reason, ex.getMessage());
+                        rmv.showError(R.string.failedLoading_reason, ex.getMessage());
                 }
             });
         }

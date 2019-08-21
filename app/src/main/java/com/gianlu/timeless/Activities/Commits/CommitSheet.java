@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 
 import com.gianlu.commonutils.BottomSheet.ModalBottomSheetHeaderView;
 import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
@@ -28,8 +27,9 @@ public class CommitSheet extends ThemedModalBottomSheet<Commit, Void> {
     }
 
     @Override
-    protected boolean onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ModalBottomSheetHeaderView parent, @NonNull Commit commit) {
-        return false;
+    protected void onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ModalBottomSheetHeaderView parent, @NonNull Commit commit) {
+        parent.setBackgroundColorRes(R.color.colorPrimary);
+        parent.setTitle(commit.message);
     }
 
     @Override
@@ -62,12 +62,6 @@ public class CommitSheet extends ThemedModalBottomSheet<Commit, Void> {
         }
 
         isLoading(false);
-    }
-
-    @Override
-    protected void onCustomizeToolbar(@NonNull Toolbar toolbar, @NonNull Commit commit) {
-        toolbar.setBackgroundResource(R.color.colorPrimary);
-        toolbar.setTitle(commit.message);
     }
 
     @Override

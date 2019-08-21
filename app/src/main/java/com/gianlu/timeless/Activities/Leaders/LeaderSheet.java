@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.BottomSheet.ModalBottomSheetHeaderView;
@@ -41,8 +40,9 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
     }
 
     @Override
-    protected boolean onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ModalBottomSheetHeaderView parent, @NonNull Leader leader) {
-        return false;
+    protected void onCreateHeader(@NonNull LayoutInflater inflater, @NonNull ModalBottomSheetHeaderView parent, @NonNull Leader leader) {
+        parent.setBackgroundColorRes(R.color.colorPrimary);
+        parent.setTitle(leader.user.getDisplayName());
     }
 
     @Override
@@ -89,12 +89,6 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
         chart.invalidate();
 
         isLoading(false);
-    }
-
-    @Override
-    protected void onCustomizeToolbar(@NonNull Toolbar toolbar, @NonNull Leader leader) {
-        toolbar.setBackgroundResource(R.color.colorPrimary);
-        toolbar.setTitle(leader.user.getDisplayName());
     }
 
     @Override

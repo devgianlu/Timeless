@@ -7,12 +7,12 @@ apply plugin: 'io.fabric'
 
 def isTravis = System.getenv("CI") == "true"
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 52
         versionName "1.10.1"
     }
@@ -60,10 +60,10 @@ play {
 dependencies {
     api project(':CommonUtils')
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    api 'com.wdullaer:materialdatetimepicker:4.2.1'
-    api 'com.squareup.okhttp3:okhttp:4.0.1'
-    api 'com.github.scribejava:scribejava-core:6.6.3'
-    api 'com.github.scribejava:scribejava-httpclient-okhttp:6.6.3'
+    api 'com.wdullaer:materialdatetimepicker:4.2.2'
+    api 'com.squareup.okhttp3:okhttp:4.1.0'
+    api 'com.github.scribejava:scribejava-core:6.8.0'
+    api 'com.github.scribejava:scribejava-httpclient-okhttp:6.8.0'
 }
 
 task printVersionName {

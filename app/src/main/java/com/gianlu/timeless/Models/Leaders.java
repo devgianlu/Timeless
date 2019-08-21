@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Leaders extends ArrayList<Leader> {
-
     public final int maxPages;
 
     public Leaders(JSONObject obj) throws JSONException {

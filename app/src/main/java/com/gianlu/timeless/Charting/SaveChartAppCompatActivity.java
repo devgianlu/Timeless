@@ -3,15 +3,15 @@ package com.gianlu.timeless.Charting;
 import android.Manifest;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
 import com.gianlu.commonutils.AskPermission;
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.R;
 
 import java.io.File;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 
 public abstract class SaveChartAppCompatActivity extends ActivityWithDialog implements OnSaveChart, AskPermission.Listener {
     private View chart;
@@ -29,7 +29,8 @@ public abstract class SaveChartAppCompatActivity extends ActivityWithDialog impl
         File image = SaveChartUtils.save(chart, title, getProject());
         if (image == null)
             showToast(Toaster.build().message(R.string.failedSavingImage).error(true));
-        else showToast(Toaster.build().message(R.string.imageSavedTo, image.getAbsolutePath()));
+        else
+            showToast(Toaster.build().message(R.string.imageSavedTo, image.getAbsolutePath()));
     }
 
     @Override
