@@ -2,7 +2,3 @@
 	path = CommonUtils
 	url = http://github.com/devgianlu/CommonUtils
 	branch = master
-[submodule "MaterialPreferences"]
-	path = MaterialPreferences
-	url = http://github.com/devgianlu/MaterialPreferences
-	branch = master
