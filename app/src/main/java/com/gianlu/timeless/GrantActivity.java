@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.NetIO.WakaTime;
-
-import androidx.annotation.NonNull;
 
 public class GrantActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
     private WakaTime.Builder builder;
@@ -42,17 +42,17 @@ public class GrantActivity extends ActivityWithDialog implements WakaTime.Initia
         dismissDialog();
 
         try {
-            startActivity(new Intent(GrantActivity.this, LoadingActivity.class)
+            startActivity(new Intent(this, LoadingActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
             Prefs.putBoolean(PK.FIRST_RUN, false);
         } catch (ActivityNotFoundException ex) {
-            Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
+            Toaster.with(this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
         }
     }
 
     @Override
     public void onException(@NonNull Exception ex) {
         dismissDialog();
-        Toaster.with(GrantActivity.this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
+        Toaster.with(this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
     }
 }

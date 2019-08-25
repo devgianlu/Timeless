@@ -62,7 +62,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
 
         if (me != null && Objects.equals(leader.getItem().user.id, me.id)) {
             holder.setIsRecyclable(false);
-            holder.itemView.setBackgroundResource(R.color.colorAccent_translucent);
+            holder.itemView.setBackgroundResource(R.color.colorSecondaryTranslucent);
         }
 
         holder.itemView.setOnClickListener(v -> {

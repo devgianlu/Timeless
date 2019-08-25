@@ -1,14 +1,12 @@
 <resources>
     <string name="app_name">Timeless</string>
-    <string name="grant_hello">Welcome to Timeless!</string>
+    <string name="grant_hello">Welcome to Timeless! A Wakatime client for Android.</string>
     <string name="grant_help">All you have to do to connect Timeless to your WakaTime account is click the button below! I want to assure you I will not have access to your credentials.</string>
     <string name="grantAccess">Grant access</string>
     <string name="checkingWakatimePermissions">Checking permissions. Please wait…</string>
     <string name="last_7_days">Last 7 days</string>
     <string name="last_30_days">Last 30 days</string>
     <string name="errorMessage">Failed loading data. Pull to refresh or restart the application!</string>
-    <string name="mpAndroidChart_details">Copyright 2016 Philipp Jahoda</string>
-    <string name="scribejava_details">Copyright © 2013 hh.ru\nCopyright © 2010 Pablo Fernandez</string>
     <string name="support">Support</string>
     <string name="home">Home</string>
     <string name="commits">Commits</string>
