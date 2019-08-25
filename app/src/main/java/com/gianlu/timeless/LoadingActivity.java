@@ -17,6 +17,8 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.User;
 import com.gianlu.timeless.NetIO.WakaTime;
 
+import java.io.IOException;
+
 public class LoadingActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
     private FakeLoadingWithLogoView view;
 
@@ -85,7 +87,11 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
     public void onException(@NonNull Exception ex) {
         view.endFakeAnimation(() -> {
             Toaster.with(this).message(R.string.failedRefreshingToken).ex(ex).show();
-            start(GrantActivity.class, null);
+            if (ex instanceof IOException) {
+                OfflineActivity.startActivity(this, LoadingActivity.class);
+            } else if (!(ex instanceof WakaTime.ShouldGetAccessToken)) {
+                start(GrantActivity.class, null);
+            }
         }, false);
     }
 }
