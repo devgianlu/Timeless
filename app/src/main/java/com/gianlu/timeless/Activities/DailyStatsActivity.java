@@ -1,9 +1,11 @@
 package com.gianlu.timeless.Activities;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -14,6 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
+import com.gianlu.commonutils.Dialogs.MaterialDatePickerDialog;
 import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
@@ -25,12 +28,11 @@ import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, CardsAdapter.Listener {
+public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, CardsAdapter.Listener, DatePicker.OnDateChangedListener {
     private TextView currDay;
     private Date currentDate;
     private RecyclerMessageView rmv;
@@ -71,11 +73,9 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 onBackPressed();
                 break;
             case R.id.dailyStats_changeDay:
-                Calendar now = Calendar.getInstance();
-                DatePickerDialog.newInstance(this,
-                        now.get(Calendar.YEAR),
-                        now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)).show(getSupportFragmentManager(), null);
+                MaterialDatePickerDialog.get(getString(R.string.selectDay), currentDate,
+                        null, new Date(), this)
+                        .show(getSupportFragmentManager(), null);
                 break;
         }
 
@@ -132,7 +132,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
     }
 
     @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
         cal.set(Calendar.YEAR, year);
@@ -140,6 +140,11 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
         updatePage(cal.getTime(), false);
+    }
+
+    @Override
+    public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
+
     }
 
     @Override
