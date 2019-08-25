@@ -116,7 +116,7 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
         final TextView name;
         final TextView total;
 
-        public ViewHolder(ViewGroup parent) {
+        public ViewHolder(@NonNull ViewGroup parent) {
             super(inflater.inflate(R.layout.item_leader, parent, false));
 
             rank = itemView.findViewById(R.id.leader_rank);

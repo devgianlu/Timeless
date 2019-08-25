@@ -35,7 +35,8 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
     void bind(@NonNull final Context context, final Config config, final CardsAdapter.Listener listener) {
         if (config.selectedBranches.isEmpty())
             selectedBranches = new ArrayList<>(config.branches);
-        else selectedBranches = new ArrayList<>(config.selectedBranches);
+        else
+            selectedBranches = new ArrayList<>(config.selectedBranches);
 
         selected.setHtml(R.string.selectedBranches, CommonUtils.join(selectedBranches, ", "));
         select.setOnClickListener(v -> showBranchesDialog(context, config.branches, config.listener, listener));

@@ -20,7 +20,7 @@ public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Le
     private final WakaTime wakaTime;
     private final Listener listener;
 
-    public LeaderboardsAdapter(Context context, WakaTime wakaTime, Leaderboards leaderboards, Listener listener) {
+    public LeaderboardsAdapter(@NonNull Context context, WakaTime wakaTime, Leaderboards leaderboards, Listener listener) {
         super(context, new Config<Leaderboards.Item>().items(leaderboards).noSeparators().maxPages(leaderboards.maxPages));
         this.wakaTime = wakaTime;
         this.listener = listener;
@@ -73,7 +73,7 @@ public class LeaderboardsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Le
         final TextView name;
         final TextView members;
 
-        public ViewHolder(ViewGroup parent) {
+        public ViewHolder(@NonNull ViewGroup parent) {
             super(inflater.inflate(R.layout.item_leaderboard, parent, false));
 
             name = itemView.findViewById(R.id.leaderboard_name);

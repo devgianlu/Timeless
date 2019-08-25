@@ -38,7 +38,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     private WakaTime wakaTime;
 
     @NonNull
-    public static ProjectFragment getInstance(Project project, Pair<Date, Date> range) {
+    public static ProjectFragment getInstance(@NonNull Project project, @NonNull Pair<Date, Date> range) {
         ProjectFragment fragment = new ProjectFragment();
         fragment.setHasOptionsMenu(true);
         Bundle args = new Bundle();
@@ -51,7 +51,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.project, menu);
     }
 
@@ -62,11 +62,9 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.projectFragment_commits:
-                if (project == null || getContext() == null) break;
-                CommitsActivity.startActivity(getContext(), project.id);
-                break;
+        if (item.getItemId() == R.id.projectFragment_commits) {
+            if (project == null) return false;
+            CommitsActivity.startActivity(requireContext(), project.id);
         }
 
         return true;
@@ -119,8 +117,10 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
         Summaries summaries = requester.summaries(start, end, project, currentBranches);
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList();
-        cards.addBranchSelector(summaries.availableBranches, summaries.selectedBranches, this)
-                .addGlobalSummary(summaries.globalSummary)
+        if (summaries.availableBranches != null && summaries.selectedBranches != null)
+            cards.addBranchSelector(summaries.availableBranches, summaries.selectedBranches, this);
+
+        cards.addGlobalSummary(summaries.globalSummary)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
                 .addPieChart(R.string.branches, summaries.globalSummary.branches)
                 .addFileList(R.string.files, summaries.globalSummary.entities);

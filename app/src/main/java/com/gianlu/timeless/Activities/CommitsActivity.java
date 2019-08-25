@@ -4,6 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+
 import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Toaster;
@@ -16,12 +22,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.ViewPager;
 
 public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnResult<Projects> {
     private final List<CommitsFragment> fragments = new ArrayList<>();
@@ -42,6 +42,7 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
         pager = findViewById(R.id.commits_pager);
         pager.setOffscreenPageLimit(4);
         TabLayout tabLayout = findViewById(R.id.commits_tabs);

@@ -134,7 +134,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         /**
          * Always on top
          */
-        public CardsList addBranchSelector(List<String> branches, List<String> selectedBranches, OnBranches listener) {
+        public CardsList addBranchSelector(@NonNull List<String> branches, @NonNull List<String> selectedBranches, @NonNull OnBranches listener) {
             if (!branches.isEmpty()) {
                 titles.add(0, null);
                 types.add(0, TYPE_BRANCH_SELECTOR);

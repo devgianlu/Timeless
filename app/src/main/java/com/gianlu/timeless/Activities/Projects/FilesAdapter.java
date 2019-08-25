@@ -2,7 +2,6 @@ package com.gianlu.timeless.Activities.Projects;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -33,7 +32,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     @Override
     @NonNull
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(inflater.inflate(R.layout.item_logged_entity, parent, false));
+        return new ViewHolder(parent);
     }
 
     @Override
@@ -57,8 +56,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         final SuperTextView name;
         final TextView time;
 
-        ViewHolder(View itemView) {
-            super(itemView);
+        ViewHolder(@NonNull ViewGroup parent) {
+            super(inflater.inflate(R.layout.item_logged_entity, parent, false));
 
             name = itemView.findViewById(R.id.loggedEntityItem_name);
             time = itemView.findViewById(R.id.loggedEntityItem_time);

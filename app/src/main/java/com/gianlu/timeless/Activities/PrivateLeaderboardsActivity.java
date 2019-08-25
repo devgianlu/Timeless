@@ -3,6 +3,8 @@ package com.gianlu.timeless.Activities;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
@@ -20,11 +22,16 @@ public class PrivateLeaderboardsActivity extends ActivityWithDialog implements W
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        layout = new RecyclerMessageView(this);
-        setContentView(layout);
+        setContentView(R.layout.activity_leaderboards_private);
         setTitle(R.string.privateLeaderboards);
 
+        layout = findViewById(R.id.privateLeaderboards_rmv);
         layout.linearLayoutManager(RecyclerView.VERTICAL, false);
+
+        Toolbar toolbar = findViewById(R.id.privateLeaderboards_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         try {
             wakaTime = WakaTime.get();

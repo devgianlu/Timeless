@@ -2,17 +2,18 @@ package com.gianlu.timeless.Activities;
 
 import android.os.Bundle;
 
-import java.util.List;
-
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import java.util.List;
+
 class PagerAdapter extends FragmentStatePagerAdapter {
     private final List<? extends Fragment> fragments;
 
-    PagerAdapter(FragmentManager fm, List<? extends Fragment> fragments) {
-        super(fm);
+    PagerAdapter(@NonNull FragmentManager fm, List<? extends Fragment> fragments) {
+        super(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.fragments = fragments;
     }
 
@@ -21,6 +22,7 @@ class PagerAdapter extends FragmentStatePagerAdapter {
         return fragments.size();
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         return fragments.get(position);
