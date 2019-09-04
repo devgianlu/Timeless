@@ -45,6 +45,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = new RecyclerMessageView(requireContext());
         layout.linearLayoutManager(RecyclerView.VERTICAL, false);
+        layout.dividerDecoration(RecyclerView.VERTICAL);
 
         Bundle args = getArguments();
         if (args == null || (range = (WakaTime.Range) args.getSerializable("range")) == null) {
@@ -76,7 +77,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
         Summaries summaries = requester.summaries(range.getStartAndEnd(), null, null);
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
-                .addGlobalSummary(summaries.globalSummary)
+                .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.MAIN)
                 .addPieChart(R.string.projects, summaries.globalSummary.projects)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)
@@ -86,8 +87,8 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
             Summaries weekBefore = requester.summaries(range.getWeekBefore(), null, null);
             Durations durations = requester.durations(new Date(), null, null);
 
-            cards.addDurations(1, R.string.durations, durations);
-            cards.addPercentage(1, R.string.averageImprovement, summaries.globalSummary.total_seconds, Summary.doTotalSecondsAverage(weekBefore));
+            cards.addDurations(1, durations);
+            cards.addImprovement(1, summaries.globalSummary.total_seconds, Summary.doTotalSecondsAverage(weekBefore));
         } else {
             cards.addProjectsBarChart(1, R.string.periodActivity, summaries);
         }

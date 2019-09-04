@@ -6,12 +6,17 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
+import com.gianlu.timeless.Models.SingleSummary;
 import com.gianlu.timeless.Models.Summaries;
-import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.github.mikephil.charting.charts.LineChart;
@@ -28,11 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 class LineChartViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
@@ -85,7 +85,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         Map<String, ILineDataSet> branchToSets = new HashMap<>(summaries.availableBranches.size());
         int maxEntries = 0;
         int i = 0;
-        for (Summary summary : summaries) {
+        for (SingleSummary summary : summaries) {
             for (LoggedEntity branch : summary.branches) {
                 LineDataSet set = (LineDataSet) branchToSets.get(branch.name);
                 if (set == null) {

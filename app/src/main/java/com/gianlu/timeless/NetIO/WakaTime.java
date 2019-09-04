@@ -11,6 +11,11 @@ import android.os.Looper;
 import android.util.LruCache;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.Lifecycle.LifecycleAwareRunnable;
@@ -53,10 +58,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -309,7 +310,7 @@ public class WakaTime {
                     cal.add(Calendar.DATE, -6);
                     break;
                 case LAST_30_DAYS:
-                    cal.add(Calendar.DATE, -30);
+                    cal.add(Calendar.DATE, -29);
                     break;
             }
 

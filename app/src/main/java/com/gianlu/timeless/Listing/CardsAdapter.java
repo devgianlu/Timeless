@@ -9,13 +9,11 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.Models.Summaries;
-import com.gianlu.timeless.Models.Summary;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_LINE = 3;
     private static final int TYPE_FILE_LIST = 4;
     private static final int TYPE_DURATIONS = 5;
-    private static final int TYPE_PERCENTAGE = 6;
+    private static final int TYPE_IMPROVEMENT = 6;
     private static final int TYPE_BRANCH_SELECTOR = 7;
     private final Context context;
     private final LayoutInflater inflater;
@@ -61,8 +59,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 return new ListViewHolder(inflater, parent);
             case TYPE_DURATIONS:
                 return new DurationsViewHolder(inflater, parent);
-            case TYPE_PERCENTAGE:
-                return new PercentageViewHolder(inflater, parent);
+            case TYPE_IMPROVEMENT:
+                return new WeeklyImprovementViewHolder(inflater, parent);
             case TYPE_BRANCH_SELECTOR:
                 return new BranchSelectorViewHolder(inflater, parent);
             default:
@@ -78,7 +76,8 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SummaryViewHolder) {
-            ((SummaryViewHolder) holder).bind(context, (Summary) objs.objs.get(position));
+            CardsList.SummaryItem s = (CardsList.SummaryItem) objs.objs.get(position);
+            ((SummaryViewHolder) holder).bind(s.summary, s.context);
         } else if (holder instanceof LineChartViewHolder) {
             ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof BarChartViewHolder) {
@@ -88,20 +87,21 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).bind(context, objs.titles.get(position), (LoggedEntities) objs.objs.get(position));
         } else if (holder instanceof DurationsViewHolder) {
-            ((DurationsViewHolder) holder).bind(objs.titles.get(position), (Durations) objs.objs.get(position));
-        } else if (holder instanceof PercentageViewHolder) {
-            ((PercentageViewHolder) holder).bind(objs.titles.get(position), (Float) objs.objs.get(position));
+            ((DurationsViewHolder) holder).bind((Durations) objs.objs.get(position));
+        } else if (holder instanceof WeeklyImprovementViewHolder) {
+            ((WeeklyImprovementViewHolder) holder).bind((Float) objs.objs.get(position));
         } else if (holder instanceof BranchSelectorViewHolder) {
             ((BranchSelectorViewHolder) holder).bind(context, (BranchSelectorViewHolder.Config) objs.objs.get(position), listener);
         }
-
-        if (!(holder instanceof BranchSelectorViewHolder))
-            CommonUtils.setRecyclerViewTopMargin(holder);
     }
 
     @Override
     public int getItemCount() {
         return objs.objs.size();
+    }
+
+    public enum SummaryContext {
+        MAIN, DAILY_STATS, CUSTOM_RANGE, PROJECTS
     }
 
     public interface Listener {
@@ -144,32 +144,33 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addPercentage(@StringRes int title, long today, float beforeAverage) {
-            return addPercentage(titles.size(), title, today, beforeAverage);
+        public CardsList addImprovement(long today, float beforeAverage) {
+            return addImprovement(titles.size(), today, beforeAverage);
         }
 
-        public CardsList addPercentage(int index, @StringRes int title, long today, float beforeAverage) {
+        public CardsList addImprovement(int index, long today, float beforeAverage) {
             BigDecimal bd = new BigDecimal(today);
             if (beforeAverage > 0)
                 bd = bd.divide(new BigDecimal(beforeAverage), 10, BigDecimal.ROUND_HALF_UP);
+
             bd = bd.multiply(new BigDecimal(100));
             bd = bd.subtract(new BigDecimal(100));
 
-            titles.add(index, title);
-            types.add(index, TYPE_PERCENTAGE);
+            titles.add(index, null);
+            types.add(index, TYPE_IMPROVEMENT);
             objs.add(index, bd.floatValue());
 
             return this;
         }
 
-        public CardsList addGlobalSummary(GlobalSummary summary) {
-            return addGlobalSummary(titles.size(), summary);
+        public CardsList addGlobalSummary(GlobalSummary summary, SummaryContext ctx) {
+            return addGlobalSummary(titles.size(), summary, ctx);
         }
 
-        public CardsList addGlobalSummary(int index, GlobalSummary summary) {
+        public CardsList addGlobalSummary(int index, GlobalSummary summary, SummaryContext ctx) {
             titles.add(index, null);
             types.add(index, TYPE_SUMMARY);
-            objs.add(index, summary);
+            objs.add(index, new SummaryItem(summary, ctx));
 
             return this;
         }
@@ -212,12 +213,12 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addDurations(@StringRes int title, Durations durations) {
-            return addDurations(titles.size(), title, durations);
+        public CardsList addDurations(Durations durations) {
+            return addDurations(titles.size(), durations);
         }
 
-        public CardsList addDurations(int index, @StringRes int title, Durations durations) {
-            titles.add(index, title);
+        public CardsList addDurations(int index, Durations durations) {
+            titles.add(index, null);
             types.add(index, TYPE_DURATIONS);
             objs.add(index, durations);
 
@@ -234,6 +235,16 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             objs.add(index, summaries);
 
             return this;
+        }
+
+        private static class SummaryItem {
+            final GlobalSummary summary;
+            final SummaryContext context;
+
+            SummaryItem(GlobalSummary summary, SummaryContext context) {
+                this.summary = summary;
+                this.context = context;
+            }
         }
     }
 }

@@ -33,7 +33,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     private Date start;
     private Date end;
     private Project project;
-    private RecyclerMessageView layout;
+    private RecyclerMessageView rmv;
     private List<String> currentBranches = null;
     private WakaTime wakaTime;
 
@@ -80,35 +80,36 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
-        layout = new RecyclerMessageView(requireContext());
-        layout.linearLayoutManager(RecyclerView.VERTICAL, false);
+        rmv = new RecyclerMessageView(requireContext());
+        rmv.linearLayoutManager(RecyclerView.VERTICAL, false);
+        rmv.dividerDecoration(RecyclerView.VERTICAL);
 
         Bundle args = getArguments();
         if (args == null
                 || (project = (Project) args.getSerializable("project")) == null
                 || (start = (Date) args.getSerializable("start")) == null
                 || (end = (Date) args.getSerializable("end")) == null) {
-            layout.showError(R.string.errorMessage);
-            return layout;
+            rmv.showError(R.string.errorMessage);
+            return rmv;
         }
 
         try {
             wakaTime = WakaTime.get();
         } catch (WakaTime.ShouldGetAccessToken ex) {
             ex.resolve(getContext());
-            return layout;
+            return rmv;
         }
 
-        layout.enableSwipeRefresh(() -> wakaTime.batch(null, ProjectFragment.this, true), MaterialColors.getInstance().getColorsRes());
+        rmv.enableSwipeRefresh(() -> wakaTime.batch(null, ProjectFragment.this, true), MaterialColors.getInstance().getColorsRes());
         wakaTime.batch(null, this, false);
 
-        return layout;
+        return rmv;
     }
 
     @Override
     public void onBranchesChanged(@NonNull List<String> branches) {
         currentBranches = branches;
-        layout.startLoading();
+        rmv.startLoading();
         wakaTime.batch(null, this, false);
     }
 
@@ -120,26 +121,26 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
         if (summaries.availableBranches != null && summaries.selectedBranches != null)
             cards.addBranchSelector(summaries.availableBranches, summaries.selectedBranches, this);
 
-        cards.addGlobalSummary(summaries.globalSummary)
+        cards.addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.PROJECTS)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
                 .addPieChart(R.string.branches, summaries.globalSummary.branches)
                 .addFileList(R.string.files, summaries.globalSummary.entities);
 
         if (start.getTime() == end.getTime()) {
             Durations durations = requester.durations(start, project, summaries.availableBranches);
-            cards.addDurations(cards.hasBranchSelector() ? 2 : 1, R.string.durations, durations);
+            cards.addDurations(cards.hasBranchSelector() ? 2 : 1, durations);
         } else {
             cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries);
         }
 
         if (getContext() == null) return;
         final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this, this);
-        ui.post(this, () -> layout.loadListData(adapter));
+        ui.post(this, () -> rmv.loadListData(adapter));
     }
 
     @Override
     public void somethingWentWrong(@NonNull Exception ex) {
-        if (ex instanceof WakaTimeException) layout.showError(ex.getMessage());
-        else layout.showError(R.string.failedLoading_reason, ex.getMessage());
+        if (ex instanceof WakaTimeException) rmv.showError(ex.getMessage());
+        else rmv.showError(R.string.failedLoading_reason, ex.getMessage());
     }
 }

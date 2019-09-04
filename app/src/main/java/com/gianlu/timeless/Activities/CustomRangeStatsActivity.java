@@ -38,7 +38,7 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
     private Pair<Date, Date> currentRange;
     private Date tmpStart;
     private WakaTime wakaTime;
-    private RecyclerMessageView layout;
+    private RecyclerMessageView rmv;
     private TextView rangeText;
 
     public void updateRangeText() {
@@ -60,9 +60,10 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        layout = findViewById(R.id.customRangeStats_recyclerViewLayout);
-        layout.linearLayoutManager(RecyclerView.VERTICAL, false);
-        layout.enableSwipeRefresh(() -> {
+        rmv = findViewById(R.id.customRangeStats_recyclerViewLayout);
+        rmv.linearLayoutManager(RecyclerView.VERTICAL, false);
+        rmv.dividerDecoration(RecyclerView.VERTICAL);
+        rmv.enableSwipeRefresh(() -> {
             wakaTime.skipNextRequestCache();
             wakaTime.getRangeSummary(currentRange, null, this);
         }, MaterialColors.getInstance().getColorsRes());
@@ -89,20 +90,20 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
     @Override
     public void onSummary(@NonNull Summaries summaries) {
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
-                .addGlobalSummary(summaries.globalSummary)
+                .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.CUSTOM_RANGE)
                 .addProjectsBarChart(R.string.periodActivity, summaries)
                 .addPieChart(R.string.projects, summaries.globalSummary.projects)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)
                 .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems);
 
-        layout.loadListData(new CardsAdapter(this, cards, this, this));
+        rmv.loadListData(new CardsAdapter(this, cards, this, this));
         dismissDialog();
     }
 
     @Override
     public void onWakaTimeError(@NonNull WakaTimeException ex) {
-        layout.showError(ex.getMessage());
+        rmv.showError(ex.getMessage());
         dismissDialog();
     }
 

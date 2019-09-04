@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.FontsManager;
 import com.gianlu.commonutils.MaterialColors;
@@ -22,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import androidx.core.content.ContextCompat;
 
 public class DurationsView extends LinearLayout {
     private final Paint gridPaint;
@@ -196,7 +196,7 @@ public class DurationsView extends LinearLayout {
 
             adjustTitleTextSize(canvas);
             titleTextPaint.getTextBounds(project, 0, project.length(), titleTextBounds);
-            canvas.drawText(project, (getWidth() - titleTextBounds.width()) / 2f, ((getHeight() + titleTextBounds.height()) / 2) - textBounds.height() - 5, titleTextPaint);
+            canvas.drawText(project, (getWidth() - titleTextBounds.width()) / 2f, ((getHeight() + titleTextBounds.height()) / 2f) - textBounds.height() - 5, titleTextPaint);
 
             boolean drawn = false;
             if (data.length != 0) {

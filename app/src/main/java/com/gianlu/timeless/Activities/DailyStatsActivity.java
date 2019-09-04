@@ -96,7 +96,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         rmv = findViewById(R.id.dailyStats_recyclerViewLayout);
         rmv.linearLayoutManager(RecyclerView.VERTICAL, false);
         rmv.enableSwipeRefresh(() -> updatePage(currentDate == null ? new Date() : currentDate, true), MaterialColors.getInstance().getColorsRes());
-
+        rmv.dividerDecoration(RecyclerView.VERTICAL);
 
         nextDay = findViewById(R.id.dailyStats_nextDay);
         ImageButton prevDay = findViewById(R.id.dailyStats_prevDay);
@@ -153,8 +153,8 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         Durations durations = requester.durations(currentDate, null, null);
 
         final CardsAdapter adapter = new CardsAdapter(this, new CardsAdapter.CardsList()
-                .addGlobalSummary(summaries.globalSummary)
-                .addDurations(R.string.durations, durations)
+                .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.DAILY_STATS)
+                .addDurations(durations)
                 .addPieChart(R.string.projects, summaries.globalSummary.projects)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)
