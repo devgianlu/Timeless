@@ -1,10 +1,15 @@
 package com.gianlu.timeless.Listing;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
@@ -33,33 +38,27 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 class BarChartViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;
     private final BarChart chart;
     private final ImageButton save;
 
     BarChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.card_chart_bar, parent, false));
+        super(inflater.inflate(R.layout.item_chart_bar, parent, false));
 
         title = itemView.findViewById(R.id.barChartCard_title);
         chart = itemView.findViewById(R.id.barChartCard_chart);
         save = itemView.findViewById(R.id.barChartCard_save);
     }
 
-    void bind(@NonNull Context context, @StringRes int title, @NonNull Summaries summaries, @Nullable OnSaveChart listener) {
+    void bind(@StringRes int title, @NonNull Summaries summaries, @Nullable OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setDescription(null);
         chart.setTouchEnabled(false);
-        chart.setNoDataText(context.getString(R.string.noData));
+        chart.setNoDataText(chart.getContext().getString(R.string.noData));
 
-        int textColor = CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorPrimary);
+        int textColor = CommonUtils.resolveAttrAsColor(chart.getContext(), android.R.attr.textColorPrimary);
         chart.getLegend().setTextColor(textColor);
 
         XAxis xAxis = chart.getXAxis();
@@ -106,7 +105,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
                 if (colorsMap.containsKey(entity.name)) {
                     colors.add(colorsMap.get(entity.name));
                 } else {
-                    int color = ContextCompat.getColor(context, materialColors.getColor(colorCount));
+                    int color = ContextCompat.getColor(chart.getContext(), materialColors.getColor(colorCount));
                     colors.add(color);
                     colorsMap.put(entity.name, color);
 

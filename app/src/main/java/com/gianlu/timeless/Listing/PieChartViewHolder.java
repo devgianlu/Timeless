@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Listing;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,18 +56,18 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         colorAccent = ContextCompat.getColor(parent.getContext(), R.color.colorAccent);
     }
 
-    void bind(@NonNull Context context, @StringRes int title, @NonNull LoggedEntities entities, OnSaveChart listener) {
+    void bind(@StringRes int title, @NonNull LoggedEntities entities, OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setDescription(null);
         chart.setHoleColor(Color.argb(0, 0, 0, 0));
-        chart.setNoDataText(context.getString(R.string.noData));
+        chart.setNoDataText(chart.getContext().getString(R.string.noData));
         chart.setDrawEntryLabels(false);
         chart.setRotationEnabled(false);
 
         final Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
-        legend.setTextColor(CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorPrimary));
+        legend.setTextColor(CommonUtils.resolveAttrAsColor(chart.getContext(), android.R.attr.textColorPrimary));
 
         final List<PieEntry> entries = new ArrayList<>();
         for (LoggedEntity entity : entities)
@@ -77,7 +76,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         PieDataSet set = new PieDataSet(entries, null);
         set.setValueTextSize(15);
         set.setSliceSpace(0);
-        set.setValueTextColor(ContextCompat.getColor(context, android.R.color.white));
+        set.setValueTextColor(ContextCompat.getColor(chart.getContext(), android.R.color.white));
         set.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -85,7 +84,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
                 else return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
-        set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), context);
+        set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), chart.getContext());
         chart.setData(new PieData(set));
         chart.setUsePercentValues(true);
 
@@ -109,7 +108,7 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         details.removeAllViews();
         long total_seconds = LoggedEntity.sumSeconds(entities);
         for (LoggedEntity entity : entities) {
-            SuperTextView text = new SuperTextView(context, R.string.cardDetailsEntity,
+            SuperTextView text = new SuperTextView(chart.getContext(), R.string.cardDetailsEntity,
                     entity.name,
                     Utils.timeFormatterHours(entity.total_seconds, true),
                     String.format(Locale.getDefault(),

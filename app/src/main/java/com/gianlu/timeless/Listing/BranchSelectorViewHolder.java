@@ -32,14 +32,14 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
         selected = itemView.findViewById(R.id.branchSelectorItem_selected);
     }
 
-    void bind(@NonNull final Context context, final Config config, final CardsAdapter.Listener listener) {
+    void bind(final Config config, final CardsAdapter.Listener listener) {
         if (config.selectedBranches.isEmpty())
             selectedBranches = new ArrayList<>(config.branches);
         else
             selectedBranches = new ArrayList<>(config.selectedBranches);
 
         selected.setHtml(R.string.selectedBranches, CommonUtils.join(selectedBranches, ", "));
-        select.setOnClickListener(v -> showBranchesDialog(context, config.branches, config.listener, listener));
+        select.setOnClickListener(v -> showBranchesDialog(v.getContext(), config.branches, config.listener, listener));
     }
 
     private void showBranchesDialog(@NonNull final Context context, final List<String> allBranches, final CardsAdapter.OnBranches branchesListener, CardsAdapter.Listener listener) {

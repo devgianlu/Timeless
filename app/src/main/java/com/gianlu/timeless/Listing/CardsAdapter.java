@@ -28,16 +28,13 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_DURATIONS = 5;
     private static final int TYPE_IMPROVEMENT = 6;
     private static final int TYPE_BRANCH_SELECTOR = 7;
-    private final Context context;
     private final LayoutInflater inflater;
     private final Listener listener;
     private final OnSaveChart saveChartListener;
     private final CardsList objs;
 
     public CardsAdapter(@NonNull Context context, CardsList objs, Listener listener, OnSaveChart saveChartListener) {
-        this.context = context;
         this.objs = objs;
-
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
         this.saveChartListener = saveChartListener;
@@ -79,19 +76,19 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             CardsList.SummaryItem s = (CardsList.SummaryItem) objs.objs.get(position);
             ((SummaryViewHolder) holder).bind(s.summary, s.context);
         } else if (holder instanceof LineChartViewHolder) {
-            ((LineChartViewHolder) holder).bind(context, objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
+            ((LineChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof BarChartViewHolder) {
-            ((BarChartViewHolder) holder).bind(context, objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
+            ((BarChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof PieChartViewHolder) {
-            ((PieChartViewHolder) holder).bind(context, objs.titles.get(position), (LoggedEntities) objs.objs.get(position), saveChartListener);
+            ((PieChartViewHolder) holder).bind(objs.titles.get(position), (LoggedEntities) objs.objs.get(position), saveChartListener);
         } else if (holder instanceof ListViewHolder) {
-            ((ListViewHolder) holder).bind(context, objs.titles.get(position), (LoggedEntities) objs.objs.get(position));
+            ((ListViewHolder) holder).bind(objs.titles.get(position), (LoggedEntities) objs.objs.get(position));
         } else if (holder instanceof DurationsViewHolder) {
             ((DurationsViewHolder) holder).bind((Durations) objs.objs.get(position));
         } else if (holder instanceof WeeklyImprovementViewHolder) {
             ((WeeklyImprovementViewHolder) holder).bind((Float) objs.objs.get(position));
         } else if (holder instanceof BranchSelectorViewHolder) {
-            ((BranchSelectorViewHolder) holder).bind(context, (BranchSelectorViewHolder.Config) objs.objs.get(position), listener);
+            ((BranchSelectorViewHolder) holder).bind((BranchSelectorViewHolder.Config) objs.objs.get(position), listener);
         }
     }
 

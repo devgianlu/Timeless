@@ -1,6 +1,5 @@
 package com.gianlu.timeless.Listing;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -47,14 +46,14 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         save = itemView.findViewById(R.id.lineChartCard_save);
     }
 
-    void bind(@NonNull Context context, @StringRes int title, @NonNull Summaries summaries, OnSaveChart listener) {
+    void bind(@StringRes int title, @NonNull Summaries summaries, OnSaveChart listener) {
         this.title.setText(title);
 
-        chart.setNoDataText(context.getString(R.string.noData));
+        chart.setNoDataText(chart.getContext().getString(R.string.noData));
         chart.setDescription(null);
         chart.setTouchEnabled(false);
 
-        int textColor = CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorPrimary);
+        int textColor = CommonUtils.resolveAttrAsColor(chart.getContext(), android.R.attr.textColorPrimary);
         chart.getLegend().setTextColor(textColor);
 
         XAxis xAxis = chart.getXAxis();
@@ -89,7 +88,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
             for (LoggedEntity branch : summary.branches) {
                 LineDataSet set = (LineDataSet) branchToSets.get(branch.name);
                 if (set == null) {
-                    int color = ContextCompat.getColor(context, colors.getColor(i));
+                    int color = ContextCompat.getColor(chart.getContext(), colors.getColor(i));
                     i++;
 
                     set = new LineDataSet(new ArrayList<>(), branch.name);
