@@ -14,8 +14,8 @@ public class SingleSummary extends Summary {
     public final long total_seconds;
     public final long date;
 
-    private SingleSummary(LoggedEntities projects, LoggedEntities languages, LoggedEntities editors, LoggedEntities operating_systems, LoggedEntities entities, LoggedEntities branches, long total_seconds, long date) {
-        super(projects, languages, editors, operating_systems, entities, branches);
+    private SingleSummary(LoggedEntities projects, LoggedEntities languages, LoggedEntities editors, LoggedEntities operating_systems, LoggedEntities entities, LoggedEntities branches, LoggedEntities machines, long total_seconds, long date) {
+        super(projects, languages, editors, operating_systems, entities, branches, machines);
         this.total_seconds = total_seconds;
         this.date = date;
     }
@@ -48,8 +48,9 @@ public class SingleSummary extends Summary {
         LoggedEntities languages = new LoggedEntities(obj.getJSONArray("languages"));
         LoggedEntities editors = new LoggedEntities(obj.getJSONArray("editors"));
         LoggedEntities operating_systems = new LoggedEntities(obj.getJSONArray("operating_systems"));
+        LoggedEntities machines = new LoggedEntities(obj.getJSONArray("machines"));
 
         Collections.sort(entities, new LoggedEntity.TotalSecondsComparator());
-        return new SingleSummary(projects, languages, editors, operating_systems, entities, branches, total_seconds, date);
+        return new SingleSummary(projects, languages, editors, operating_systems, entities, branches, machines, total_seconds, date);
     }
 }

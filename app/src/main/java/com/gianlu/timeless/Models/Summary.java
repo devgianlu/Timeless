@@ -9,14 +9,16 @@ public abstract class Summary {
     public final LoggedEntities operating_systems;
     public final LoggedEntities entities;
     public final LoggedEntities branches;
+    public final LoggedEntities machines;
 
-    Summary(LoggedEntities projects, LoggedEntities languages, LoggedEntities editors, LoggedEntities operating_systems, LoggedEntities entities, LoggedEntities branches) {
+    Summary(LoggedEntities projects, LoggedEntities languages, LoggedEntities editors, LoggedEntities operating_systems, LoggedEntities entities, LoggedEntities branches, LoggedEntities machines) {
         this.projects = projects;
         this.languages = languages;
         this.editors = editors;
         this.operating_systems = operating_systems;
         this.entities = entities;
         this.branches = branches;
+        this.machines = machines;
     }
 
     Summary() {
@@ -26,6 +28,7 @@ public abstract class Summary {
         operating_systems = LoggedEntities.empty();
         entities = LoggedEntities.empty();
         branches = LoggedEntities.empty();
+        machines = LoggedEntities.empty();
     }
 
     public static float doTotalSecondsAverage(List<SingleSummary> summaries) {

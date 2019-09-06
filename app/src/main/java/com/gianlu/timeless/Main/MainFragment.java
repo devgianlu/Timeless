@@ -81,6 +81,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
                 .addPieChart(R.string.projects, summaries.globalSummary.projects)
                 .addPieChart(R.string.languages, summaries.globalSummary.languages)
                 .addPieChart(R.string.editors, summaries.globalSummary.editors)
+                .addPieChart(R.string.machines, summaries.globalSummary.machines)
                 .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems);
 
         if (range == WakaTime.Range.TODAY) {
