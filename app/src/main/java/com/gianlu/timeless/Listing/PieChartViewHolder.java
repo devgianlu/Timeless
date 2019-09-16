@@ -6,17 +6,20 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.OnSaveChart;
+import com.gianlu.timeless.Charting.PieChartColorHelper;
 import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.colors.ProjectsColorMapper;
+import com.gianlu.timeless.dialogs.LoggedEntityDialog;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
@@ -25,19 +28,18 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-class PieChartViewHolder extends RecyclerView.ViewHolder {
+class PieChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final ImageButton save;
     private final PieChart chart;
 
-    PieChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.item_chart_pie, parent, false));
+    PieChartViewHolder(Listener listener, LayoutInflater inflater, ViewGroup parent) {
+        super(listener, inflater, parent, R.layout.item_chart_pie);
 
         title = itemView.findViewById(R.id.pieChartCard_title);
         save = itemView.findViewById(R.id.pieChartCard_save);
@@ -52,12 +54,13 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
         chart.setNoDataText(chart.getContext().getString(R.string.noData));
         chart.setDrawEntryLabels(false);
         chart.setRotationEnabled(false);
+        chart.setUsePercentValues(true);
 
-        final Legend legend = chart.getLegend();
+        Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
         legend.setTextColor(CommonUtils.resolveAttrAsColor(chart.getContext(), android.R.attr.textColorPrimary));
 
-        final List<PieEntry> entries = new ArrayList<>();
+        List<PieEntry> entries = new ArrayList<>();
         for (LoggedEntity entity : entities)
             entries.add(new PieEntry(entity.total_seconds, entity.name));
 
@@ -72,22 +75,24 @@ class PieChartViewHolder extends RecyclerView.ViewHolder {
                 else return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
-        set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), chart.getContext());
-        chart.setData(new PieData(set));
-        chart.setUsePercentValues(true);
 
-        save.setOnClickListener(v -> listener.saveImage(chart, title));
+        PieChartColorHelper helper = new PieChartColorHelper(chart, ProjectsColorMapper.get());
+        helper.setData(new PieData(set));
 
-        chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+        helper.setOnChartValueSelectedListener(new PieChartColorHelper.OnValueSelectedListener() {
             @Override
-            public void onValueSelected(Entry e, Highlight h) {
-
+            public void onValueSelected(@NonNull Entry e, @NonNull Highlight h, @ColorInt int color) {
+                showDialog(LoggedEntityDialog.get(((PieEntry) e).getLabel(), color)
+                        .setOnDismissListener((d) -> chart.highlightValue(null)), null);
             }
 
             @Override
             public void onNothingSelected() {
-
             }
         });
+
+        Utils.addTimeToLegendEntries(chart, entities);
+
+        save.setOnClickListener(v -> listener.saveImage(chart, title));
     }
 }

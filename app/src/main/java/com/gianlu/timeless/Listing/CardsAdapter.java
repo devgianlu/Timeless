@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.timeless.Charting.OnSaveChart;
@@ -29,11 +28,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_IMPROVEMENT = 6;
     private static final int TYPE_BRANCH_SELECTOR = 7;
     private final LayoutInflater inflater;
-    private final Listener listener;
+    private final HelperViewHolder.Listener listener;
     private final OnSaveChart saveChartListener;
     private final CardsList objs;
 
-    public CardsAdapter(@NonNull Context context, CardsList objs, Listener listener, OnSaveChart saveChartListener) {
+    public CardsAdapter(@NonNull Context context, CardsList objs, HelperViewHolder.Listener listener, OnSaveChart saveChartListener) {
         this.objs = objs;
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
@@ -49,7 +48,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             case TYPE_PROJECTS_BAR:
                 return new BarChartViewHolder(inflater, parent);
             case TYPE_PIE:
-                return new PieChartViewHolder(inflater, parent);
+                return new PieChartViewHolder(listener, inflater, parent);
             case TYPE_LINE:
                 return new LineChartViewHolder(inflater, parent);
             case TYPE_FILE_LIST:
@@ -59,7 +58,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             case TYPE_IMPROVEMENT:
                 return new WeeklyImprovementViewHolder(inflater, parent);
             case TYPE_BRANCH_SELECTOR:
-                return new BranchSelectorViewHolder(inflater, parent);
+                return new BranchSelectorViewHolder(listener, inflater, parent);
             default:
                 throw new IllegalStateException("Unknown view type: " + viewType);
         }
@@ -88,7 +87,7 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else if (holder instanceof WeeklyImprovementViewHolder) {
             ((WeeklyImprovementViewHolder) holder).bind((Float) objs.objs.get(position));
         } else if (holder instanceof BranchSelectorViewHolder) {
-            ((BranchSelectorViewHolder) holder).bind((BranchSelectorViewHolder.Config) objs.objs.get(position), listener);
+            ((BranchSelectorViewHolder) holder).bind((BranchSelectorViewHolder.Config) objs.objs.get(position));
         }
     }
 
@@ -99,10 +98,6 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public enum SummaryContext {
         MAIN, DAILY_STATS, CUSTOM_RANGE, PROJECTS
-    }
-
-    public interface Listener {
-        void showDialog(@NonNull AlertDialog.Builder builder);
     }
 
     public interface OnBranches {

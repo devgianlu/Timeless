@@ -1,11 +1,17 @@
 package com.gianlu.timeless;
 
+import androidx.annotation.NonNull;
+
+import com.gianlu.timeless.Models.LoggedEntity;
+import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
+
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-
-import androidx.annotation.NonNull;
 
 public class Utils {
     public static final String ACTION_DATE_RANGE = "changed_date_range";
@@ -13,6 +19,24 @@ public class Utils {
     public static final String ACTION_CHANGE_SELECTED_BRANCHES = "changed_selected_branches";
     public static final String ACTION_FILTER_LEADERS = "filtered_leaderboards";
     public static final String ACTION_SHOW_ME_LEADER = "show_me_in_leaderboards";
+
+    public static void addTimeToLegendEntries(@NonNull Chart chart, @NonNull List<LoggedEntity> entities) {
+        Legend legend = chart.getLegend();
+        LegendEntry[] oldEntries = legend.getEntries();
+        LegendEntry[] customEntries = new LegendEntry[oldEntries.length];
+        for (int i = 0; i < oldEntries.length; i++) {
+            LegendEntry entry = oldEntries[i];
+            LoggedEntity entity = LoggedEntity.find(entities, entry.label);
+            if (entity != null) {
+                entry.label += " (" + Utils.timeFormatterHours(entity.total_seconds, false) + ")";
+                customEntries[i] = entry;
+            }
+        }
+
+        legend.setCustom(customEntries);
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+    }
 
     @NonNull
     public static SimpleDateFormat getDateTimeFormatter() {

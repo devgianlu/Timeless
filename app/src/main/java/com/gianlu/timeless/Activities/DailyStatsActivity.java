@@ -21,6 +21,7 @@ import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
+import com.gianlu.timeless.Listing.HelperViewHolder;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summaries;
@@ -32,7 +33,7 @@ import com.gianlu.timeless.Utils;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, CardsAdapter.Listener, DatePicker.OnDateChangedListener {
+public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, HelperViewHolder.Listener, DatePicker.OnDateChangedListener {
     private TextView currDay;
     private Date currentDate;
     private RecyclerMessageView rmv;

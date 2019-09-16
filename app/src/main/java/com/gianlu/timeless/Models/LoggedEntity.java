@@ -1,5 +1,8 @@
 package com.gianlu.timeless.Models;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,12 +33,13 @@ public class LoggedEntity {
         }
     }
 
-    public static long sumSeconds(List<LoggedEntity> entities) {
-        long sum = 0;
+    @Nullable
+    public static LoggedEntity find(@NonNull List<LoggedEntity> entities, @NonNull String name) {
         for (LoggedEntity entity : entities)
-            sum += entity.total_seconds;
+            if (Objects.equals(entity.name, name))
+                return entity;
 
-        return sum;
+        return null;
     }
 
     @Override

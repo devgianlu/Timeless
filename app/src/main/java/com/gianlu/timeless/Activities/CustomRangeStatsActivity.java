@@ -21,6 +21,7 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Charting.SaveChartAppCompatActivity;
 import com.gianlu.timeless.Listing.CardsAdapter;
+import com.gianlu.timeless.Listing.HelperViewHolder;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
@@ -34,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class CustomRangeStatsActivity extends SaveChartAppCompatActivity implements WakaTime.OnSummary, DatePickerDialog.OnDateSetListener, CardsAdapter.Listener, OnSaveChart {
+public class CustomRangeStatsActivity extends SaveChartAppCompatActivity implements WakaTime.OnSummary, DatePickerDialog.OnDateSetListener, HelperViewHolder.Listener, OnSaveChart {
     private Pair<Date, Date> currentRange;
     private Date tmpStart;
     private WakaTime wakaTime;

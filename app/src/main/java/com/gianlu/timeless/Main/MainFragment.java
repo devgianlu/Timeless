@@ -15,6 +15,7 @@ import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Charting.SaveChartFragment;
 import com.gianlu.timeless.Listing.CardsAdapter;
+import com.gianlu.timeless.Listing.HelperViewHolder;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summaries;
@@ -25,7 +26,7 @@ import com.gianlu.timeless.R;
 
 import java.util.Date;
 
-public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, CardsAdapter.Listener {
+public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, HelperViewHolder.Listener {
     private WakaTime.Range range;
     private RecyclerMessageView layout;
     private WakaTime wakaTime;

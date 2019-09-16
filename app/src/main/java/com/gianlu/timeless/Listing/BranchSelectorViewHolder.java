@@ -8,7 +8,6 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.commonutils.CommonUtils;
@@ -20,29 +19,29 @@ import com.gianlu.timeless.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
+class BranchSelectorViewHolder extends HelperViewHolder {
     private final ImageButton select;
     private final SuperTextView selected;
     private List<String> selectedBranches = null;
 
-    BranchSelectorViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.item_branch_selector, parent, false));
+    BranchSelectorViewHolder(Listener listener, LayoutInflater inflater, ViewGroup parent) {
+        super(listener, inflater, parent, R.layout.item_branch_selector);
 
         select = itemView.findViewById(R.id.branchSelectorItem_select);
         selected = itemView.findViewById(R.id.branchSelectorItem_selected);
     }
 
-    void bind(final Config config, final CardsAdapter.Listener listener) {
+    void bind(Config config) {
         if (config.selectedBranches.isEmpty())
             selectedBranches = new ArrayList<>(config.branches);
         else
             selectedBranches = new ArrayList<>(config.selectedBranches);
 
         selected.setHtml(R.string.selectedBranches, CommonUtils.join(selectedBranches, ", "));
-        select.setOnClickListener(v -> showBranchesDialog(v.getContext(), config.branches, config.listener, listener));
+        select.setOnClickListener(v -> showBranchesDialog(v.getContext(), config.branches, config.listener));
     }
 
-    private void showBranchesDialog(@NonNull final Context context, final List<String> allBranches, final CardsAdapter.OnBranches branchesListener, CardsAdapter.Listener listener) {
+    private void showBranchesDialog(@NonNull Context context, List<String> allBranches, CardsAdapter.OnBranches branchesListener) {
         final boolean[] selectedBranchesBoolean = new boolean[allBranches.size()];
         for (int i = 0; i < allBranches.size(); i++)
             selectedBranchesBoolean[i] = selectedBranches.contains(allBranches.get(i));
@@ -69,7 +68,7 @@ class BranchSelectorViewHolder extends RecyclerView.ViewHolder {
                 })
                 .setNegativeButton(android.R.string.cancel, null);
 
-        if (listener != null) listener.showDialog(builder);
+        showDialog(builder);
         ThisApplication.sendAnalytics(Utils.ACTION_CHANGE_SELECTED_BRANCHES);
     }
 

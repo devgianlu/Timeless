@@ -11,14 +11,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.FontsManager;
-import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Models.Duration;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.colors.ColorsMapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,7 +62,7 @@ public class DurationsView extends LinearLayout {
         gridPaint.setColor(CommonUtils.resolveAttrAsColor(context, android.R.attr.textColorSecondary));
     }
 
-    public void setDurations(Durations durations) {
+    public void setDurations(Durations durations, ColorsMapper colors) {
         this.projects = new ArrayList<>();
         for (Duration duration : durations)
             if (!projects.contains(duration.project))
@@ -75,9 +76,12 @@ public class DurationsView extends LinearLayout {
             noData.setTextAlignment(TEXT_ALIGNMENT_CENTER);
             addView(noData);
         } else {
-            MaterialColors colors = MaterialColors.getShuffledInstance();
-            for (int i = 0; i < projects.size(); i++)
-                addView(new ChartView(getContext(), projects.get(i), durations.filter(projects.get(i)), ContextCompat.getColor(getContext(), colors.getColor(i)), projects.size() <= 1, durations.isToday()));
+            for (int i = 0; i < projects.size(); i++) {
+                String p = projects.get(i);
+                addView(new ChartView(getContext(), p, durations.filter(p),
+                        ContextCompat.getColor(getContext(), colors.getColor(p)),
+                        projects.size() <= 1, durations.isToday()));
+            }
         }
     }
 
@@ -94,7 +98,7 @@ public class DurationsView extends LinearLayout {
         private final float hiddenSince;
         private float mInternalPadding;
 
-        public ChartView(Context context, String project, List<Duration> durations, int color, boolean lonely, boolean isToday) {
+        public ChartView(Context context, String project, List<Duration> durations, @ColorInt int color, boolean lonely, boolean isToday) {
             super(context);
             mHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, context.getResources().getDisplayMetrics());
 
