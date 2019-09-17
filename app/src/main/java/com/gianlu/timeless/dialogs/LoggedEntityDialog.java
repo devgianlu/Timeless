@@ -14,17 +14,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.Utils;
 
 public class LoggedEntityDialog extends DialogFragment {
     private DialogInterface.OnDismissListener dismissListener = null;
 
     @NonNull
-    public static LoggedEntityDialog get(@NonNull String title, @ColorInt int bgColor) {
+    public static LoggedEntityDialog get(@NonNull String title, @ColorInt int bgColor, int timeSeconds) {
         LoggedEntityDialog dialog = new LoggedEntityDialog();
         Bundle args = new Bundle();
         args.putString("title", title);
         args.putInt("bgColor", bgColor);
+        args.putInt("timeSeconds", timeSeconds);
         dialog.setArguments(args);
         return dialog;
     }
@@ -47,14 +50,20 @@ public class LoggedEntityDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.dialog_logged_entity, container, false);
         TextView title = layout.findViewById(R.id.loggedEntityDialog_title);
+        TextView time = layout.findViewById(R.id.loggedEntityDialog_time);
 
         Bundle args = getArguments();
         if (args != null) {
-            layout.setBackgroundColor(args.getInt("bgColor", Color.WHITE));
-            title.setText(args.getString("title", null));
-        }
+            int bgColor = args.getInt("bgColor", Color.WHITE);
+            int fgColor = CommonUtils.blackOrWhiteText(bgColor);
 
-        // TODO: Show in-depth details
+            layout.setBackgroundColor(bgColor);
+            title.setText(args.getString("title", null));
+            time.setText(Utils.timeFormatterHours(args.getInt("timeSeconds", 0), true));
+
+            title.setTextColor(fgColor);
+            time.setTextColor(fgColor);
+        }
 
         return layout;
     }

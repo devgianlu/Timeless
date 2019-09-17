@@ -9,7 +9,15 @@
         android:id="@+id/loggedEntityDialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textAlignment="center"
         android:textAppearance="?textAppearanceHeadline6" />
 
+    <TextView
+        android:id="@+id/loggedEntityDialog_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceCaption" />
 
 </LinearLayout>

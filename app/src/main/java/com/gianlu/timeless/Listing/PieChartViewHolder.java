@@ -82,7 +82,7 @@ class PieChartViewHolder extends HelperViewHolder {
         helper.setOnChartValueSelectedListener(new PieChartColorHelper.OnValueSelectedListener() {
             @Override
             public void onValueSelected(@NonNull Entry e, @NonNull Highlight h, @ColorInt int color) {
-                showDialog(LoggedEntityDialog.get(((PieEntry) e).getLabel(), color)
+                showDialog(LoggedEntityDialog.get(((PieEntry) e).getLabel(), color, (int) ((PieEntry) e).getValue())
                         .setOnDismissListener((d) -> chart.highlightValue(null)), null);
             }
 
