@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Charting;
+package com.gianlu.timeless.charts;
 
 import android.Manifest;
 import android.view.View;

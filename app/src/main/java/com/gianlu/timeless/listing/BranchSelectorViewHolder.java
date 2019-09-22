@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Listing;
+package com.gianlu.timeless.listing;
 
 
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 
 import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.commonutils.CommonUtils;
@@ -15,6 +14,7 @@ import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ class BranchSelectorViewHolder extends HelperViewHolder {
         for (int i = 0; i < allBranches.size(); i++)
             selectedBranchesBoolean[i] = selectedBranches.contains(allBranches.get(i));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle(R.string.selectBranches)
                 .setMultiChoiceItems(allBranches.toArray(new String[0]), selectedBranchesBoolean, (dialog, which, isChecked) -> selectedBranchesBoolean[which] = isChecked)
                 .setPositiveButton(R.string.apply, (dialog, which) -> {

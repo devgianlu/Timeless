@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Listing;
+package com.gianlu.timeless.listing;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -8,16 +8,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.SingleSummary;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.charts.OnSaveChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -33,13 +32,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-class LineChartViewHolder extends RecyclerView.ViewHolder {
+class LineChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final LineChart chart;
     private final ImageButton save;
 
-    LineChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.item_chart_line, parent, false));
+    LineChartViewHolder(Listener listener, LayoutInflater inflater, ViewGroup parent) {
+        super(listener, inflater, parent, R.layout.item_chart_line);
 
         title = itemView.findViewById(R.id.lineChartCard_title);
         chart = itemView.findViewById(R.id.lineChartCard_chart);
@@ -53,7 +52,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
         chart.setDescription(null);
         chart.setTouchEnabled(false);
 
-        int textColor = CommonUtils.resolveAttrAsColor(chart.getContext(), android.R.attr.textColorPrimary);
+        int textColor = CommonUtils.resolveAttrAsColor(getContext(), android.R.attr.textColorPrimary);
         chart.getLegend().setTextColor(textColor);
 
         XAxis xAxis = chart.getXAxis();
@@ -88,7 +87,7 @@ class LineChartViewHolder extends RecyclerView.ViewHolder {
             for (LoggedEntity branch : summary.branches) {
                 LineDataSet set = (LineDataSet) branchToSets.get(branch.name);
                 if (set == null) {
-                    int color = ContextCompat.getColor(chart.getContext(), colors.getColor(i));
+                    int color = ContextCompat.getColor(getContext(), colors.getColor(i));
                     i++;
 
                     set = new LineDataSet(new ArrayList<>(), branch.name);

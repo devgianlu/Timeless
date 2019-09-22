@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Charting;
+package com.gianlu.timeless.charts;
 
 import android.content.Context;
 import android.graphics.Canvas;

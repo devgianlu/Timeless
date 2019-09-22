@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Charting;
+package com.gianlu.timeless.charts;
 
 import android.content.Context;
 
@@ -16,7 +16,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
-public class PieChartColorHelper {
+public final class PieChartColorHelper {
     private final PieChart chart;
     private final ColorsMapper colors;
 

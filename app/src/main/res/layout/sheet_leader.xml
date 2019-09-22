@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.gianlu.timeless.Charting.SquarePieChart
+    <com.gianlu.timeless.charts.SquarePieChart
         android:layout_marginTop="8dp"
         android:id="@+id/leaderSheet_chart"
         android:layout_width="match_parent"

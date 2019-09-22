@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Charting;
+package com.gianlu.timeless.charts;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -7,6 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Environment;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.FontsManager;
 import com.gianlu.commonutils.Logging;
@@ -23,15 +28,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
+final class SaveChartUtils {
 
-public class SaveChartUtils {
+    private SaveChartUtils() {
+    }
 
     @Nullable
-    public static File save(View view, @StringRes int title, @Nullable Project project) {
+    static File save(View view, @StringRes int title, @Nullable Project project) {
         String name = view.getContext().getString(title) + " (" + new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault()).format(new Date()) + ")";
 
         try {
@@ -43,7 +46,7 @@ public class SaveChartUtils {
     }
 
     @NonNull
-    static File save(View chart, @Nullable Project project, String name) throws IOException {
+    private static File save(View chart, @Nullable Project project, String name) throws IOException {
         File dest = new File(getImageDirectory(project), name + ".png");
         try (OutputStream out = new FileOutputStream(dest)) {
             Bitmap bitmap = createBitmap(chart);
@@ -55,7 +58,7 @@ public class SaveChartUtils {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static File getImageDirectory(@Nullable Project project) {
+    private static File getImageDirectory(@Nullable Project project) {
         File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Timeless");
         dir.mkdir();
 
@@ -69,7 +72,7 @@ public class SaveChartUtils {
     }
 
     @NonNull
-    public static Bitmap createBitmap(@NonNull View view) {
+    private static Bitmap createBitmap(@NonNull View view) {
         Bitmap chartBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas chartCanvas = new Canvas(chartBitmap);
         chartCanvas.drawColor(Color.WHITE);
@@ -101,7 +104,7 @@ public class SaveChartUtils {
         rectPaint.setColor(ContextCompat.getColor(view.getContext(), R.color.colorPrimaryDark));
 
         canvas.drawRect(0, view.getHeight() + 10, canvas.getWidth(), canvas.getHeight(), rectPaint);
-        canvas.drawText(text, (canvas.getWidth() - textBounds.width()) / 2f, view.getHeight() + ((canvas.getHeight() - view.getHeight() - 10 + textBounds.height()) / 2) + 6, textPaint);
+        canvas.drawText(text, (canvas.getWidth() - textBounds.width()) / 2f, view.getHeight() + ((canvas.getHeight() - view.getHeight() - 10 + textBounds.height()) / 2f) + 6, textPaint);
 
         return bitmap;
     }

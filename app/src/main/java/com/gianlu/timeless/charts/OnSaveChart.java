@@ -1,12 +1,12 @@
-package com.gianlu.timeless.Charting;
+package com.gianlu.timeless.charts;
 
 import android.view.View;
-
-import com.gianlu.timeless.Models.Project;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import com.gianlu.timeless.Models.Project;
 
 public interface OnSaveChart {
     @Nullable

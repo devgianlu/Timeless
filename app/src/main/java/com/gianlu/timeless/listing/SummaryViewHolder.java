@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Listing;
+package com.gianlu.timeless.listing;
 
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -8,10 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.timeless.Listing.CardsAdapter.SummaryContext;
 import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.listing.CardsAdapter.SummaryContext;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

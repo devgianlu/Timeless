@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Listing;
+package com.gianlu.timeless.listing;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,11 +8,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.Models.Summaries;
+import com.gianlu.timeless.charts.OnSaveChart;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -46,11 +46,11 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             case TYPE_SUMMARY:
                 return new SummaryViewHolder(inflater, parent);
             case TYPE_PROJECTS_BAR:
-                return new BarChartViewHolder(inflater, parent);
+                return new BarChartViewHolder(listener, inflater, parent);
             case TYPE_PIE:
                 return new PieChartViewHolder(listener, inflater, parent);
             case TYPE_LINE:
-                return new LineChartViewHolder(inflater, parent);
+                return new LineChartViewHolder(listener, inflater, parent);
             case TYPE_FILE_LIST:
                 return new ListViewHolder(inflater, parent);
             case TYPE_DURATIONS:

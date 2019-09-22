@@ -13,12 +13,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-public class Utils {
+public final class Utils {
     public static final String ACTION_DATE_RANGE = "changed_date_range";
     public static final String ACTION_SAVED_CHART = "saved_chart_as_image";
     public static final String ACTION_CHANGE_SELECTED_BRANCHES = "changed_selected_branches";
     public static final String ACTION_FILTER_LEADERS = "filtered_leaderboards";
     public static final String ACTION_SHOW_ME_LEADER = "show_me_in_leaderboards";
+
+    private Utils() {
+    }
 
     public static void addTimeToLegendEntries(@NonNull Chart chart, @NonNull List<LoggedEntity> entities) {
         Legend legend = chart.getLegend();

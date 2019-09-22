@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Charting;
+package com.gianlu.timeless.charts;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -20,6 +20,6 @@ public class SquareBarChart extends BarChart {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, (int) (widthMeasureSpec + getLegend().mNeededHeight));
+        super.onMeasure(widthMeasureSpec, (int) (widthMeasureSpec + getLegend().mNeededHeight - getLegend().getYOffset()));
     }
 }

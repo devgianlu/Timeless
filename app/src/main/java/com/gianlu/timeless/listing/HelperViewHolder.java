@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Listing;
+package com.gianlu.timeless.listing;
 
 import android.content.Context;
 import android.view.LayoutInflater;

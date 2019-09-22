@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Listing;
+package com.gianlu.timeless.listing;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -12,12 +12,12 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.Charting.OnSaveChart;
-import com.gianlu.timeless.Charting.PieChartColorHelper;
 import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.charts.OnSaveChart;
+import com.gianlu.timeless.charts.PieChartColorHelper;
 import com.gianlu.timeless.colors.ProjectsColorMapper;
 import com.gianlu.timeless.dialogs.LoggedEntityDialog;
 import com.github.mikephil.charting.charts.PieChart;
@@ -58,16 +58,19 @@ class PieChartViewHolder extends HelperViewHolder {
 
         Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
-        legend.setTextColor(CommonUtils.resolveAttrAsColor(chart.getContext(), android.R.attr.textColorPrimary));
+        legend.setTextColor(CommonUtils.resolveAttrAsColor(getContext(), android.R.attr.textColorPrimary));
 
         List<PieEntry> entries = new ArrayList<>();
-        for (LoggedEntity entity : entities)
+        for (LoggedEntity entity : entities) {
+            if (entity.total_seconds < 1000) continue;
+
             entries.add(new PieEntry(entity.total_seconds, entity.name));
+        }
 
         PieDataSet set = new PieDataSet(entries, null);
         set.setValueTextSize(15);
         set.setSliceSpace(0);
-        set.setValueTextColor(ContextCompat.getColor(chart.getContext(), android.R.color.white));
+        set.setValueTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
         set.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {

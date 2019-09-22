@@ -17,15 +17,15 @@ import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.timeless.Activities.CommitsActivity;
-import com.gianlu.timeless.Charting.SaveChartFragment;
-import com.gianlu.timeless.Listing.CardsAdapter;
-import com.gianlu.timeless.Listing.HelperViewHolder;
 import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.NetIO.WakaTime;
 import com.gianlu.timeless.NetIO.WakaTimeException;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.charts.SaveChartFragment;
+import com.gianlu.timeless.listing.CardsAdapter;
+import com.gianlu.timeless.listing.HelperViewHolder;
 
 import java.util.Date;
 import java.util.List;

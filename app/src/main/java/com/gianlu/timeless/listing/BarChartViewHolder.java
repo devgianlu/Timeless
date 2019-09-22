@@ -1,4 +1,4 @@
-package com.gianlu.timeless.Listing;
+package com.gianlu.timeless.listing;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,16 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.timeless.Charting.OnSaveChart;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.Models.Summaries;
 import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.charts.OnSaveChart;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
@@ -38,13 +37,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-class BarChartViewHolder extends RecyclerView.ViewHolder {
+class BarChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final BarChart chart;
     private final ImageButton save;
 
-    BarChartViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.item_chart_bar, parent, false));
+    BarChartViewHolder(Listener listener, LayoutInflater inflater, ViewGroup parent) {
+        super(listener, inflater, parent, R.layout.item_chart_bar);
 
         title = itemView.findViewById(R.id.barChartCard_title);
         chart = itemView.findViewById(R.id.barChartCard_chart);
@@ -58,7 +57,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         chart.setTouchEnabled(false);
         chart.setNoDataText(chart.getContext().getString(R.string.noData));
 
-        int textColor = CommonUtils.resolveAttrAsColor(chart.getContext(), android.R.attr.textColorPrimary);
+        int textColor = CommonUtils.resolveAttrAsColor(getContext(), android.R.attr.textColorPrimary);
         chart.getLegend().setTextColor(textColor);
 
         XAxis xAxis = chart.getXAxis();
@@ -87,12 +86,12 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        final Legend legend = chart.getLegend();
+        Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
 
-        final List<BarEntry> entries = new ArrayList<>();
-        final Map<String, Integer> colorsMap = new HashMap<>();
-        final List<Integer> colors = new ArrayList<>();
+        List<BarEntry> entries = new ArrayList<>();
+        Map<String, Integer> colorsMap = new HashMap<>();
+        List<Integer> colors = new ArrayList<>();
         List<LegendEntry> legendEntries = new ArrayList<>();
         int colorCount = 0;
         MaterialColors materialColors = MaterialColors.getShuffledInstance();
@@ -105,7 +104,7 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
                 if (colorsMap.containsKey(entity.name)) {
                     colors.add(colorsMap.get(entity.name));
                 } else {
-                    int color = ContextCompat.getColor(chart.getContext(), materialColors.getColor(colorCount));
+                    int color = ContextCompat.getColor(getContext(), materialColors.getColor(colorCount));
                     colors.add(color);
                     colorsMap.put(entity.name, color);
 
@@ -133,7 +132,6 @@ class BarChartViewHolder extends RecyclerView.ViewHolder {
         chart.setFitBars(true);
 
         if (legendEntries.isEmpty()) chart.clear();
-        if (listener != null)
-            save.setOnClickListener(v -> listener.saveImage(chart, title));
+        if (listener != null) save.setOnClickListener(v -> listener.saveImage(chart, title));
     }
 }
