@@ -97,6 +97,7 @@ public class PieChartViewHolder extends HelperViewHolder {
         });
 
         Utils.addTimeToLegendEntries(chart, entities);
+        if (entries.isEmpty()) chart.clear();
 
         save.setOnClickListener(v -> listener.saveImage(chart, title));
     }

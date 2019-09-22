@@ -18,7 +18,9 @@
     <com.gianlu.commonutils.CasualViews.SuperTextView
         android:id="@+id/commitSheet_hash"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1" />
 
     <com.gianlu.commonutils.CasualViews.SuperTextView
         android:id="@+id/commitSheet_ref"

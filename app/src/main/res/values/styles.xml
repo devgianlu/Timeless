@@ -1,4 +1,6 @@
 <resources>
 
     <style name="AppTheme" parent="BaseAppTheme" />
+
+    <style name="AppTheme.Preferences" parent="AppTheme" />
 </resources>

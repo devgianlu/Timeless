@@ -33,24 +33,25 @@
         <!-- Main activity -->
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"
             android:configChanges="uiMode"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.Drawer" />
 
         <!-- Preferences activity -->
         <activity
-            android:configChanges="uiMode"
             android:name=".PreferenceActivity"
-            android:screenOrientation="portrait" />
+            android:configChanges="uiMode"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Preferences" />
 
         <!-- Grant permission activity -->
         <activity
-            android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
-            android:theme="@style/FullscreenTheme"
             android:name=".GrantActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -75,43 +76,43 @@
 
         <!-- Custom range stats activity -->
         <activity
-            android:configChanges="uiMode"
             android:name=".Activities.CustomRangeStatsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Commits activity -->
         <activity
-            android:configChanges="uiMode"
             android:name=".Activities.CommitsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Projects activity -->
         <activity
-            android:configChanges="uiMode"
             android:name=".Activities.ProjectsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Leaders activity -->
         <activity
-            android:configChanges="uiMode"
             android:name=".Activities.LeadersActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Private leaderboards activity -->
         <activity
-            android:configChanges="uiMode"
             android:name=".Activities.PrivateLeaderboardsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Logs provider -->
         <provider

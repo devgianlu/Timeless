@@ -15,12 +15,13 @@ import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
 import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
-import com.gianlu.commonutils.MaterialColors;
 import com.gianlu.commonutils.Toaster;
 import com.gianlu.timeless.Models.Leader;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.charts.PieChartColorHelper;
 import com.gianlu.timeless.charts.SquarePieChart;
+import com.gianlu.timeless.colors.ProjectsColorMapper;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -60,9 +61,11 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
 
         chart.clear();
         chart.setDescription(null);
+        chart.setTouchEnabled(false);
         chart.setHoleColor(Color.argb(0, 0, 0, 0));
         chart.setDrawEntryLabels(false);
         chart.setRotationEnabled(false);
+        chart.setUsePercentValues(true);
 
         Legend legend = chart.getLegend();
         legend.setWordWrapEnabled(true);
@@ -83,10 +86,9 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
                 else return String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         });
-        set.setColors(MaterialColors.getShuffledInstance().getColorsRes(), parent.getContext());
-        chart.setData(new PieData(set));
-        chart.setUsePercentValues(true);
-        chart.invalidate();
+
+        PieChartColorHelper helper = new PieChartColorHelper(chart, ProjectsColorMapper.get());
+        helper.setData(new PieData(set));
 
         isLoading(false);
     }
