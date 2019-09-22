@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.timeless.Models.Durations;
-import com.gianlu.timeless.Models.GlobalSummary;
-import com.gianlu.timeless.Models.LoggedEntities;
-import com.gianlu.timeless.Models.Summaries;
+import com.gianlu.timeless.api.models.Durations;
+import com.gianlu.timeless.api.models.GlobalSummary;
+import com.gianlu.timeless.api.models.LoggedEntities;
+import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.charts.OnSaveChart;
 
 import java.math.BigDecimal;

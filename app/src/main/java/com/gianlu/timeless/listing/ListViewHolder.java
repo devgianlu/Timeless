@@ -8,9 +8,9 @@ import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.timeless.Activities.Projects.FilesAdapter;
-import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.activities.projects.FilesAdapter;
+import com.gianlu.timeless.api.models.LoggedEntities;
 
 class ListViewHolder extends RecyclerView.ViewHolder {
     private final TextView title;

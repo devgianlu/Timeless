@@ -12,11 +12,11 @@ import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.timeless.Models.LoggedEntity;
-import com.gianlu.timeless.Models.Summaries;
-import com.gianlu.timeless.Models.Summary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.api.models.LoggedEntity;
+import com.gianlu.timeless.api.models.Summaries;
+import com.gianlu.timeless.api.models.Summary;
 import com.gianlu.timeless.charts.OnSaveChart;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;

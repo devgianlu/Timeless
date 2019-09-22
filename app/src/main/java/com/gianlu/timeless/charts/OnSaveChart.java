@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.gianlu.timeless.Models.Project;
+import com.gianlu.timeless.api.models.Project;
 
 public interface OnSaveChart {
     @Nullable

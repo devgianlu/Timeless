@@ -13,11 +13,11 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.timeless.Activities.ProjectsActivity;
-import com.gianlu.timeless.Models.LoggedEntities;
-import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.activities.ProjectsActivity;
+import com.gianlu.timeless.api.models.LoggedEntities;
+import com.gianlu.timeless.api.models.LoggedEntity;
 import com.gianlu.timeless.charts.OnSaveChart;
 import com.gianlu.timeless.charts.PieChartColorHelper;
 import com.gianlu.timeless.colors.ProjectsColorMapper;

@@ -13,7 +13,7 @@ import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
-import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.api.WakaTime;
 
 public class GrantActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
     private WakaTime.Builder builder;

@@ -14,8 +14,8 @@ import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.OfflineActivity;
 import com.gianlu.commonutils.Preferences.Prefs;
 import com.gianlu.commonutils.Toaster;
-import com.gianlu.timeless.Models.User;
-import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.api.WakaTime;
+import com.gianlu.timeless.api.models.User;
 
 import java.io.IOException;
 

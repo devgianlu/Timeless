@@ -8,9 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.timeless.Models.GlobalSummary;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.api.models.GlobalSummary;
 import com.gianlu.timeless.listing.CardsAdapter.SummaryContext;
 
 import java.text.SimpleDateFormat;

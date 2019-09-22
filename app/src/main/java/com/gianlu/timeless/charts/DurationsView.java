@@ -16,9 +16,9 @@ import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.FontsManager;
-import com.gianlu.timeless.Models.Duration;
-import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.api.models.Duration;
+import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.colors.ColorsMapper;
 
 import java.util.ArrayList;

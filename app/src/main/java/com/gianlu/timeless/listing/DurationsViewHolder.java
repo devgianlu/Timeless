@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.timeless.Models.Durations;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.charts.DurationsView;
 import com.gianlu.timeless.colors.ProjectsColorMapper;
 

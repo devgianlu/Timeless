@@ -68,7 +68,7 @@
 
         <!-- Daily stats activity -->
         <activity
-            android:name=".Activities.DailyStatsActivity"
+            android:name=".activities.DailyStatsActivity"
             android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -76,7 +76,7 @@
 
         <!-- Custom range stats activity -->
         <activity
-            android:name=".Activities.CustomRangeStatsActivity"
+            android:name=".activities.CustomRangeStatsActivity"
             android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -84,7 +84,7 @@
 
         <!-- Commits activity -->
         <activity
-            android:name=".Activities.CommitsActivity"
+            android:name=".activities.CommitsActivity"
             android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -92,7 +92,7 @@
 
         <!-- Projects activity -->
         <activity
-            android:name=".Activities.ProjectsActivity"
+            android:name=".activities.ProjectsActivity"
             android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -100,7 +100,7 @@
 
         <!-- Leaders activity -->
         <activity
-            android:name=".Activities.LeadersActivity"
+            android:name=".activities.LeadersActivity"
             android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -108,7 +108,7 @@
 
         <!-- Private leaderboards activity -->
         <activity
-            android:name=".Activities.PrivateLeaderboardsActivity"
+            android:name=".activities.PrivateLeaderboardsActivity"
             android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"

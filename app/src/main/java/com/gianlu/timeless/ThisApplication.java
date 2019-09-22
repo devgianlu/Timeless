@@ -8,7 +8,7 @@ import com.gianlu.commonutils.Analytics.AnalyticsApplication;
 import com.gianlu.commonutils.ConnectivityChecker;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Preferences.Prefs;
-import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.api.WakaTime;
 
 import java.io.BufferedReader;
 import java.io.IOException;

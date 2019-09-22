@@ -2,7 +2,7 @@ package com.gianlu.timeless;
 
 import androidx.annotation.NonNull;
 
-import com.gianlu.timeless.Models.LoggedEntity;
+import com.gianlu.timeless.api.models.LoggedEntity;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;

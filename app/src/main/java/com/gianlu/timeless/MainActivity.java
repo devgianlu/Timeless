@@ -15,17 +15,17 @@ import com.gianlu.commonutils.Drawer.BaseDrawerItem;
 import com.gianlu.commonutils.Drawer.DrawerManager;
 import com.gianlu.commonutils.Logging;
 import com.gianlu.commonutils.Toaster;
-import com.gianlu.timeless.Activities.CommitsActivity;
-import com.gianlu.timeless.Activities.CustomRangeStatsActivity;
-import com.gianlu.timeless.Activities.DailyStatsActivity;
-import com.gianlu.timeless.Activities.LeadersActivity;
-import com.gianlu.timeless.Activities.PrivateLeaderboardsActivity;
-import com.gianlu.timeless.Activities.ProjectsActivity;
-import com.gianlu.timeless.Main.DrawerItem;
-import com.gianlu.timeless.Main.MainFragment;
-import com.gianlu.timeless.Main.PagerAdapter;
-import com.gianlu.timeless.Models.User;
-import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.timeless.activities.CommitsActivity;
+import com.gianlu.timeless.activities.CustomRangeStatsActivity;
+import com.gianlu.timeless.activities.DailyStatsActivity;
+import com.gianlu.timeless.activities.LeadersActivity;
+import com.gianlu.timeless.activities.PrivateLeaderboardsActivity;
+import com.gianlu.timeless.activities.ProjectsActivity;
+import com.gianlu.timeless.api.WakaTime;
+import com.gianlu.timeless.api.models.User;
+import com.gianlu.timeless.main.DrawerItem;
+import com.gianlu.timeless.main.MainFragment;
+import com.gianlu.timeless.main.PagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends ActivityWithDialog implements DrawerManager.MenuDrawerListener<DrawerItem> {

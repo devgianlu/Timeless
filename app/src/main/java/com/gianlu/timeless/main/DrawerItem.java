@@ -1,0 +1,7 @@
+package com.gianlu.timeless.main;
+
+public enum DrawerItem {
+    COMMITS, PROJECTS, PUBLIC_LEADERBOARD,
+    PREFERENCES, SUPPORT, DAILY_STATS,
+    PRIVATE_LEADERBOARDS, CUSTOM_RANGE_STATS
+}

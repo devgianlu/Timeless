@@ -15,10 +15,10 @@ import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.FontsManager;
 import com.gianlu.commonutils.Logging;
-import com.gianlu.timeless.Models.Project;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.api.models.Project;
 
 import java.io.File;
 import java.io.FileOutputStream;
