@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.SuperTextView;
+import com.gianlu.commonutils.misc.SuperTextView;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.models.LoggedEntity;

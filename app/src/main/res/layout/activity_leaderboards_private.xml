@@ -10,7 +10,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:id="@+id/privateLeaderboards_toolbar" />
 
-    <com.gianlu.commonutils.CasualViews.RecyclerMessageView
+    <com.gianlu.commonutils.misc.RecyclerMessageView
         android:id="@+id/privateLeaderboards_rmv"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

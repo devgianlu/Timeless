@@ -14,10 +14,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
-import com.gianlu.commonutils.Dialogs.MaterialDatePickerDialog;
-import com.gianlu.commonutils.MaterialColors;
-import com.gianlu.commonutils.Toaster;
+import com.gianlu.commonutils.dialogs.MaterialDatePickerDialog;
+import com.gianlu.commonutils.misc.RecyclerMessageView;
+import com.gianlu.commonutils.typography.MaterialColors;
+import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
@@ -48,7 +48,7 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
         if (currentRange.first.getTime() == currentRange.second.getTime())
             rangeText.setText(formatter.format(currentRange.first));
         else
-            rangeText.setText(formatter.format(currentRange.first) + " - " + formatter.format(currentRange.second));
+            rangeText.setText(String.format(Locale.getDefault(), "%s - %s", formatter.format(currentRange.first), formatter.format(currentRange.second)));
     }
 
     @Override

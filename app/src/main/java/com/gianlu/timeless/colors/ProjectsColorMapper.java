@@ -3,7 +3,7 @@ package com.gianlu.timeless.colors;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 
-import com.gianlu.commonutils.MaterialColors;
+import com.gianlu.commonutils.typography.MaterialColors;
 
 import java.util.HashMap;
 import java.util.Map;

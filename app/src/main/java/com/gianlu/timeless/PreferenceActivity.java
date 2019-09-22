@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.gianlu.commonutils.Preferences.BasePreferenceActivity;
-import com.gianlu.commonutils.Preferences.BasePreferenceFragment;
-import com.gianlu.commonutils.Preferences.MaterialAboutPreferenceItem;
+import com.gianlu.commonutils.preferences.BasePreferenceActivity;
+import com.gianlu.commonutils.preferences.BasePreferenceFragment;
+import com.gianlu.commonutils.preferences.MaterialAboutPreferenceItem;
 import com.yarolegovich.mp.MaterialCheckboxPreference;
 
 import java.util.Arrays;

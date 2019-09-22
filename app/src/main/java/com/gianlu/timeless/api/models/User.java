@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.Drawer.BaseDrawerProfile;
+import com.gianlu.commonutils.drawer.BaseDrawerProfile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,10 +22,12 @@ public class User implements Serializable, BaseDrawerProfile {
 
     public User(JSONObject obj) throws JSONException {
         id = obj.getString("id");
-        website = obj.optString("website", null);
         email = CommonUtils.getStupidString(obj, "email");
         username = CommonUtils.getStupidString(obj, "username");
         full_name = CommonUtils.getStupidString(obj, "full_name");
+
+        if (!obj.has("website")) website = null;
+        else website = obj.getString("website");
     }
 
     @Nullable

@@ -7,8 +7,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
-import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.misc.RecyclerMessageView;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.activities.privateleaderboards.LeaderboardsAdapter;
 import com.gianlu.timeless.api.WakaTime;

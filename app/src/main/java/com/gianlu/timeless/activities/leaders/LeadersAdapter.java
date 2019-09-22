@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.InfiniteRecyclerView;
-import com.gianlu.commonutils.FontsManager;
+import com.gianlu.commonutils.misc.InfiniteRecyclerView;
+import com.gianlu.commonutils.typography.FontsManager;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.WakaTime;

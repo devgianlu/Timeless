@@ -17,10 +17,10 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
-import com.gianlu.commonutils.Lifecycle.LifecycleAwareRunnable;
-import com.gianlu.commonutils.Logging;
-import com.gianlu.commonutils.Preferences.Prefs;
+import com.gianlu.commonutils.lifecycle.LifecycleAwareHandler;
+import com.gianlu.commonutils.lifecycle.LifecycleAwareRunnable;
+import com.gianlu.commonutils.logging.Logging;
+import com.gianlu.commonutils.preferences.Prefs;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.PK;
 import com.gianlu.timeless.R;
@@ -410,7 +410,7 @@ public class WakaTime {
             }
         }
 
-        public void endFlow(@NonNull final String data, @NonNull final InitializationListener listener) {
+        public void endFlow(@NonNull String data, @NonNull InitializationListener listener) {
             executorService.execute(() -> {
                 try {
                     OAuth2Authorization auth = service.extractAuthorization(data);
@@ -418,13 +418,12 @@ public class WakaTime {
                         throw new ShouldGetAccessToken("Failed getting authorization code!");
                     token = service.getAccessToken(auth.getCode());
 
-                    final WakaTime w = build();
+                    WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
-                } catch (IOException | ShouldGetAccessToken | InterruptedException | ExecutionException ex) {
+                } catch (ShouldGetAccessToken ex) {
+                    ex.resolve(context);
+                } catch (IOException | InterruptedException | ExecutionException ex) {
                     handler.post(() -> listener.onException(ex));
-
-                    if (ex instanceof ShouldGetAccessToken)
-                        ((ShouldGetAccessToken) ex).resolve(context);
                 }
             });
         }
@@ -447,7 +446,7 @@ public class WakaTime {
                     if (!token.getScope().contains("read_private_leaderboards"))
                         throw new ShouldGetAccessToken(new IllegalStateException("Missing `read_private_leaderboards` scope"));
 
-                    final WakaTime w = build();
+                    WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
                 } catch (ShouldGetAccessToken ex) {
                     ex.resolve(context);
@@ -476,7 +475,7 @@ public class WakaTime {
         }
 
         public void resolve(@Nullable Context context) {
-            if (context == null) throw new RuntimeException(this);
+            if (context == null) throw new IllegalStateException(this);
             context.startActivity(new Intent(context, GrantActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }

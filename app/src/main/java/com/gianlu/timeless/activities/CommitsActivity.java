@@ -11,9 +11,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
-import com.gianlu.commonutils.Dialogs.DialogUtils;
-import com.gianlu.commonutils.Toaster;
+import com.gianlu.commonutils.dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.dialogs.DialogUtils;
+import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.activities.commits.CommitsFragment;
 import com.gianlu.timeless.api.WakaTime;

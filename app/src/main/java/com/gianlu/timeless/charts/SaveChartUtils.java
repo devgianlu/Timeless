@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
-import com.gianlu.commonutils.FontsManager;
-import com.gianlu.commonutils.Logging;
+import com.gianlu.commonutils.logging.Logging;
+import com.gianlu.commonutils.typography.FontsManager;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;

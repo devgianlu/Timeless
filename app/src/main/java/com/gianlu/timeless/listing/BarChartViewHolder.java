@@ -11,7 +11,7 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.MaterialColors;
+import com.gianlu.commonutils.typography.MaterialColors;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.models.LoggedEntity;

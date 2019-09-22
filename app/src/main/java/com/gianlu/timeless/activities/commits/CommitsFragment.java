@@ -13,9 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
-import com.gianlu.commonutils.Dialogs.DialogUtils;
-import com.gianlu.commonutils.MaterialColors;
+import com.gianlu.commonutils.dialogs.DialogUtils;
+import com.gianlu.commonutils.misc.RecyclerMessageView;
+import com.gianlu.commonutils.typography.MaterialColors;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.activities.ProjectsActivity;
 import com.gianlu.timeless.api.WakaTime;

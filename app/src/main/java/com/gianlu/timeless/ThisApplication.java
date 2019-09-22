@@ -4,10 +4,10 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 
-import com.gianlu.commonutils.Analytics.AnalyticsApplication;
-import com.gianlu.commonutils.ConnectivityChecker;
-import com.gianlu.commonutils.Logging;
-import com.gianlu.commonutils.Preferences.Prefs;
+import com.gianlu.commonutils.analytics.AnalyticsApplication;
+import com.gianlu.commonutils.logging.Logging;
+import com.gianlu.commonutils.network.ConnectivityChecker;
+import com.gianlu.commonutils.preferences.Prefs;
 import com.gianlu.timeless.api.WakaTime;
 
 import java.io.BufferedReader;

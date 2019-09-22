@@ -16,10 +16,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
-import com.gianlu.commonutils.Dialogs.DialogUtils;
-import com.gianlu.commonutils.Dialogs.MaterialDatePickerDialog;
-import com.gianlu.commonutils.Toaster;
+import com.gianlu.commonutils.dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.dialogs.DialogUtils;
+import com.gianlu.commonutils.dialogs.MaterialDatePickerDialog;
+import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
@@ -139,7 +139,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         if (currentRange.first.getTime() == currentRange.second.getTime())
             rangeText.setText(formatter.format(currentRange.first));
         else
-            rangeText.setText(formatter.format(currentRange.first) + " - " + formatter.format(currentRange.second));
+            rangeText.setText(String.format(Locale.getDefault(), "%s - %s", formatter.format(currentRange.first), formatter.format(currentRange.second)));
     }
 
     @Override

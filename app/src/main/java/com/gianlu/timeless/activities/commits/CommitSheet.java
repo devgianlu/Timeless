@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.gianlu.commonutils.BottomSheet.ModalBottomSheetHeaderView;
-import com.gianlu.commonutils.BottomSheet.ThemedModalBottomSheet;
-import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.bottomsheet.ModalBottomSheetHeaderView;
+import com.gianlu.commonutils.bottomsheet.ThemedModalBottomSheet;
+import com.gianlu.commonutils.misc.SuperTextView;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.models.Commit;

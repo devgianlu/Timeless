@@ -8,9 +8,9 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 
-import com.gianlu.commonutils.CasualViews.SuperTextView;
 import com.gianlu.commonutils.CommonUtils;
-import com.gianlu.commonutils.Toaster;
+import com.gianlu.commonutils.misc.SuperTextView;
+import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;

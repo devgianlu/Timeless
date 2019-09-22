@@ -8,12 +8,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 
-import com.gianlu.commonutils.CasualViews.FakeLoadingWithLogoView;
-import com.gianlu.commonutils.ConnectivityChecker;
-import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
-import com.gianlu.commonutils.OfflineActivity;
-import com.gianlu.commonutils.Preferences.Prefs;
-import com.gianlu.commonutils.Toaster;
+import com.gianlu.commonutils.dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.misc.FakeLoadingWithLogoView;
+import com.gianlu.commonutils.network.ConnectivityChecker;
+import com.gianlu.commonutils.preferences.Prefs;
+import com.gianlu.commonutils.ui.OfflineActivity;
+import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.api.WakaTime;
 import com.gianlu.timeless.api.models.User;
 

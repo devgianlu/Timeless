@@ -24,7 +24,7 @@
         android:textColor="?attr/colorOnPrimary"
         android:textStyle="bold" />
 
-    <com.gianlu.commonutils.CasualViews.RecyclerMessageView
+    <com.gianlu.commonutils.misc.RecyclerMessageView
         android:id="@+id/customRangeStats_recyclerViewLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

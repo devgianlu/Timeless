@@ -15,10 +15,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
-import com.gianlu.commonutils.Dialogs.MaterialDatePickerDialog;
-import com.gianlu.commonutils.Lifecycle.LifecycleAwareHandler;
-import com.gianlu.commonutils.MaterialColors;
+import com.gianlu.commonutils.dialogs.MaterialDatePickerDialog;
+import com.gianlu.commonutils.lifecycle.LifecycleAwareHandler;
+import com.gianlu.commonutils.misc.RecyclerMessageView;
+import com.gianlu.commonutils.typography.MaterialColors;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.WakaTime;
