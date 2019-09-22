@@ -42,7 +42,7 @@ public class CommitsAdapter extends InfiniteRecyclerView.InfiniteAdapter<Commits
         final Commit commit = item.getItem();
         holder.message.setText(commit.message);
         holder.author.setText(commit.getAuthor());
-        holder.hash.setText(commit.truncated_hash());
+        holder.hash.setText(commit.truncatedHash());
         holder.date.setText(Utils.getDateTimeFormatter().format(new Date(commit.committer_date)));
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onCommitSelected(project, commit);

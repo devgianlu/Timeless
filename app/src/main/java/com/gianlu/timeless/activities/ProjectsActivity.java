@@ -85,10 +85,12 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
+                // Unused
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                // Unused
             }
         });
 
@@ -145,7 +147,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
             case R.id.projects_range:
                 MaterialDatePickerDialog.get(getString(R.string.selectStartDate),
                         currentRange.first, null, new Date(), (view, year, month, dayOfMonth) -> {
@@ -158,10 +160,10 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
                                     currentRange.second, tmpStart, new Date(), ProjectsActivity.this)
                                     .show(getSupportFragmentManager(), "END");
                         }).show(getSupportFragmentManager(), "START");
-                break;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

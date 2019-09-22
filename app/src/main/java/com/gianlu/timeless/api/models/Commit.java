@@ -35,7 +35,7 @@ public class Commit implements Serializable {
     }
 
     @NonNull
-    public String truncated_hash() {
+    public String truncatedHash() {
         return hash.substring(0, 8);
     }
 

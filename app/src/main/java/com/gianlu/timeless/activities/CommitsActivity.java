@@ -57,10 +57,12 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
+                // Unused
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                // Unused
             }
         });
 

@@ -127,7 +127,7 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
             case R.id.customRangeStats_range:
                 Calendar start = Calendar.getInstance();
                 start.setTime(currentRange.first);
@@ -143,10 +143,10 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
                                     currentRange.second, tmpStart, new Date(), CustomRangeStatsActivity.this)
                                     .show(getSupportFragmentManager(), "END");
                         }).show(getSupportFragmentManager(), "START");
-                break;
+                return true;
+            default:
+                return false;
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

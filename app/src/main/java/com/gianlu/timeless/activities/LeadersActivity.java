@@ -172,6 +172,8 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
             case R.id.leaders_filter:
                 showFilterDialog();
                 break;
+            default:
+                return false;
         }
 
         return true;

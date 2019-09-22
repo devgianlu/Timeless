@@ -34,7 +34,7 @@ import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, HelperViewHolder.Listener, DatePicker.OnDateChangedListener {
+public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, HelperViewHolder.Listener {
     private TextView currDay;
     private Date currentDate;
     private RecyclerMessageView rmv;
@@ -73,15 +73,15 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
             case R.id.dailyStats_changeDay:
                 MaterialDatePickerDialog.get(getString(R.string.selectDay), currentDate,
                         null, new Date(), this)
                         .show(getSupportFragmentManager(), null);
-                break;
+                return true;
+            default:
+                return false;
         }
-
-        return true;
     }
 
     @Override
@@ -142,11 +142,6 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
         updatePage(cal.getTime(), false);
-    }
-
-    @Override
-    public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
-
     }
 
     @Override

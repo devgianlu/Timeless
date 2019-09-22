@@ -93,6 +93,7 @@ public class PieChartViewHolder extends HelperViewHolder {
 
             @Override
             public void onNothingSelected() {
+                // Unused
             }
         });
 

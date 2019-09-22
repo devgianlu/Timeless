@@ -86,8 +86,7 @@ public class WakaTime {
     private OAuth2AccessToken token;
 
     private WakaTime(@NonNull Builder builder) throws ShouldGetAccessToken {
-        if (builder.token == null)
-            throw new ShouldGetAccessToken(new NullPointerException("Requested token is null!"));
+        if (builder.token == null) throw new ShouldGetAccessToken("Requested token is null!");
 
         Prefs.putString(PK.TOKEN, builder.token.getRefreshToken());
 
@@ -101,8 +100,7 @@ public class WakaTime {
 
     @NonNull
     public static WakaTime get() throws ShouldGetAccessToken {
-        if (instance == null)
-            throw new ShouldGetAccessToken(new NullPointerException("Instance hasn't been initialized!"));
+        if (instance == null) throw new ShouldGetAccessToken("Instance hasn't been initialized!");
         return instance;
     }
 
@@ -132,8 +130,7 @@ public class WakaTime {
 
             if (token == null) {
                 String storedToken = Prefs.getString(PK.TOKEN, null);
-                if (storedToken == null)
-                    throw new ShouldGetAccessToken(new NullPointerException("Stored token is null!"));
+                if (storedToken == null) throw new ShouldGetAccessToken("Stored token is null!");
                 token = service.refreshAccessToken(storedToken);
                 Prefs.putString(PK.TOKEN, token.getRefreshToken());
             }
@@ -418,7 +415,7 @@ public class WakaTime {
                 try {
                     OAuth2Authorization auth = service.extractAuthorization(data);
                     if (auth.getCode() == null)
-                        throw new ShouldGetAccessToken(new NullPointerException("Failed getting authorization code!"));
+                        throw new ShouldGetAccessToken("Failed getting authorization code!");
                     token = service.getAccessToken(auth.getCode());
 
                     final WakaTime w = build();
@@ -440,7 +437,7 @@ public class WakaTime {
 
             final String storedToken = Prefs.getString(PK.TOKEN, null);
             if (storedToken == null) {
-                listener.onException(new ShouldGetAccessToken(new NullPointerException("Stored token is null!")));
+                listener.onException(new ShouldGetAccessToken("Stored token is null!"));
                 return;
             }
 
@@ -452,11 +449,10 @@ public class WakaTime {
 
                     final WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
-                } catch (IOException | ShouldGetAccessToken | ExecutionException | InterruptedException | OAuth2AccessTokenErrorResponse ex) {
+                } catch (ShouldGetAccessToken ex) {
+                    ex.resolve(context);
+                } catch (IOException | ExecutionException | InterruptedException | OAuth2AccessTokenErrorResponse ex) {
                     handler.post(() -> listener.onException(ex));
-
-                    if (ex instanceof ShouldGetAccessToken)
-                        ((ShouldGetAccessToken) ex).resolve(context);
                 }
             });
         }
@@ -471,8 +467,12 @@ public class WakaTime {
 
     public static class ShouldGetAccessToken extends Exception {
 
-        private ShouldGetAccessToken(@NonNull Throwable cause) {
+        ShouldGetAccessToken(@NonNull Throwable cause) {
             super(cause);
+        }
+
+        ShouldGetAccessToken(String message) {
+            super(message);
         }
 
         public void resolve(@Nullable Context context) {
