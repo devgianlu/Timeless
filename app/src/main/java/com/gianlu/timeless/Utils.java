@@ -22,18 +22,14 @@ public class Utils {
 
     public static void addTimeToLegendEntries(@NonNull Chart chart, @NonNull List<LoggedEntity> entities) {
         Legend legend = chart.getLegend();
-        LegendEntry[] oldEntries = legend.getEntries();
-        LegendEntry[] customEntries = new LegendEntry[oldEntries.length];
-        for (int i = 0; i < oldEntries.length; i++) {
-            LegendEntry entry = oldEntries[i];
+        LegendEntry[] entries = legend.getEntries();
+        for (LegendEntry entry : entries) {
             LoggedEntity entity = LoggedEntity.find(entities, entry.label);
-            if (entity != null) {
+            if (entity != null)
                 entry.label += " (" + Utils.timeFormatterHours(entity.total_seconds, false) + ")";
-                customEntries[i] = entry;
-            }
         }
 
-        legend.setCustom(customEntries);
+        legend.setCustom(entries);
         chart.notifyDataSetChanged();
         chart.invalidate();
     }

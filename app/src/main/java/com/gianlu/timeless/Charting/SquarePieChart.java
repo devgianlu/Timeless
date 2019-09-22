@@ -20,8 +20,9 @@ public class SquarePieChart extends PieChart {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec,
-                MeasureSpec.makeMeasureSpec((int) (MeasureSpec.getSize(widthMeasureSpec) + getLegend().mNeededHeight),
-                        MeasureSpec.EXACTLY)); // FIXME
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        setMeasuredDimension(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec((int) (width + getLegend().mNeededHeight / 1.5f - getLegend().getYOffset()), MeasureSpec.EXACTLY));
     }
 }
