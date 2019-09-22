@@ -23,6 +23,7 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.charts.SaveChartFragment;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
+import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
 import java.util.Date;
 
@@ -79,11 +80,11 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                 .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.MAIN)
-                .addPieChart(R.string.projects, summaries.globalSummary.projects)
-                .addPieChart(R.string.languages, summaries.globalSummary.languages)
-                .addPieChart(R.string.editors, summaries.globalSummary.editors)
-                .addPieChart(R.string.machines, summaries.globalSummary.machines)
-                .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems);
+                .addPieChart(R.string.projects, ChartContext.PROJECTS, summaries.globalSummary.interval(), summaries.globalSummary.projects)
+                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
+                .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors)
+                .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines)
+                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems);
 
         if (range == WakaTime.Range.TODAY) {
             Summaries weekBefore = requester.summaries(range.getWeekBefore(), null, null);

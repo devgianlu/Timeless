@@ -78,6 +78,8 @@
     <string name="prevDay">Previous day</string>
     <string name="nextDay">Next day</string>
     <string name="machines">Machines</string>
+    <string name="project">Project</string>
+    <string name="goToProject">Go to project</string>
     <plurals name="members">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>

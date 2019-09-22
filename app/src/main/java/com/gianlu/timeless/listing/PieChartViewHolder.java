@@ -1,6 +1,7 @@
 package com.gianlu.timeless.listing;
 
 import android.graphics.Color;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -12,6 +13,7 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.timeless.Activities.ProjectsActivity;
 import com.gianlu.timeless.Models.LoggedEntities;
 import com.gianlu.timeless.Models.LoggedEntity;
 import com.gianlu.timeless.R;
@@ -30,10 +32,11 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-class PieChartViewHolder extends HelperViewHolder {
+public class PieChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final ImageButton save;
     private final PieChart chart;
@@ -46,7 +49,7 @@ class PieChartViewHolder extends HelperViewHolder {
         chart = itemView.findViewById(R.id.pieChartCard_chart);
     }
 
-    void bind(@StringRes int title, @NonNull LoggedEntities entities, OnSaveChart listener) {
+    void bind(@StringRes int title, @NonNull LoggedEntities entities, @NonNull ChartContext chartContext, @NonNull Pair<Date, Date> interval, OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -85,8 +88,7 @@ class PieChartViewHolder extends HelperViewHolder {
         helper.setOnChartValueSelectedListener(new PieChartColorHelper.OnValueSelectedListener() {
             @Override
             public void onValueSelected(@NonNull Entry e, @NonNull Highlight h, @ColorInt int color) {
-                showDialog(LoggedEntityDialog.get(((PieEntry) e).getLabel(), color, (int) ((PieEntry) e).getValue())
-                        .setOnDismissListener((d) -> chart.highlightValue(null)), null);
+                showDialog(prepareDialog(((PieEntry) e).getLabel(), (int) ((PieEntry) e).getValue(), color, interval, chartContext), null);
             }
 
             @Override
@@ -97,5 +99,25 @@ class PieChartViewHolder extends HelperViewHolder {
         Utils.addTimeToLegendEntries(chart, entities);
 
         save.setOnClickListener(v -> listener.saveImage(chart, title));
+    }
+
+    @NonNull
+    private LoggedEntityDialog prepareDialog(@NonNull String label, int value, @ColorInt int color, @NonNull Pair<Date, Date> interval, @NonNull ChartContext chartContext) {
+        LoggedEntityDialog dialog;
+        if (chartContext == ChartContext.PROJECTS) {
+            dialog = LoggedEntityDialog.get(label, color, value,
+                    new LoggedEntityDialog.Action(R.string.goToProject,
+                            ProjectsActivity.startIntent(getContext(), interval, label)));
+        } else {
+            dialog = LoggedEntityDialog.get(label, color, value, null);
+        }
+
+        dialog.setOnDismissListener((d) -> chart.highlightValue(null));
+
+        return dialog;
+    }
+
+    public enum ChartContext {
+        PROJECTS, IRRELEVANT
     }
 }

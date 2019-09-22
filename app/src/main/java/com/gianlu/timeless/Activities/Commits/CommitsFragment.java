@@ -2,6 +2,9 @@ package com.gianlu.timeless.Activities.Commits;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gianlu.commonutils.CasualViews.RecyclerMessageView;
 import com.gianlu.commonutils.Dialogs.DialogUtils;
 import com.gianlu.commonutils.MaterialColors;
+import com.gianlu.timeless.Activities.ProjectsActivity;
 import com.gianlu.timeless.Models.Commit;
 import com.gianlu.timeless.Models.Commits;
 import com.gianlu.timeless.Models.Project;
@@ -27,11 +31,31 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
     @NonNull
     public static CommitsFragment getInstance(@NonNull Project project) {
         CommitsFragment fragment = new CommitsFragment();
+        fragment.setHasOptionsMenu(true);
         Bundle args = new Bundle();
         args.putSerializable("project", project);
         args.putString("title", project.name);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.commits, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.commitsMenu_project) {
+            Project project;
+            Bundle args = getArguments();
+            if (args != null && (project = (Project) args.getSerializable("project")) != null) {
+                ProjectsActivity.startActivity(requireContext(), null, project.id);
+                return true;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public boolean onBackPressed() {
@@ -49,7 +73,7 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
         layout = new RecyclerMessageView(requireContext());
         layout.linearLayoutManager(RecyclerView.VERTICAL, false);
 
-        final Project project;
+        Project project;
         Bundle args = getArguments();
         if (args == null || (project = (Project) args.getSerializable("project")) == null) {
             layout.showError(R.string.errorMessage);

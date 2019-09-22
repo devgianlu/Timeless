@@ -1,6 +1,7 @@
 package com.gianlu.timeless.listing;
 
 import android.content.Context;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,6 +17,7 @@ import com.gianlu.timeless.charts.OnSaveChart;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -72,28 +74,29 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SummaryViewHolder) {
-            CardsList.SummaryItem s = (CardsList.SummaryItem) objs.objs.get(position);
+            CardsList.SummaryItem s = (CardsList.SummaryItem) objs.payloads.get(position);
             ((SummaryViewHolder) holder).bind(s.summary, s.context);
         } else if (holder instanceof LineChartViewHolder) {
-            ((LineChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
+            ((LineChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.payloads.get(position), saveChartListener);
         } else if (holder instanceof BarChartViewHolder) {
-            ((BarChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.objs.get(position), saveChartListener);
+            ((BarChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.payloads.get(position), saveChartListener);
         } else if (holder instanceof PieChartViewHolder) {
-            ((PieChartViewHolder) holder).bind(objs.titles.get(position), (LoggedEntities) objs.objs.get(position), saveChartListener);
+            CardsList.PieItem p = (CardsList.PieItem) objs.payloads.get(position);
+            ((PieChartViewHolder) holder).bind(objs.titles.get(position), p.entities, p.ctx, p.interval, saveChartListener);
         } else if (holder instanceof ListViewHolder) {
-            ((ListViewHolder) holder).bind(objs.titles.get(position), (LoggedEntities) objs.objs.get(position));
+            ((ListViewHolder) holder).bind(objs.titles.get(position), (LoggedEntities) objs.payloads.get(position));
         } else if (holder instanceof DurationsViewHolder) {
-            ((DurationsViewHolder) holder).bind((Durations) objs.objs.get(position));
+            ((DurationsViewHolder) holder).bind((Durations) objs.payloads.get(position));
         } else if (holder instanceof WeeklyImprovementViewHolder) {
-            ((WeeklyImprovementViewHolder) holder).bind((Float) objs.objs.get(position));
+            ((WeeklyImprovementViewHolder) holder).bind((Float) objs.payloads.get(position));
         } else if (holder instanceof BranchSelectorViewHolder) {
-            ((BranchSelectorViewHolder) holder).bind((BranchSelectorViewHolder.Config) objs.objs.get(position));
+            ((BranchSelectorViewHolder) holder).bind((BranchSelectorViewHolder.Config) objs.payloads.get(position));
         }
     }
 
     @Override
     public int getItemCount() {
-        return objs.objs.size();
+        return objs.types.size();
     }
 
     public enum SummaryContext {
@@ -105,14 +108,14 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public static class CardsList {
-        private final List<Integer> titles;
+        private final List<Object> payloads;
         private final List<Integer> types;
-        private final List<Object> objs;
+        private final List<Integer> titles;
 
         public CardsList() {
-            titles = new ArrayList<>();
+            payloads = new ArrayList<>();
             types = new ArrayList<>();
-            objs = new ArrayList<>();
+            titles = new ArrayList<>();
         }
 
         public boolean hasBranchSelector() {
@@ -128,16 +131,16 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
         public CardsList addBranchSelector(@NonNull List<String> branches, @NonNull List<String> selectedBranches, @NonNull OnBranches listener) {
             if (!branches.isEmpty()) {
-                titles.add(0, null);
                 types.add(0, TYPE_BRANCH_SELECTOR);
-                objs.add(0, new BranchSelectorViewHolder.Config(branches, selectedBranches, listener));
+                titles.add(0, null);
+                payloads.add(0, new BranchSelectorViewHolder.Config(branches, selectedBranches, listener));
             }
 
             return this;
         }
 
         public CardsList addImprovement(long today, float beforeAverage) {
-            return addImprovement(titles.size(), today, beforeAverage);
+            return addImprovement(types.size(), today, beforeAverage);
         }
 
         public CardsList addImprovement(int index, long today, float beforeAverage) {
@@ -148,85 +151,97 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             bd = bd.multiply(new BigDecimal(100));
             bd = bd.subtract(new BigDecimal(100));
 
-            titles.add(index, null);
             types.add(index, TYPE_IMPROVEMENT);
-            objs.add(index, bd.floatValue());
+            titles.add(index, null);
+            payloads.add(index, bd.floatValue());
 
             return this;
         }
 
         public CardsList addGlobalSummary(GlobalSummary summary, SummaryContext ctx) {
-            return addGlobalSummary(titles.size(), summary, ctx);
+            return addGlobalSummary(types.size(), summary, ctx);
         }
 
         public CardsList addGlobalSummary(int index, GlobalSummary summary, SummaryContext ctx) {
-            titles.add(index, null);
             types.add(index, TYPE_SUMMARY);
-            objs.add(index, new SummaryItem(summary, ctx));
+            titles.add(index, null);
+            payloads.add(index, new SummaryItem(summary, ctx));
 
             return this;
         }
 
         public CardsList addProjectsBarChart(@StringRes int title, Summaries summaries) {
-            return addProjectsBarChart(titles.size(), title, summaries);
+            return addProjectsBarChart(types.size(), title, summaries);
         }
 
         public CardsList addProjectsBarChart(int index, @StringRes int title, Summaries summaries) {
-            titles.add(index, title);
             types.add(index, TYPE_PROJECTS_BAR);
-            objs.add(index, summaries);
+            titles.add(index, title);
+            payloads.add(index, summaries);
 
             return this;
         }
 
         public CardsList addFileList(@StringRes int title, LoggedEntities entities) {
-            return addFileList(titles.size(), title, entities);
+            return addFileList(types.size(), title, entities);
         }
 
         public CardsList addFileList(int index, @StringRes int title, LoggedEntities entities) {
             if (entities.size() > 0) {
                 titles.add(index, title);
                 types.add(index, TYPE_FILE_LIST);
-                objs.add(index, entities);
+                payloads.add(index, entities);
             }
 
             return this;
         }
 
-        public CardsList addPieChart(@StringRes int title, LoggedEntities entities) {
-            return addPieChart(titles.size(), title, entities);
+        public CardsList addPieChart(@StringRes int title, PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities) {
+            return addPieChart(types.size(), title, ctx, interval, entities);
         }
 
-        public CardsList addPieChart(int index, @StringRes int title, LoggedEntities entities) {
+        public CardsList addPieChart(int index, @StringRes int title, PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities) {
             titles.add(index, title);
             types.add(index, TYPE_PIE);
-            objs.add(index, entities);
+            payloads.add(index, new PieItem(ctx, interval, entities));
 
             return this;
         }
 
         public CardsList addDurations(Durations durations) {
-            return addDurations(titles.size(), durations);
+            return addDurations(types.size(), durations);
         }
 
         public CardsList addDurations(int index, Durations durations) {
             titles.add(index, null);
             types.add(index, TYPE_DURATIONS);
-            objs.add(index, durations);
+            payloads.add(index, durations);
 
             return this;
         }
 
         public CardsList addLineChart(@StringRes int title, Summaries summaries) {
-            return addLineChart(titles.size(), title, summaries);
+            return addLineChart(types.size(), title, summaries);
         }
 
         public CardsList addLineChart(int index, @StringRes int title, Summaries summaries) {
             titles.add(index, title);
             types.add(index, TYPE_LINE);
-            objs.add(index, summaries);
+            payloads.add(index, summaries);
 
             return this;
+        }
+
+        private static class PieItem {
+            private final PieChartViewHolder.ChartContext ctx;
+            private final Pair<Date, Date> interval;
+            private final LoggedEntities entities;
+
+            PieItem(PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities) {
+                this.ctx = ctx;
+                this.interval = interval;
+                this.entities = entities;
+            }
         }
 
         private static class SummaryItem {

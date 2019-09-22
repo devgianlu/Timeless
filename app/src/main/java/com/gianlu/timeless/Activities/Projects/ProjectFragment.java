@@ -26,6 +26,7 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.charts.SaveChartFragment;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
+import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
 import java.util.Date;
 import java.util.List;
@@ -123,8 +124,8 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
             cards.addBranchSelector(summaries.availableBranches, summaries.selectedBranches, this);
 
         cards.addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.PROJECTS)
-                .addPieChart(R.string.languages, summaries.globalSummary.languages)
-                .addPieChart(R.string.branches, summaries.globalSummary.branches)
+                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
+                .addPieChart(R.string.branches, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.branches)
                 .addFileList(R.string.files, summaries.globalSummary.entities);
 
         if (start.getTime() == end.getTime()) {

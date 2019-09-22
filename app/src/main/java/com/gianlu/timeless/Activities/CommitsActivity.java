@@ -3,6 +3,7 @@ package com.gianlu.timeless.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,9 +75,9 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
 
     @Override
     public void onResult(@NonNull Projects projects) {
+        projects.filterNoRepository();
         for (Project project : projects)
-            if (project.hasRepository)
-                fragments.add(CommitsFragment.getInstance(project));
+            fragments.add(CommitsFragment.getInstance(project));
 
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
         pager.setOffscreenPageLimit(fragments.size());
@@ -84,10 +85,20 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
 
         String projectId = getIntent().getStringExtra("projectId");
         if (projectId != null) {
-            int pos = projects.indexOf(projectId);
+            int pos = projects.indexOfId(projectId);
             if (pos != -1) pager.setCurrentItem(pos, false);
             getIntent().removeExtra("projectId");
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            super.onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

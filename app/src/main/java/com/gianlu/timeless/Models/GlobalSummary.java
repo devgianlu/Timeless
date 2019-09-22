@@ -1,6 +1,11 @@
 package com.gianlu.timeless.Models;
 
+import android.util.Pair;
+
+import androidx.annotation.NonNull;
+
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class GlobalSummary extends Summary {
@@ -30,5 +35,10 @@ public class GlobalSummary extends Summary {
         this.total_seconds = total;
         this.start = summaries.get(0).date;
         this.end = summaries.get(summaries.size() - 1).date;
+    }
+
+    @NonNull
+    public Pair<Date, Date> interval() {
+        return new Pair<>(new Date(start), new Date(end));
     }
 }

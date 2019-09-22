@@ -118,7 +118,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 CommitsActivity.startActivity(this, null);
                 return false;
             case PROJECTS:
-                startActivity(new Intent(this, ProjectsActivity.class));
+                ProjectsActivity.startActivity(this, null, null);
                 return false;
             case PRIVATE_LEADERBOARDS:
                 startActivity(new Intent(this, PrivateLeaderboardsActivity.class));

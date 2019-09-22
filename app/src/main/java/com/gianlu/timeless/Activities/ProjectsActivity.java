@@ -1,6 +1,8 @@
 package com.gianlu.timeless.Activities;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.MenuItem;
@@ -8,6 +10,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -39,6 +42,22 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
     private Date tmpStart;
     private WakaTime wakaTime;
     private TextView rangeText;
+
+    public static void startActivity(@NonNull Context context, @Nullable Pair<Date, Date> interval, @Nullable String projectName) {
+        context.startActivity(startIntent(context, interval, projectName));
+    }
+
+    @NonNull
+    public static Intent startIntent(@NonNull Context context, @Nullable Pair<Date, Date> interval, @Nullable String projectName) {
+        Intent intent = new Intent(context, ProjectsActivity.class);
+        if (projectName != null) intent.putExtra("projectName", projectName);
+        if (interval != null) {
+            intent.putExtra("intervalStart", interval.first);
+            intent.putExtra("intervalEnd", interval.second);
+        }
+
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +94,9 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
 
         showDialog(DialogUtils.progressDialog(this, R.string.loadingData));
 
-        Date date = (Date) getIntent().getSerializableExtra("date");
-        if (date != null) currentRange = new Pair<>(date, date);
+        Date start = (Date) getIntent().getSerializableExtra("intervalStart");
+        Date end = (Date) getIntent().getSerializableExtra("intervalEnd");
+        if (start != null && end != null) currentRange = new Pair<>(start, end);
         else currentRange = WakaTime.Range.LAST_7_DAYS.getStartAndEnd();
 
         try {
@@ -91,17 +111,17 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
     }
 
     @Override
-    public void onResult(@NonNull final Projects projects) {
-        final List<Fragment> fragments = new ArrayList<>();
+    public void onResult(@NonNull Projects projects) {
+        List<Fragment> fragments = new ArrayList<>();
         for (Project project : projects)
             fragments.add(ProjectFragment.getInstance(project, currentRange));
 
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
         dismissDialog();
 
-        String projectId = getIntent().getStringExtra("project_id");
-        if (projectId != null) {
-            int pos = projects.indexOf(projectId);
+        String projectName = getIntent().getStringExtra("projectName");
+        if (projectName != null) {
+            int pos = projects.indexOfName(projectName);
             if (pos != -1) pager.setCurrentItem(pos, false);
         }
     }
@@ -157,7 +177,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
         wakaTime.getProjects(this, new WakaTime.OnResult<Projects>() {
             @Override
             public void onResult(@NonNull Projects projects) {
-                final List<Fragment> fragments = new ArrayList<>();
+                List<Fragment> fragments = new ArrayList<>();
                 for (Project project : projects)
                     fragments.add(ProjectFragment.getInstance(project, currentRange));
 

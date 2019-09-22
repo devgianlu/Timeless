@@ -29,6 +29,7 @@ import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.charts.SaveChartAppCompatActivity;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
+import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -156,11 +157,11 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         final CardsAdapter adapter = new CardsAdapter(this, new CardsAdapter.CardsList()
                 .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.DAILY_STATS)
                 .addDurations(durations)
-                .addPieChart(R.string.projects, summaries.globalSummary.projects)
-                .addPieChart(R.string.languages, summaries.globalSummary.languages)
-                .addPieChart(R.string.editors, summaries.globalSummary.editors)
-                .addPieChart(R.string.machines, summaries.globalSummary.machines)
-                .addPieChart(R.string.operatingSystems, summaries.globalSummary.operating_systems), this, this);
+                .addPieChart(R.string.projects, ChartContext.PROJECTS, summaries.globalSummary.interval(), summaries.globalSummary.projects)
+                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
+                .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors)
+                .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines)
+                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems), this, this);
 
         ui.post(this, () -> rmv.loadListData(adapter));
     }
