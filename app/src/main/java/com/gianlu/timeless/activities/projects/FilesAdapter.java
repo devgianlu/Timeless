@@ -43,7 +43,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         if (path.length == 1)
             path = file.name.split("\\u005c");
 
-        holder.name.setCompactedText(file.name, path[path.length - 1]);
+        holder.name.setCompactableText(file.name, path[path.length - 1]);
         holder.time.setText(Utils.timeFormatterHours(file.total_seconds, true));
     }
 
