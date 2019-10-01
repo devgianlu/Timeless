@@ -2,5 +2,5 @@
 
     <style name="AppTheme" parent="BaseAppTheme" />
 
-    <style name="AppTheme.Preferences" parent="AppTheme" />
+    <style name="AppTheme.NightFullDark" parent="AppTheme" />
 </resources>

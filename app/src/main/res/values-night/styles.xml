@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme.Preferences" parent="AppTheme">
+    <style name="AppTheme.NightFullDark" parent="AppTheme">
         <item name="android:statusBarColor">?colorSurface</item>
     </style>
 </resources>

@@ -43,7 +43,7 @@
             android:name=".PreferenceActivity"
             android:configChanges="uiMode"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Preferences" />
+            android:theme="@style/AppTheme.NightFullDark" />
 
         <!-- Grant permission activity -->
         <activity
@@ -113,6 +113,10 @@
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.gianlu.commonutils.logging.LogsActivity"
+            android:theme="@style/AppTheme.NightFullDark" />
 
         <!-- Logs provider -->
         <provider
