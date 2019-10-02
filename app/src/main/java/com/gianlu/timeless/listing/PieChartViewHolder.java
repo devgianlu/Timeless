@@ -65,7 +65,7 @@ public class PieChartViewHolder extends HelperViewHolder {
 
         List<PieEntry> entries = new ArrayList<>();
         for (LoggedEntity entity : entities) {
-            if (entity.total_seconds < 1000) continue;
+            if (entity.total_seconds < 1) continue;
 
             entries.add(new PieEntry(entity.total_seconds, entity.name));
         }

@@ -65,6 +65,9 @@
     <string name="machines">Machines</string>
     <string name="project">Project</string>
     <string name="goToProject">Go to project</string>
+    <string name="weeklyAverage_better">Whoa! You are improving the weekly average.</string>
+    <string name="weeklyAverage_worse">Ouch! You are not doing so well on the weekly average.</string>
+    <string name="weeklyAverage_ok">That\'s fine, I guess. This is the weekly average.</string>
     <plurals name="members">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>

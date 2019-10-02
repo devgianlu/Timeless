@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +27,10 @@ class WeeklyImprovementViewHolder extends RecyclerView.ViewHolder {
         icon = itemView.findViewById(R.id.improvementCard_icon);
     }
 
+    private String getString(@StringRes int res) {
+        return itemView.getContext().getString(res);
+    }
+
     void bind(float roundedPercent) {
         int color;
         int iconRes;
@@ -33,15 +38,15 @@ class WeeklyImprovementViewHolder extends RecyclerView.ViewHolder {
         if (roundedPercent > 0) {
             color = ContextCompat.getColor(icon.getContext(), R.color.green);
             iconRes = R.drawable.baseline_trending_up_24;
-            str = "Whoa! You are improving the weekly average.";
+            str = getString(R.string.weeklyAverage_better);
         } else if (roundedPercent < 0) {
             color = ContextCompat.getColor(icon.getContext(), R.color.red);
             iconRes = R.drawable.baseline_trending_down_24;
-            str = "Dammit! You are not doing so well on the weekly average.";
+            str = getString(R.string.weeklyAverage_worse);
         } else {
             color = CommonUtils.resolveAttrAsColor(icon.getContext(), android.R.attr.colorControlNormal);
             iconRes = R.drawable.baseline_trending_flat_24;
-            str = "That's fine, I guess. This is the weekly average.";
+            str = getString(R.string.weeklyAverage_ok);
         }
 
         text.setText(str);
