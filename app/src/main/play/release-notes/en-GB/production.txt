@@ -1,2 +1,7 @@
-Release 1.10.1:
-- Minor bug fixes
+### Added
+- Machines stats
+
+### Changed
+- Updated Material Design
+- Improved weekly average view
+- Better date picker dialog
