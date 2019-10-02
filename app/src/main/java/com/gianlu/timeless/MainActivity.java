@@ -10,22 +10,22 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import com.gianlu.commonutils.Dialogs.ActivityWithDialog;
-import com.gianlu.commonutils.Drawer.BaseDrawerItem;
-import com.gianlu.commonutils.Drawer.DrawerManager;
-import com.gianlu.commonutils.Logging;
-import com.gianlu.commonutils.Toaster;
-import com.gianlu.timeless.Activities.CommitsActivity;
-import com.gianlu.timeless.Activities.CustomRangeStatsActivity;
-import com.gianlu.timeless.Activities.DailyStatsActivity;
-import com.gianlu.timeless.Activities.LeadersActivity;
-import com.gianlu.timeless.Activities.PrivateLeaderboardsActivity;
-import com.gianlu.timeless.Activities.ProjectsActivity;
-import com.gianlu.timeless.Main.DrawerItem;
-import com.gianlu.timeless.Main.MainFragment;
-import com.gianlu.timeless.Main.PagerAdapter;
-import com.gianlu.timeless.Models.User;
-import com.gianlu.timeless.NetIO.WakaTime;
+import com.gianlu.commonutils.dialogs.ActivityWithDialog;
+import com.gianlu.commonutils.drawer.BaseDrawerItem;
+import com.gianlu.commonutils.drawer.DrawerManager;
+import com.gianlu.commonutils.logging.Logging;
+import com.gianlu.commonutils.ui.Toaster;
+import com.gianlu.timeless.activities.CommitsActivity;
+import com.gianlu.timeless.activities.CustomRangeStatsActivity;
+import com.gianlu.timeless.activities.DailyStatsActivity;
+import com.gianlu.timeless.activities.LeadersActivity;
+import com.gianlu.timeless.activities.PrivateLeaderboardsActivity;
+import com.gianlu.timeless.activities.ProjectsActivity;
+import com.gianlu.timeless.api.WakaTime;
+import com.gianlu.timeless.api.models.User;
+import com.gianlu.timeless.main.DrawerItem;
+import com.gianlu.timeless.main.MainFragment;
+import com.gianlu.timeless.main.PagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends ActivityWithDialog implements DrawerManager.MenuDrawerListener<DrawerItem> {
@@ -54,7 +54,6 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                     startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     finish();
                 })
-                .addMenuItem(new BaseDrawerItem<>(DrawerItem.HOME, R.drawable.baseline_home_24, getString(R.string.home)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.DAILY_STATS, R.drawable.baseline_view_day_24, getString(R.string.dailyStats)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.CUSTOM_RANGE_STATS, R.drawable.baseline_date_range_24, getString(R.string.customRangeStats)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.PROJECTS, R.drawable.baseline_view_module_24, getString(R.string.projects)))
@@ -64,8 +63,6 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 .addMenuItemSeparator()
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.PREFERENCES, R.drawable.baseline_settings_24, getString(R.string.preferences)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.SUPPORT, R.drawable.baseline_report_problem_24, getString(R.string.support))).build(this, findViewById(R.id.main_drawer), toolbar);
-
-        drawerManager.setActiveItem(DrawerItem.HOME);
 
         pager.setOffscreenPageLimit(3);
         pager.setAdapter(new PagerAdapter(getSupportFragmentManager(),
@@ -91,7 +88,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (drawerManager != null) drawerManager.onTogglerConfigurationChanged(newConfig);
     }
@@ -111,31 +108,29 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
     @Override
     public boolean onDrawerMenuItemSelected(@NonNull BaseDrawerItem<DrawerItem> item) {
         switch (item.id) {
-            case HOME:
-                return true;
             case DAILY_STATS:
-                startActivity(new Intent(MainActivity.this, DailyStatsActivity.class));
+                startActivity(new Intent(this, DailyStatsActivity.class));
                 return false;
             case CUSTOM_RANGE_STATS:
-                startActivity(new Intent(MainActivity.this, CustomRangeStatsActivity.class));
+                startActivity(new Intent(this, CustomRangeStatsActivity.class));
                 return false;
             case COMMITS:
                 CommitsActivity.startActivity(this, null);
                 return false;
             case PROJECTS:
-                startActivity(new Intent(MainActivity.this, ProjectsActivity.class));
+                ProjectsActivity.startActivity(this, null, null);
                 return false;
             case PRIVATE_LEADERBOARDS:
-                startActivity(new Intent(MainActivity.this, PrivateLeaderboardsActivity.class));
+                startActivity(new Intent(this, PrivateLeaderboardsActivity.class));
                 return false;
             case PUBLIC_LEADERBOARD:
                 LeadersActivity.startActivity(this);
                 return false;
             case PREFERENCES:
-                startActivity(new Intent(MainActivity.this, PreferenceActivity.class));
+                startActivity(new Intent(this, PreferenceActivity.class));
                 return false;
             case SUPPORT:
-                Logging.sendEmail(MainActivity.this, null);
+                Logging.sendEmail(this, null);
                 return true;
             default:
                 return true;

@@ -20,7 +20,7 @@
         <!-- Loading activity -->
         <activity
             android:name=".LoadingActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
@@ -33,6 +33,7 @@
         <!-- Main activity -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="uiMode"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.Drawer" />
@@ -40,13 +41,17 @@
         <!-- Preferences activity -->
         <activity
             android:name=".PreferenceActivity"
-            android:screenOrientation="portrait" />
+            android:configChanges="uiMode"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NightFullDark" />
 
         <!-- Grant permission activity -->
         <activity
             android:name=".GrantActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -63,47 +68,59 @@
 
         <!-- Daily stats activity -->
         <activity
-            android:name=".Activities.DailyStatsActivity"
+            android:name=".activities.DailyStatsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Custom range stats activity -->
         <activity
-            android:name=".Activities.CustomRangeStatsActivity"
+            android:name=".activities.CustomRangeStatsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Commits activity -->
         <activity
-            android:name=".Activities.CommitsActivity"
+            android:name=".activities.CommitsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Projects activity -->
         <activity
-            android:name=".Activities.ProjectsActivity"
+            android:name=".activities.ProjectsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- Leaders activity -->
         <activity
-            android:name=".Activities.LeadersActivity"
+            android:name=".activities.LeadersActivity"
+            android:configChanges="uiMode"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- Private leaderboards activity -->
+        <activity
+            android:name=".activities.PrivateLeaderboardsActivity"
+            android:configChanges="uiMode"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".Activities.PrivateLeaderboardsActivity"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:name="com.gianlu.commonutils.logging.LogsActivity"
+            android:theme="@style/AppTheme.NightFullDark" />
 
         <!-- Logs provider -->
         <provider
-            android:name="com.gianlu.commonutils.LogsProvider"
+            android:name="com.gianlu.commonutils.logging.LogsProvider"
             android:authorities="com.gianlu.timeless.logs"
             android:exported="false"
             android:grantUriPermissions="true">

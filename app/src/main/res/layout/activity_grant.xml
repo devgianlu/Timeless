@@ -2,50 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="24dp">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="24dp"
         android:layout_weight="0.5"
+        android:maxWidth="200dp"
         android:src="@drawable/ic_wakatime"
-        android:tint="?android:textColorPrimary" />
+        android:tint="?colorOnSurface" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/grant_hello"
         android:textAlignment="center"
-        android:textColor="?android:textColorPrimary"
-        android:textSize="40sp"
-        android:textStyle="bold" />
+        android:textAppearance="?attr/textAppearanceHeadline5" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/grant_help"
         android:textAlignment="center"
-        android:textColor="?android:textColorPrimary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textAppearance="?attr/textAppearanceCaption" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.1" />
+        android:layout_weight="1" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/grantActivity_grant"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/grantAccess" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.1" />
+        android:text="@string/grantAccess"
+        android:textSize="24sp" />
 </LinearLayout>

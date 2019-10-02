@@ -5,22 +5,22 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.gianlu.commonutils.CasualViews.SuperTextView
+    <com.gianlu.commonutils.misc.SuperTextView
         android:id="@+id/leaderSheet_rank"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.gianlu.commonutils.CasualViews.SuperTextView
+    <com.gianlu.commonutils.misc.SuperTextView
         android:id="@+id/leaderSheet_weekTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.gianlu.commonutils.CasualViews.SuperTextView
+    <com.gianlu.commonutils.misc.SuperTextView
         android:id="@+id/leaderSheet_dailyAverage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.gianlu.timeless.Charting.SquarePieChart
+    <com.gianlu.timeless.charts.SquarePieChart
         android:layout_marginTop="8dp"
         android:id="@+id/leaderSheet_chart"
         android:layout_width="match_parent"
