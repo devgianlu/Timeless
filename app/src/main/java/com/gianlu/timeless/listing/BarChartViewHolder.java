@@ -1,12 +1,12 @@
 package com.gianlu.timeless.listing;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
@@ -50,7 +50,7 @@ class BarChartViewHolder extends HelperViewHolder {
         save = itemView.findViewById(R.id.barChartCard_save);
     }
 
-    void bind(@StringRes int title, @NonNull Summaries summaries, @Nullable OnSaveChart listener) {
+    void bind(@StringRes int title, @NonNull Summaries summaries, OnSaveChart listener) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -131,7 +131,12 @@ class BarChartViewHolder extends HelperViewHolder {
         chart.setData(new BarData(set));
         chart.setFitBars(true);
 
-        if (legendEntries.isEmpty()) chart.clear();
-        if (listener != null) save.setOnClickListener(v -> listener.saveImage(chart, title));
+        if (entries.isEmpty()) {
+            save.setVisibility(View.INVISIBLE);
+            chart.clear();
+        } else {
+            save.setVisibility(View.VISIBLE);
+            save.setOnClickListener(v -> listener.saveImage(chart, title));
+        }
     }
 }

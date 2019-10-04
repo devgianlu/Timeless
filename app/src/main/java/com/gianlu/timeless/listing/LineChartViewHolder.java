@@ -1,6 +1,7 @@
 package com.gianlu.timeless.listing;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -113,9 +114,14 @@ class LineChartViewHolder extends HelperViewHolder {
         if (maxEntries > 10) maxEntries = 10;
         xAxis.setLabelCount(maxEntries, true);
 
-        if (branchToSets.isEmpty()) chart.clear();
-        else chart.setData(new LineData(new ArrayList<>(branchToSets.values())));
+        if (branchToSets.isEmpty()) {
+            chart.clear();
+            save.setVisibility(View.INVISIBLE);
+        } else {
+            chart.setData(new LineData(new ArrayList<>(branchToSets.values())));
 
-        save.setOnClickListener(v -> listener.saveImage(chart, title));
+            save.setVisibility(View.VISIBLE);
+            save.setOnClickListener(v -> listener.saveImage(chart, title));
+        }
     }
 }

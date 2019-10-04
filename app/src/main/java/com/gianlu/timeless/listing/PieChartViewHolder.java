@@ -3,6 +3,7 @@ package com.gianlu.timeless.listing;
 import android.graphics.Color;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -98,9 +99,13 @@ public class PieChartViewHolder extends HelperViewHolder {
         });
 
         Utils.addTimeToLegendEntries(chart, entities);
-        if (entries.isEmpty()) chart.clear();
-
-        save.setOnClickListener(v -> listener.saveImage(chart, title));
+        if (entries.isEmpty()) {
+            chart.clear();
+            save.setVisibility(View.INVISIBLE);
+        } else {
+            save.setOnClickListener(v -> listener.saveImage(chart, title));
+            save.setVisibility(View.VISIBLE);
+        }
     }
 
     @NonNull
