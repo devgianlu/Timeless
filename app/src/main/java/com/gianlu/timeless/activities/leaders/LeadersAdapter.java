@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.misc.InfiniteRecyclerView;
 import com.gianlu.commonutils.typography.FontsManager;
 import com.gianlu.timeless.R;
@@ -62,7 +63,8 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
 
         if (me != null && Objects.equals(leader.getItem().user.id, me.id)) {
             holder.setIsRecyclable(false);
-            holder.itemView.setBackgroundResource(R.color.colorSecondaryTranslucent);
+            FontsManager.set(FontsManager.ROBOTO_BOLD, holder.name);
+            CommonUtils.setTextColor(holder.name, R.color.colorSecondary);
         }
 
         holder.itemView.setOnClickListener(v -> {

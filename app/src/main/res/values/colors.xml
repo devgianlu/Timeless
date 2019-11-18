@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#4f5b69</color>
-    <color name="colorPrimaryTranslucent">#4d4f5b69</color>
     <color name="colorPrimaryVariant">#29333a</color>
+    <color name="colorOnPrimary">@color/white</color>
+
     <color name="colorSecondary">#00acac</color>
     <color name="colorSecondaryVariant">#007979</color>
-    <color name="colorSecondaryTranslucent">#1a00acac</color>
-
-    <color name="colorOnPrimary">@color/white</color>
     <color name="colorOnSecondary">@color/white</color>
 </resources>
