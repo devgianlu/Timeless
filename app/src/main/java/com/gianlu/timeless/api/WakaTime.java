@@ -36,6 +36,7 @@ import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.api.models.User;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.DefaultApi20;
+import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
@@ -422,7 +423,7 @@ public class WakaTime {
                     handler.post(() -> listener.onWakatimeInitialized(w));
                 } catch (ShouldGetAccessToken ex) {
                     ex.resolve(context);
-                } catch (IOException | InterruptedException | ExecutionException ex) {
+                } catch (IOException | InterruptedException | ExecutionException | OAuthException ex) {
                     handler.post(() -> listener.onException(ex));
                 }
             });
