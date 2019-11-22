@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 22-11-2019
+### Changed
+- Fixed issue when user does not have a timezone in his profile
+- Fixed crash due to OAuth2 flow
+- Hide save icon when there is no data
+
+
 ## [2.0.0] - 02-10-2019
 ### Added
 - Machines stats
