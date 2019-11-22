@@ -54,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,8 +73,9 @@ public class WakaTime {
     private static WakaTime instance;
 
     static {
-        BASE_URL = HttpUrl.parse("https://wakatime.com/api/v1/");
-        if (BASE_URL == null) throw new IllegalStateException("WTF?!");
+        BASE_URL = HttpUrl.get("https://wakatime.com/api/v1/").newBuilder()
+                .addQueryParameter("timezone", TimeZone.getDefault().getID())
+                .build();
     }
 
     private final OkHttpClient client;
