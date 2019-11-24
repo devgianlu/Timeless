@@ -59,9 +59,12 @@ play {
 }
 
 dependencies {
-    api project(':CommonUtils')
+    api(project(':CommonUtils')) {
+        exclude group: 'me.toptas.fancyshowcase'
+    }
+
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    api 'com.squareup.okhttp3:okhttp:4.1.0'
+    api 'com.squareup.okhttp3:okhttp:4.2.1'
     api 'com.github.scribejava:scribejava-core:6.8.0'
     api 'com.github.scribejava:scribejava-httpclient-okhttp:6.8.0'
 }
