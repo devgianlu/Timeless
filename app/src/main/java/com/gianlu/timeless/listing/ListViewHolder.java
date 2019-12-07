@@ -17,7 +17,7 @@ class ListViewHolder extends RecyclerView.ViewHolder {
     private final RecyclerView list;
 
     ListViewHolder(LayoutInflater inflater, ViewGroup parent) {
-        super(inflater.inflate(R.layout.card_list, parent, false));
+        super(inflater.inflate(R.layout.item_list, parent, false));
 
         title = itemView.findViewById(R.id.listCard_title);
         list = itemView.findViewById(R.id.listCard_list);
