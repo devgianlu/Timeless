@@ -1,4 +1,2 @@
 ### Changed
-- Fixed issue when user does not have a timezone in his profile
-- Fixed crash due to OAuth2 flow
-- Hide save icon when there is no data
+- Fixed layout issue with list item
