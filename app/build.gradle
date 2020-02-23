@@ -8,7 +8,7 @@ apply plugin: 'io.fabric'
 def isTravis = System.getenv("CI") == "true"
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.gianlu.timeless"
@@ -72,7 +72,7 @@ dependencies {
     }
 
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    api 'com.squareup.okhttp3:okhttp:4.2.1'
+    api 'com.squareup.okhttp3:okhttp:4.2.2'
     api 'com.github.scribejava:scribejava-core:6.8.0'
     api 'com.github.scribejava:scribejava-httpclient-okhttp:6.8.0'
 }

@@ -87,7 +87,7 @@ final class SaveChartUtils {
         textPaint.setColor(Color.WHITE);
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(38);
-        FontsManager.set(view.getContext(), textPaint, FontsManager.ROBOTO_LIGHT);
+        FontsManager.set(view.getContext(), textPaint, R.font.roboto_light);
 
         String text = view.getContext().getString(R.string.watermark);
         Rect textBounds = new Rect();

@@ -56,14 +56,13 @@ public class LeadersAdapter extends InfiniteRecyclerView.InfiniteAdapter<Leaders
     protected void userBindViewHolder(@NonNull ViewHolder holder, @NonNull ItemEnclosure<Leader> item, int position) {
         final ItemEnclosure<Leader> leader = items.get(position);
 
-        FontsManager.set(FontsManager.ROBOTO_LIGHT, holder.rank);
         holder.rank.setText(String.valueOf(leader.getItem().rank));
         holder.name.setText(leader.getItem().user.getDisplayName());
         holder.total.setText(Utils.timeFormatterHours(leader.getItem().total_seconds, true));
 
         if (me != null && Objects.equals(leader.getItem().user.id, me.id)) {
             holder.setIsRecyclable(false);
-            FontsManager.set(FontsManager.ROBOTO_BOLD, holder.name);
+            FontsManager.set(R.font.roboto_bold, holder.name);
             CommonUtils.setTextColor(holder.name, R.color.colorSecondary);
         }
 
