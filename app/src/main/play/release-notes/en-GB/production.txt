@@ -1,2 +1,2 @@
 ### Changed
-- Fixed layout issue with list item
+- Fixed error message in 30 days tab
