@@ -153,7 +153,7 @@ public class WakaTime {
                     skipNextCache = false;
 
                     return obj;
-                } else if (resp.code() == 400) {
+                } else if (resp.code() == 400 || resp.code() == 402) {
                     throw new WakaTimeException(obj);
                 } else {
                     throw new StatusCodeException(resp);
