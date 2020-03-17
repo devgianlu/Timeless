@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -13,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
-import com.gianlu.commonutils.logging.Logging;
 import com.gianlu.commonutils.typography.FontsManager;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.ThisApplication;
@@ -33,6 +33,8 @@ final class SaveChartUtils {
     private SaveChartUtils() {
     }
 
+    private static final String TAG = SaveChartUtils.class.getSimpleName();
+
     @Nullable
     static File save(View view, @StringRes int title, @Nullable Project project) {
         String name = view.getContext().getString(title) + " (" + new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.getDefault()).format(new Date()) + ")";
@@ -40,7 +42,7 @@ final class SaveChartUtils {
         try {
             return save(view, project, name);
         } catch (IOException ex) {
-            Logging.log(ex);
+            Log.e(TAG, "Failed saving chart.", ex);
             return null;
         }
     }

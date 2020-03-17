@@ -3,6 +3,7 @@ package com.gianlu.timeless.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -114,9 +115,12 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
         if (fragment.onBackPressed()) super.onBackPressed();
     }
 
+    private static final String TAG = CommitsActivity.class.getSimpleName();
+
     @Override
     public void onException(@NonNull Exception ex) {
-        Toaster.with(this).message(R.string.failedLoading).ex(ex).show();
+        Log.e(TAG, "Failed getting commits.", ex);
+        Toaster.with(this).message(R.string.failedLoading).show();
         onBackPressed();
     }
 }

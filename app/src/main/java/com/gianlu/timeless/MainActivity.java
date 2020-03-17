@@ -13,7 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.gianlu.commonutils.dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.drawer.BaseDrawerItem;
 import com.gianlu.commonutils.drawer.DrawerManager;
-import com.gianlu.commonutils.logging.Logging;
+import com.gianlu.commonutils.logs.LogsHelper;
 import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.activities.CommitsActivity;
 import com.gianlu.timeless.activities.CustomRangeStatsActivity;
@@ -43,7 +43,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
 
         User user = (User) getIntent().getSerializableExtra("user");
         if (user == null) {
-            Toaster.with(this).message(R.string.failedLoading).ex(new NullPointerException("user is null!")).show();
+            Toaster.with(this).message(R.string.failedLoading).show();
             onBackPressed();
             return;
         }
@@ -130,7 +130,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 startActivity(new Intent(this, PreferenceActivity.class));
                 return false;
             case SUPPORT:
-                Logging.sendEmail(this, null);
+                LogsHelper.sendEmail(this, null);
                 return true;
             default:
                 return true;

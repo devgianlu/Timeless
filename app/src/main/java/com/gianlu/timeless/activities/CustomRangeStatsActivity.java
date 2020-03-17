@@ -2,6 +2,7 @@ package com.gianlu.timeless.activities;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,9 +111,12 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
         dismissDialog();
     }
 
+    private static final String TAG = CustomRangeStatsActivity.class.getSimpleName();
+
     @Override
     public void onException(@NonNull Exception ex) {
-        Toaster.with(this).message(R.string.failedLoading).ex(ex).show();
+        Log.e(TAG, "Failed loading stats.", ex);
+        Toaster.with(this).message(R.string.failedLoading).show();
         onBackPressed();
     }
 

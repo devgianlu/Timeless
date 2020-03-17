@@ -3,6 +3,7 @@ package com.gianlu.timeless;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -16,6 +17,7 @@ import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.api.WakaTime;
 
 public class GrantActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
+    private static final String TAG = GrantActivity.class.getSimpleName();
     private WakaTime.Builder builder;
 
     @Override
@@ -56,13 +58,14 @@ public class GrantActivity extends ActivityWithDialog implements WakaTime.Initia
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
             Prefs.putBoolean(PK.FIRST_RUN, false);
         } catch (ActivityNotFoundException ex) {
-            Toaster.with(this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
+            Toaster.with(this).message(R.string.failedCheckingWakatimePermissions).show();
         }
     }
 
     @Override
     public void onException(@NonNull Exception ex) {
         dismissDialog();
-        Toaster.with(this).message(R.string.failedCheckingWakatimePermissions).ex(ex).show();
+        Log.e(TAG, "Failed checking permissions.", ex);
+        Toaster.with(this).message(R.string.failedCheckingWakatimePermissions).show();
     }
 }

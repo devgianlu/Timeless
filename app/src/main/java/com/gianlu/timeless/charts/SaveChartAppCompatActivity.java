@@ -28,14 +28,14 @@ public abstract class SaveChartAppCompatActivity extends ActivityWithDialog impl
     public final void permissionGranted(@NonNull String permission) {
         File image = SaveChartUtils.save(chart, title, getProject());
         if (image == null)
-            showToast(Toaster.build().message(R.string.failedSavingImage).error(true));
+            showToast(Toaster.build().message(R.string.failedSavingImage));
         else
             showToast(Toaster.build().message(R.string.imageSavedTo, image.getAbsolutePath()));
     }
 
     @Override
     public final void permissionDenied(@NonNull String permission) {
-        showToast(Toaster.build().message(R.string.writeDenied).error(true));
+        showToast(Toaster.build().message(R.string.writeDenied));
 
         chart = null;
         title = 0;

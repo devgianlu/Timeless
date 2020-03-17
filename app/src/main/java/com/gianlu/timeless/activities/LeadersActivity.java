@@ -3,6 +3,7 @@ package com.gianlu.timeless.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import com.gianlu.timeless.api.models.LeadersWithMe;
 import com.gianlu.timeless.api.models.Summaries;
 
 public class LeadersActivity extends ActivityWithDialog implements LeadersAdapter.Listener {
+    private static final String TAG = LeadersActivity.class.getSimpleName();
     private LeadersAdapter adapter;
     private TextView currFilter;
     private String currLang = null;
@@ -206,7 +208,8 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
 
             @Override
             public void onException(@NonNull Exception ex) {
-                Toaster.with(LeadersActivity.this).message(R.string.failedLoading).ex(ex).show();
+                Log.e(TAG, "Failed loading more leaders.", ex);
+                Toaster.with(LeadersActivity.this).message(R.string.failedLoading).show();
                 dismissDialog();
             }
         });

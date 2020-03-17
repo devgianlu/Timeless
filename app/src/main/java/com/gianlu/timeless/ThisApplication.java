@@ -5,7 +5,6 @@ import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 
 import com.gianlu.commonutils.analytics.AnalyticsApplication;
-import com.gianlu.commonutils.logging.Logging;
 import com.gianlu.commonutils.network.ConnectivityChecker;
 import com.gianlu.commonutils.preferences.Prefs;
 import com.gianlu.timeless.api.WakaTime;
@@ -44,8 +43,7 @@ public class ThisApplication extends AnalyticsApplication {
                 String token = in.readLine();
                 if (token != null && !token.isEmpty()) Prefs.putString(PK.TOKEN, token);
                 deleteFile("token");
-            } catch (IOException ex) {
-                Logging.log(ex);
+            } catch (IOException ignored) {
             }
         }
 

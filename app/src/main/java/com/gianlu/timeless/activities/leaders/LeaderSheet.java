@@ -103,7 +103,7 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(leader.user.getWebsite())));
             } catch (ActivityNotFoundException ex) {
-                DialogUtils.showToast(getContext(), Toaster.build().message(R.string.failedLoading).ex(ex));
+                DialogUtils.showToast(getContext(), Toaster.build().message(R.string.failedLoading));
             }
         });
         return true;

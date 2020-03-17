@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.widget.DatePicker;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class ProjectsActivity extends ActivityWithDialog implements DatePickerDialog.OnDateSetListener, WakaTime.OnResult<Projects> {
+    private static final String TAG = ProjectsActivity.class.getSimpleName();
     private Pair<Date, Date> currentRange;
     private ViewPager pager;
     private Date tmpStart;
@@ -130,7 +132,8 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
 
     @Override
     public void onException(@NonNull Exception ex) {
-        Toaster.with(this).message(R.string.failedLoading).ex(ex).show();
+        Log.e(TAG, "Failed loading projects.", ex);
+        Toaster.with(this).message(R.string.failedLoading).show();
         onBackPressed();
     }
 
@@ -192,7 +195,8 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
             @Override
             public void onException(@NonNull Exception ex) {
                 dismissDialog();
-                Toaster.with(ProjectsActivity.this).message(R.string.failedLoading).ex(ex).show();
+                Log.e(TAG, "Failed loading projects.", ex);
+                Toaster.with(ProjectsActivity.this).message(R.string.failedLoading).show();
                 onBackPressed();
             }
         });

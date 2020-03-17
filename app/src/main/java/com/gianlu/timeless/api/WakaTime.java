@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.util.LruCache;
 import android.util.Pair;
 
@@ -19,7 +20,6 @@ import androidx.annotation.WorkerThread;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.lifecycle.LifecycleAwareRunnable;
-import com.gianlu.commonutils.logging.Logging;
 import com.gianlu.commonutils.preferences.Prefs;
 import com.gianlu.timeless.GrantActivity;
 import com.gianlu.timeless.PK;
@@ -70,6 +70,7 @@ public class WakaTime {
     private static final HttpUrl BASE_URL;
     private static final long MAX_CACHE_AGE = TimeUnit.MINUTES.toMillis(10);
     private static final int MAX_CACHE_SIZE = 20;
+    private static final String TAG = WakaTime.class.getSimpleName();
     private static WakaTime instance;
 
     static {
@@ -408,8 +409,7 @@ public class WakaTime {
         public void startFlow() {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(service.getAuthorizationUrl())));
-            } catch (ActivityNotFoundException ex) {
-                Logging.log(ex);
+            } catch (ActivityNotFoundException ignored) {
             }
         }
 
@@ -512,7 +512,7 @@ public class WakaTime {
                 stuff.request(requester, handler);
                 WakaTime.this.skipCache = false;
             } catch (Exception ex) {
-                Logging.log(ex);
+                Log.e(TAG, "Request failed.", ex);
                 handler.post(ctx, () -> stuff.somethingWentWrong(ex));
             }
         }

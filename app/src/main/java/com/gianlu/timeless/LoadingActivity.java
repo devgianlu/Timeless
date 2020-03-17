@@ -2,6 +2,7 @@ package com.gianlu.timeless;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.gianlu.timeless.api.models.User;
 import java.io.IOException;
 
 public class LoadingActivity extends ActivityWithDialog implements WakaTime.InitializationListener {
+    private static final String TAG = LoadingActivity.class.getSimpleName();
     private FakeLoadingWithLogoView view;
 
     @Override
@@ -75,8 +77,9 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
             @Override
             public void onException(@NonNull Exception ex) {
+                Log.e(TAG, "Failed getting user info.", ex);
                 view.endFakeAnimation(() -> {
-                    Toaster.with(LoadingActivity.this).message(R.string.failedLoading).ex(ex).show();
+                    Toaster.with(LoadingActivity.this).message(R.string.failedLoading).show();
                     finish();
                 }, false);
             }
@@ -85,8 +88,9 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
     @Override
     public void onException(@NonNull Exception ex) {
+        Log.e(TAG, "Failed refreshing token.", ex);
         view.endFakeAnimation(() -> {
-            Toaster.with(this).message(R.string.failedRefreshingToken).ex(ex).show();
+            Toaster.with(this).message(R.string.failedRefreshingToken).show();
             if (ex instanceof IOException) {
                 OfflineActivity.startActivity(this, LoadingActivity.class);
             } else if (!(ex instanceof WakaTime.ShouldGetAccessToken)) {
