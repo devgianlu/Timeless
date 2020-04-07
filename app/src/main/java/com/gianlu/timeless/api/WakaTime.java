@@ -397,13 +397,14 @@ public class WakaTime {
             this.client = new OkHttpClient.Builder()
                     .addInterceptor(new UserAgentInterceptor())
                     .build();
-            this.service = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s")
-                    .apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
-                    .withScope("email,read_stats,read_logged_time,read_private_leaderboards")
+
+            ServiceBuilder builder = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s");
+            builder.withScope("email,read_stats,read_logged_time,read_private_leaderboards");
+            builder.apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
                     .callback("timeless://grantActivity/")
                     .userAgent(ThisApplication.USER_AGENT)
-                    .httpClient(new OkHttpHttpClient(client))
-                    .build(new WakatimeApi());
+                    .httpClient(new OkHttpHttpClient(client));
+            this.service = builder.build(new WakatimeApi());
         }
 
         public void startFlow() {
