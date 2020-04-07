@@ -4,6 +4,7 @@ plugins {
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 def isTravis = System.getenv("CI") == "true"
 android {
@@ -76,7 +77,7 @@ dependencies {
     implementation 'com.github.scribejava:scribejava-core:6.9.0'
     implementation 'com.github.scribejava:scribejava-httpclient-okhttp:6.9.0'
 
-    implementation 'com.google.firebase:firebase-perf:19.0.5'
+    standardImplementation 'com.google.firebase:firebase-perf:19.0.5'
 }
 
 task printVersionName {
