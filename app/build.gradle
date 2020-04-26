@@ -15,8 +15,8 @@ android {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 58
-        versionName "2.1.4"
+        versionCode 59
+        versionName "2.2.0"
     }
 
     if (isTravis) {

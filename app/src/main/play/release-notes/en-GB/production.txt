@@ -1,3 +1,6 @@
+### Fixed
+- Fixed not being able to save chart on Android 10+
+- Fixed durations not displaying anything
+
 ### Changed
-- Using Android logging
-- Updated libraries
+- Removed Timeless footer from chart images
