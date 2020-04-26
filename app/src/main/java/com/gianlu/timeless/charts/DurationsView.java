@@ -70,11 +70,7 @@ public class DurationsView extends LinearLayout {
 
         removeAllViews();
         if (projects.isEmpty()) {
-            TextView noData = new TextView(getContext());
-            noData.setText(R.string.noData);
-            noData.setTextColor(Color.rgb(247, 189, 51));
-            noData.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-            addView(noData);
+            nothingToShow();
         } else {
             for (int i = 0; i < projects.size(); i++) {
                 String p = projects.get(i);
@@ -82,6 +78,24 @@ public class DurationsView extends LinearLayout {
                         ContextCompat.getColor(getContext(), colors.getColor(p)),
                         projects.size() <= 1, durations.isToday()));
             }
+        }
+    }
+
+    private void nothingToShow() {
+        TextView noData = new TextView(getContext());
+        noData.setText(R.string.noData);
+        noData.setTextColor(Color.rgb(247, 189, 51));
+        noData.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+        addView(noData);
+    }
+
+    @Override
+    public void removeView(View view) {
+        super.removeView(view);
+
+        if (getChildCount() == 0) {
+            removeAllViews();
+            nothingToShow();
         }
     }
 
