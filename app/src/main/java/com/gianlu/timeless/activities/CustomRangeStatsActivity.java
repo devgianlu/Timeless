@@ -15,6 +15,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gianlu.commonutils.dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.dialogs.MaterialDatePickerDialog;
 import com.gianlu.commonutils.misc.RecyclerMessageView;
 import com.gianlu.commonutils.typography.MaterialColors;
@@ -24,10 +25,7 @@ import com.gianlu.timeless.ThisApplication;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.WakaTime;
 import com.gianlu.timeless.api.WakaTimeException;
-import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
-import com.gianlu.timeless.charts.OnSaveChart;
-import com.gianlu.timeless.charts.SaveChartAppCompatActivity;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
@@ -37,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class CustomRangeStatsActivity extends SaveChartAppCompatActivity implements WakaTime.OnSummary, DatePickerDialog.OnDateSetListener, HelperViewHolder.Listener, OnSaveChart {
+public class CustomRangeStatsActivity extends ActivityWithDialog implements WakaTime.OnSummary, DatePickerDialog.OnDateSetListener, HelperViewHolder.Listener {
     private Pair<Date, Date> currentRange;
     private Date tmpStart;
     private WakaTime wakaTime;
@@ -101,7 +99,7 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
                 .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines)
                 .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems);
 
-        rmv.loadListData(new CardsAdapter(this, cards, this, this));
+        rmv.loadListData(new CardsAdapter(this, cards, null, this));
         dismissDialog();
     }
 
@@ -166,11 +164,5 @@ public class CustomRangeStatsActivity extends SaveChartAppCompatActivity impleme
         wakaTime.getRangeSummary(currentRange, null, this);
 
         ThisApplication.sendAnalytics(Utils.ACTION_DATE_RANGE);
-    }
-
-    @Nullable
-    @Override
-    public Project getProject() {
-        return null;
     }
 }

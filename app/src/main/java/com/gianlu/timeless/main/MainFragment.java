@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gianlu.commonutils.dialogs.FragmentWithDialog;
 import com.gianlu.commonutils.lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.misc.RecyclerMessageView;
 import com.gianlu.commonutils.typography.MaterialColors;
@@ -17,17 +18,15 @@ import com.gianlu.timeless.R;
 import com.gianlu.timeless.api.WakaTime;
 import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Durations;
-import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.api.models.Summary;
-import com.gianlu.timeless.charts.SaveChartFragment;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
 import java.util.Date;
 
-public class MainFragment extends SaveChartFragment implements WakaTime.BatchStuff, HelperViewHolder.Listener {
+public class MainFragment extends FragmentWithDialog implements WakaTime.BatchStuff, HelperViewHolder.Listener {
     private WakaTime.Range range;
     private RecyclerMessageView layout;
     private WakaTime wakaTime;
@@ -68,12 +67,6 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
         return layout;
     }
 
-    @Nullable
-    @Override
-    public Project getProject() {
-        return null;
-    }
-
     @Override
     public void request(@NonNull WakaTime.Requester requester, @NonNull LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(range.getStartAndEnd(), null, null);
@@ -97,7 +90,7 @@ public class MainFragment extends SaveChartFragment implements WakaTime.BatchStu
         }
 
         if (getContext() == null) return;
-        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this, this);
+        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, null, this);
         ui.post(this, () -> layout.loadListData(adapter));
     }
 

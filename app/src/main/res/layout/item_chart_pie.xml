@@ -30,10 +30,10 @@
             android:layout_height="32dp"
             android:layout_gravity="top"
             android:adjustViewBounds="true"
-
+            android:contentDescription="@string/shareChartImage"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
-            android:src="@drawable/baseline_save_24" />
+            android:src="@drawable/baseline_share_24" />
     </LinearLayout>
 
     <com.gianlu.timeless.charts.SquarePieChart

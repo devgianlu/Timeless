@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gianlu.commonutils.dialogs.FragmentWithDialog;
 import com.gianlu.commonutils.lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.misc.RecyclerMessageView;
 import com.gianlu.commonutils.typography.MaterialColors;
@@ -23,7 +24,6 @@ import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
-import com.gianlu.timeless.charts.SaveChartFragment;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
@@ -31,7 +31,7 @@ import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 import java.util.Date;
 import java.util.List;
 
-public class ProjectFragment extends SaveChartFragment implements CardsAdapter.OnBranches, WakaTime.BatchStuff, HelperViewHolder.Listener {
+public class ProjectFragment extends FragmentWithDialog implements CardsAdapter.OnBranches, WakaTime.BatchStuff, HelperViewHolder.Listener {
     private Date start;
     private Date end;
     private Project project;
@@ -70,13 +70,6 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
         }
 
         return true;
-    }
-
-    @Nullable
-    @Override
-    public Project getProject() {
-        Bundle args = getArguments();
-        return args == null ? null : (Project) args.getSerializable("project");
     }
 
     @Nullable
@@ -136,7 +129,7 @@ public class ProjectFragment extends SaveChartFragment implements CardsAdapter.O
         }
 
         if (getContext() == null) return;
-        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, this, this);
+        final CardsAdapter adapter = new CardsAdapter(getContext(), cards, project, this);
         ui.post(this, () -> rmv.loadListData(adapter));
     }
 

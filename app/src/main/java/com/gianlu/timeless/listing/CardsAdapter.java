@@ -6,14 +6,15 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.GlobalSummary;
 import com.gianlu.timeless.api.models.LoggedEntities;
+import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
-import com.gianlu.timeless.charts.OnSaveChart;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,15 +31,16 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_IMPROVEMENT = 6;
     private static final int TYPE_BRANCH_SELECTOR = 7;
     private final LayoutInflater inflater;
+    @Nullable
+    private final Project project;
     private final HelperViewHolder.Listener listener;
-    private final OnSaveChart saveChartListener;
     private final CardsList objs;
 
-    public CardsAdapter(@NonNull Context context, CardsList objs, HelperViewHolder.Listener listener, OnSaveChart saveChartListener) {
+    public CardsAdapter(@NonNull Context context, @NonNull CardsList objs, @Nullable Project project, @NonNull HelperViewHolder.Listener listener) {
         this.objs = objs;
         this.inflater = LayoutInflater.from(context);
+        this.project = project;
         this.listener = listener;
-        this.saveChartListener = saveChartListener;
     }
 
     @Override
@@ -77,12 +79,12 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             CardsList.SummaryItem s = (CardsList.SummaryItem) objs.payloads.get(position);
             ((SummaryViewHolder) holder).bind(s.summary, s.context);
         } else if (holder instanceof LineChartViewHolder) {
-            ((LineChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.payloads.get(position), saveChartListener);
+            ((LineChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.payloads.get(position), project);
         } else if (holder instanceof BarChartViewHolder) {
-            ((BarChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.payloads.get(position), saveChartListener);
+            ((BarChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.payloads.get(position), project);
         } else if (holder instanceof PieChartViewHolder) {
             CardsList.PieItem p = (CardsList.PieItem) objs.payloads.get(position);
-            ((PieChartViewHolder) holder).bind(objs.titles.get(position), p.entities, p.ctx, p.interval, saveChartListener);
+            ((PieChartViewHolder) holder).bind(objs.titles.get(position), p.entities, p.ctx, p.interval, project);
         } else if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).bind(objs.titles.get(position), (LoggedEntities) objs.payloads.get(position));
         } else if (holder instanceof DurationsViewHolder) {

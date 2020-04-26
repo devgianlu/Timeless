@@ -7,17 +7,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.typography.MaterialColors;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.SaveChartUtils;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.models.LoggedEntity;
+import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.api.models.Summary;
-import com.gianlu.timeless.charts.OnSaveChart;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
@@ -50,7 +52,7 @@ class BarChartViewHolder extends HelperViewHolder {
         save = itemView.findViewById(R.id.barChartCard_save);
     }
 
-    void bind(@StringRes int title, @NonNull Summaries summaries, OnSaveChart listener) {
+    void bind(@StringRes int title, @NonNull Summaries summaries, @Nullable Project project) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -136,7 +138,7 @@ class BarChartViewHolder extends HelperViewHolder {
             chart.clear();
         } else {
             save.setVisibility(View.VISIBLE);
-            save.setOnClickListener(v -> listener.saveImage(chart, title));
+            save.setOnClickListener(v -> SaveChartUtils.share(chart, title, project));
         }
     }
 }

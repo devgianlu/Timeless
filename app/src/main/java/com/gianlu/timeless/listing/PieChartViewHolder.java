@@ -10,16 +10,18 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.timeless.R;
+import com.gianlu.timeless.SaveChartUtils;
 import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.activities.ProjectsActivity;
 import com.gianlu.timeless.api.models.LoggedEntities;
 import com.gianlu.timeless.api.models.LoggedEntity;
-import com.gianlu.timeless.charts.OnSaveChart;
+import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.charts.PieChartColorHelper;
 import com.gianlu.timeless.colors.ProjectsColorMapper;
 import com.gianlu.timeless.dialogs.LoggedEntityDialog;
@@ -50,7 +52,7 @@ public class PieChartViewHolder extends HelperViewHolder {
         chart = itemView.findViewById(R.id.pieChartCard_chart);
     }
 
-    void bind(@StringRes int title, @NonNull LoggedEntities entities, @NonNull ChartContext chartContext, @NonNull Pair<Date, Date> interval, OnSaveChart listener) {
+    void bind(@StringRes int title, @NonNull LoggedEntities entities, @NonNull ChartContext chartContext, @NonNull Pair<Date, Date> interval, @Nullable Project project) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -103,7 +105,7 @@ public class PieChartViewHolder extends HelperViewHolder {
             chart.clear();
             save.setVisibility(View.INVISIBLE);
         } else {
-            save.setOnClickListener(v -> listener.saveImage(chart, title));
+            save.setOnClickListener(v -> SaveChartUtils.share(chart, title, project));
             save.setVisibility(View.VISIBLE);
         }
     }

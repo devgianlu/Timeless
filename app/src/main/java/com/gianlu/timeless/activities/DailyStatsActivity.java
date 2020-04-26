@@ -10,11 +10,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gianlu.commonutils.dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.dialogs.MaterialDatePickerDialog;
 import com.gianlu.commonutils.lifecycle.LifecycleAwareHandler;
 import com.gianlu.commonutils.misc.RecyclerMessageView;
@@ -24,9 +24,7 @@ import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.WakaTime;
 import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Durations;
-import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
-import com.gianlu.timeless.charts.SaveChartAppCompatActivity;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
@@ -34,7 +32,7 @@ import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DailyStatsActivity extends SaveChartAppCompatActivity implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, HelperViewHolder.Listener {
+public class DailyStatsActivity extends ActivityWithDialog implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, HelperViewHolder.Listener {
     private TextView currDay;
     private Date currentDate;
     private RecyclerMessageView rmv;
@@ -127,12 +125,6 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
         updatePage(new Date(), false);
     }
 
-    @Nullable
-    @Override
-    public Project getProject() {
-        return null;
-    }
-
     @Override
     public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
         Calendar cal = Calendar.getInstance();
@@ -156,7 +148,7 @@ public class DailyStatsActivity extends SaveChartAppCompatActivity implements Da
                 .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
                 .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors)
                 .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines)
-                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems), this, this);
+                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems), null, this);
 
         ui.post(this, () -> rmv.loadListData(adapter));
     }
