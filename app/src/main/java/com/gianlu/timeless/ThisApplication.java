@@ -6,12 +6,9 @@ import androidx.annotation.NonNull;
 
 import com.gianlu.commonutils.analytics.AnalyticsApplication;
 import com.gianlu.commonutils.network.ConnectivityChecker;
-import com.gianlu.commonutils.preferences.Prefs;
 import com.gianlu.timeless.api.WakaTime;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,17 +32,6 @@ public class ThisApplication extends AnalyticsApplication {
                 return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
             }
         });
-
-        // Backward compatibility
-        if (!Prefs.has(PK.TOKEN)) {
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(openFileInput("token")));
-                String token = in.readLine();
-                if (token != null && !token.isEmpty()) Prefs.putString(PK.TOKEN, token);
-                deleteFile("token");
-            } catch (IOException ignored) {
-            }
-        }
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
             if (key.equals(PK.CACHE_ENABLED.key())) {

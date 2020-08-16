@@ -37,6 +37,7 @@ import com.gianlu.timeless.api.models.User;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.exceptions.OAuthException;
+import com.github.scribejava.core.extractors.OAuth2AccessTokenJsonExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuth2Authorization;
@@ -45,6 +46,7 @@ import com.github.scribejava.core.oauth2.clientauthentication.ClientAuthenticati
 import com.github.scribejava.core.oauth2.clientauthentication.RequestBodyAuthenticationScheme;
 import com.github.scribejava.httpclient.okhttp.OkHttpHttpClient;
 
+import org.jetbrains.annotations.Contract;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,16 +90,16 @@ public class WakaTime {
     private volatile boolean skipCache = false;
     private volatile boolean skipNextCache = false;
     private OAuth2AccessToken token;
+    private long tokenCreateAt;
 
     private WakaTime(@NonNull Builder builder) throws ShouldGetAccessToken {
         if (builder.token == null) throw new ShouldGetAccessToken("Requested token is null!");
-
-        Prefs.putString(PK.TOKEN, builder.token.getRefreshToken());
 
         this.client = builder.client;
         this.handler = new LifecycleAwareHandler(builder.handler);
         this.executorService = builder.executorService;
         this.token = builder.token;
+        this.tokenCreateAt = builder.tokenCreateAt;
         this.service = builder.service;
         this.requester = new Requester();
     }
@@ -108,11 +110,34 @@ public class WakaTime {
         return instance;
     }
 
+    @NonNull
+    @Contract(" -> new")
     @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat getAPIFormatter() {
         return new SimpleDateFormat("yyyy-MM-dd");
     }
 
+    //region Store token
+    private static void storeToken(@NonNull OAuth2AccessToken token, long createdAt) {
+        Prefs.putString(PK.TOKEN_RAW, token.getRawResponse());
+        Prefs.putLong(PK.TOKEN_CREATED_AT, createdAt);
+    }
+
+    @Nullable
+    private static OAuth2AccessToken loadToken() {
+        String raw = Prefs.getString(PK.TOKEN_RAW, null);
+        if (raw == null) return null;
+
+        try {
+            return OAuth2AccessTokenJsonExtractor.instance().extract(new com.github.scribejava.core.model.Response(200, null, null, raw));
+        } catch (IOException ex) {
+            Log.e(TAG, "Failed loading token.", ex);
+            return null;
+        }
+    }
+    //endregion
+
+    //region Cache
     public void cacheEnabledChanged() {
         if (cacheEnabled()) memoryCache.resize(MAX_CACHE_SIZE);
         else memoryCache.trimToSize(-1);
@@ -122,23 +147,35 @@ public class WakaTime {
         return Prefs.getBoolean(PK.CACHE_ENABLED, true);
     }
 
+    public void skipNextRequestCache() {
+        skipNextCache = true;
+    }
+
+    @Nullable
+    private CachedResponse getFromCache(HttpUrl url) {
+        synchronized (memoryCache) {
+            return memoryCache.get(url);
+        }
+    }
+    //endregion
+
     @NonNull
     @WorkerThread
-    private JSONObject doRequestSync(HttpUrl url) throws IOException, ShouldGetAccessToken, ExecutionException, InterruptedException, JSONException, WakaTimeException {
+    private synchronized JSONObject doRequestSync(HttpUrl url) throws IOException, ExecutionException, InterruptedException, JSONException, WakaTimeException {
         CachedResponse cachedResponse;
         if (cacheEnabled() && !skipCache && !skipNextCache) cachedResponse = getFromCache(url);
         else cachedResponse = null;
 
         if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
-            Request.Builder request = new Request.Builder().get().url(url);
+            if (tokenCreateAt + token.getExpiresIn() * 1000 <= System.currentTimeMillis()) {
+                token = service.refreshAccessToken(token.getRefreshToken());
+                tokenCreateAt = System.currentTimeMillis();
+                storeToken(token, tokenCreateAt);
 
-            if (token == null) {
-                String storedToken = Prefs.getString(PK.TOKEN, null);
-                if (storedToken == null) throw new ShouldGetAccessToken("Stored token is null!");
-                token = service.refreshAccessToken(storedToken);
-                Prefs.putString(PK.TOKEN, token.getRefreshToken());
+                Log.d(TAG, "Refreshed token.");
             }
 
+            Request.Builder request = new Request.Builder().get().url(url);
             request.addHeader("Authorization", String.format("Bearer %s", token.getAccessToken()));
 
             try (Response resp = client.newCall(request.build()).execute()) {
@@ -165,13 +202,7 @@ public class WakaTime {
         }
     }
 
-    @Nullable
-    private CachedResponse getFromCache(HttpUrl url) {
-        synchronized (memoryCache) {
-            return memoryCache.get(url);
-        }
-    }
-
+    //region Requests
     public void batch(@Nullable Activity activity, @NonNull BatchStuff listener, boolean skipCache) {
         executorService.execute(new BatchRequest(activity == null ? listener : activity, listener, skipCache));
     }
@@ -275,10 +306,7 @@ public class WakaTime {
             }
         });
     }
-
-    public void skipNextRequestCache() {
-        skipNextCache = true;
-    }
+    //endregion
 
     public enum Range {
         TODAY,
@@ -389,7 +417,8 @@ public class WakaTime {
         private final Context context;
         private final ExecutorService executorService = Executors.newFixedThreadPool(3);
         private final Handler handler;
-        private OAuth2AccessToken token = null;
+        private long tokenCreateAt;
+        private OAuth2AccessToken token;
 
         public Builder(Context context) {
             this.context = context;
@@ -420,7 +449,10 @@ public class WakaTime {
                     OAuth2Authorization auth = service.extractAuthorization(data);
                     if (auth.getCode() == null)
                         throw new ShouldGetAccessToken("Failed getting authorization code!");
+
                     token = service.getAccessToken(auth.getCode());
+                    tokenCreateAt = System.currentTimeMillis();
+                    storeToken(token, tokenCreateAt);
 
                     WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
@@ -432,23 +464,42 @@ public class WakaTime {
             });
         }
 
-        public void alreadyAuthorized(@NonNull final InitializationListener listener) {
+        public void alreadyAuthorized(@NonNull InitializationListener listener) {
             if (WakaTime.instance != null) {
                 listener.onWakatimeInitialized(WakaTime.instance);
                 return;
             }
 
-            final String storedToken = Prefs.getString(PK.TOKEN, null);
-            if (storedToken == null) {
-                listener.onException(new ShouldGetAccessToken("Stored token is null!"));
-                return;
+            long storedCreatedAt;
+            OAuth2AccessToken storedToken;
+            if (Prefs.has(PK.TOKEN)) {
+                storedCreatedAt = 0; // Definitely expired
+                storedToken = new OAuth2AccessToken("", null, 0, Prefs.getString(PK.TOKEN, null), null, null);
+                Log.d(TAG, "Used deprecated token.");
+            } else {
+                storedCreatedAt = Prefs.getLong(PK.TOKEN_CREATED_AT, 0);
+                storedToken = loadToken();
+                if (storedToken == null) {
+                    listener.onException(new ShouldGetAccessToken("Missing stored token."));
+                    return;
+                }
             }
 
             executorService.execute(() -> {
                 try {
-                    token = service.refreshAccessToken(storedToken);
+                    if (storedCreatedAt + storedToken.getExpiresIn() * 1000 <= System.currentTimeMillis()) {
+                        token = service.refreshAccessToken(storedToken.getRefreshToken());
+                        tokenCreateAt = System.currentTimeMillis();
+                        storeToken(token, tokenCreateAt);
+
+                        Prefs.remove(PK.TOKEN);
+                    } else {
+                        token = storedToken;
+                        tokenCreateAt = storedCreatedAt;
+                    }
+
                     if (!token.getScope().contains("read_private_leaderboards"))
-                        throw new ShouldGetAccessToken(new IllegalStateException("Missing `read_private_leaderboards` scope"));
+                        throw new ShouldGetAccessToken("Missing `read_private_leaderboards` scope");
 
                     WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
@@ -469,11 +520,6 @@ public class WakaTime {
     }
 
     public static class ShouldGetAccessToken extends Exception {
-
-        ShouldGetAccessToken(@NonNull Throwable cause) {
-            super(cause);
-        }
-
         ShouldGetAccessToken(String message) {
             super(message);
         }
@@ -555,7 +601,7 @@ public class WakaTime {
         }
 
         @NonNull
-        public Commits commits(Project project, int page) throws IOException, JSONException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException, WakaTimeException {
+        public Commits commits(@NonNull Project project, int page) throws IOException, JSONException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException, WakaTimeException {
             return new Commits(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current/projects/" + project.id + "/commits")
                     .addQueryParameter("page", String.valueOf(page)).build()));

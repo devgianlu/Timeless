@@ -14,7 +14,7 @@ public class GlobalSummary extends Summary {
     public final long end;
     public int days;
 
-    GlobalSummary(List<SingleSummary> summaries) {
+    GlobalSummary(@NonNull List<SingleSummary> summaries) {
         super();
 
         long total = 0;
