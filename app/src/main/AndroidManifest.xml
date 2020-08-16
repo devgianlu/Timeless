@@ -112,6 +112,27 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- Configure coding activity widget activity -->
+        <activity
+            android:name=".widgets.ConfigureCodingActivityWidgetActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/configureWidget"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Coding activity widget receiver -->
+        <receiver android:name=".widgets.CodingActivityWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/coding_activity_widget_info" />
+        </receiver>
+
         <!-- Charts images provider -->
         <provider
             android:name="com.gianlu.timeless.SaveChartProvider"

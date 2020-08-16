@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/showCodingActivityFor" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/configureCodingActivityWidget_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:checkedButton="@id/configureCodingActivityWidget_range_today"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/configureCodingActivityWidget_range_today"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/today" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/configureCodingActivityWidget_range_lastWeek"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/last_7_days" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/configureCodingActivityWidget_range_lastMonth"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/last_30_days" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+</LinearLayout>

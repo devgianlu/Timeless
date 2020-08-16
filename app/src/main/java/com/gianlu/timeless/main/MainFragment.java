@@ -32,7 +32,7 @@ public class MainFragment extends FragmentWithDialog implements WakaTime.BatchSt
     private WakaTime wakaTime;
 
     @NonNull
-    public static MainFragment getInstance(Context context, WakaTime.Range range) {
+    public static MainFragment getInstance(Context context, @NonNull WakaTime.Range range) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
         args.putString("title", range.getFormal(context));
