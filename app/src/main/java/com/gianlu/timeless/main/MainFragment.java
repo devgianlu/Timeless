@@ -1,5 +1,7 @@
 package com.gianlu.timeless.main;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.gianlu.timeless.api.models.Summary;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
+import com.gianlu.timeless.widgets.CodingActivityWidgetProvider;
 
 import java.util.Date;
 
@@ -70,6 +73,18 @@ public class MainFragment extends FragmentWithDialog implements WakaTime.BatchSt
     @Override
     public void request(@NonNull WakaTime.Requester requester, @NonNull LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(range.getStartAndEnd(), null, null);
+
+        ui.post(this, () -> {
+            Context context = getContext();
+            if (context == null)
+                return;
+
+            AppWidgetManager manager = AppWidgetManager.getInstance(context);
+            int[] ids = manager.getAppWidgetIds(new ComponentName(context, CodingActivityWidgetProvider.class));
+
+            for (int id : ids)
+                CodingActivityWidgetProvider.performWidgetUpdate(context, id, range, summaries);
+        });
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                 .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.MAIN)

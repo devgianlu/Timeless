@@ -46,6 +46,16 @@ public class CodingActivityWidgetProvider extends AppWidgetProvider {
     }
 
     @NonNull
+    private static RemoteViews createRemoteViewsLoading(@NonNull Context context) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_coding_activity);
+        views.setViewVisibility(R.id.codingActivityWidget_time, View.GONE);
+        views.setViewVisibility(R.id.codingActivityWidget_range, View.GONE);
+        views.setViewVisibility(R.id.codingActivityWidget_error, View.GONE);
+        views.setOnClickPendingIntent(R.id.codingActivityWidget, startAppPendingIntent(context));
+        return views;
+    }
+
+    @NonNull
     private static RemoteViews createRemoteViewsError(@NonNull Context context, @NonNull String errorStr) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_coding_activity);
         views.setViewVisibility(R.id.codingActivityWidget_time, View.GONE);
@@ -58,20 +68,22 @@ public class CodingActivityWidgetProvider extends AppWidgetProvider {
     }
 
     public static void performWidgetUpdate(@NonNull WakaTime wakaTime, @NonNull Context context, int appWidgetId, @Nullable Runnable completionCallback) {
-        WidgetOptions options = loadWidgetOptions(appWidgetId);
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        manager.updateAppWidget(appWidgetId, createRemoteViewsLoading(context));
 
+        Log.v(TAG, "Refreshing widget: " + appWidgetId);
+        WidgetOptions options = loadWidgetOptions(appWidgetId);
+        wakaTime.skipNextRequestCache();
         wakaTime.getRangeSummary(options.range.getStartAndEnd(), null, new WakaTime.OnSummary() {
             @Override
             public void onSummary(@NonNull Summaries summaries) {
-                long total = summaries.globalSummary.total_seconds;
-
-                AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, createRemoteViews(context, options.range, total));
+                performWidgetUpdate(context, appWidgetId, options, summaries);
                 if (completionCallback != null) completionCallback.run();
             }
 
             @Override
             public void onWakaTimeError(@NonNull WakaTimeException ex) {
-                AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, createRemoteViewsError(context, ex.getMessage()));
+                manager.updateAppWidget(appWidgetId, createRemoteViewsError(context, ex.getMessage()));
                 if (completionCallback != null) completionCallback.run();
             }
 
@@ -79,10 +91,33 @@ public class CodingActivityWidgetProvider extends AppWidgetProvider {
             public void onException(@NonNull Exception ex) {
                 Log.e(TAG, "Failed retrieving summary for widget update.", ex);
 
-                AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, createRemoteViewsError(context, context.getString(R.string.failedLoading)));
+                manager.updateAppWidget(appWidgetId, createRemoteViewsError(context, context.getString(R.string.failedLoading)));
                 if (completionCallback != null) completionCallback.run();
             }
         });
+    }
+
+    private static void performWidgetUpdate(@NonNull Context context, int appWidgetId, @NonNull WidgetOptions options, @NonNull Summaries summaries) {
+        long total = summaries.globalSummary.total_seconds;
+        AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, createRemoteViews(context, options.range, total));
+        Log.d(TAG, "Widget updated: " + appWidgetId);
+    }
+
+    /**
+     * Updates the widget after making sure that the range is correct.
+     *
+     * @param context     The context
+     * @param appWidgetId The target widget ID
+     * @param range       The range of the summaries
+     * @param summaries   The summaries
+     */
+    public static void performWidgetUpdate(@NonNull Context context, int appWidgetId, @NonNull WakaTime.Range range, @NonNull Summaries summaries) {
+        WidgetOptions options = loadWidgetOptions(appWidgetId);
+        if (options.range != range)
+            return;
+
+        long total = summaries.globalSummary.total_seconds;
+        AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, createRemoteViews(context, range, total));
     }
 
     @NonNull

@@ -10,9 +10,8 @@
     android:paddingEnd="4dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
         android:text="@string/app_name"
         android:textColor="@color/colorOnPrimary" />
 
@@ -38,5 +37,4 @@
         android:layout_height="wrap_content"
         android:textColor="@color/red"
         android:textSize="12sp" />
-
 </LinearLayout>

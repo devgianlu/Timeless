@@ -214,7 +214,7 @@ public class WakaTime {
                 try {
                     final User user = requester.user();
                     post(() -> listener.onResult(user));
-                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -228,7 +228,7 @@ public class WakaTime {
                 try {
                     final LeadersWithMe leaders = requester.leaders(language, page);
                     post(() -> listener.onResult(leaders));
-                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -242,7 +242,7 @@ public class WakaTime {
                 try {
                     final Leaders leaders = requester.leaders(id, language, page);
                     post(() -> listener.onResult(leaders));
-                } catch (JSONException | IOException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -256,7 +256,7 @@ public class WakaTime {
                 try {
                     final Projects projects = requester.projects();
                     post(() -> listener.onResult(projects));
-                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -270,7 +270,7 @@ public class WakaTime {
                 try {
                     final Commits commits = requester.commits(project, page);
                     post(() -> listener.onResult(commits));
-                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (IOException | JSONException | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -284,7 +284,7 @@ public class WakaTime {
                 try {
                     final Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
                     post(() -> listener.onSummary(summaries));
-                } catch (IOException | JSONException | ShouldGetAccessToken | ParseException | InterruptedException | ExecutionException ex) {
+                } catch (IOException | JSONException | ParseException | InterruptedException | ExecutionException ex) {
                     post(() -> listener.onException(ex));
                 } catch (WakaTimeException ex) {
                     post(() -> listener.onWakaTimeError(ex));
@@ -300,7 +300,7 @@ public class WakaTime {
                 try {
                     final Leaderboards leaderboards = requester.privateLeaderboards(page);
                     post(() -> listener.onResult(leaderboards));
-                } catch (IOException | JSONException | ShouldGetAccessToken | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -569,7 +569,7 @@ public class WakaTime {
     public class Requester {
 
         @NonNull
-        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
             HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/durations")
                     .addQueryParameter("date", getAPIFormatter().format(day));
 
@@ -580,12 +580,12 @@ public class WakaTime {
         }
 
         @NonNull
-        public Summaries summaries(Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException {
+        public Summaries summaries(@NonNull Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ParseException, ExecutionException, InterruptedException {
             return summaries(startAndEnd.first, startAndEnd.second, project, branches);
         }
 
         @NonNull
-        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException {
+        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ParseException, ExecutionException, InterruptedException {
             SimpleDateFormat formatter = getAPIFormatter();
             HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/summaries")
                     .addQueryParameter("start", formatter.format(start))
@@ -601,14 +601,14 @@ public class WakaTime {
         }
 
         @NonNull
-        public Commits commits(@NonNull Project project, int page) throws IOException, JSONException, ShouldGetAccessToken, ParseException, ExecutionException, InterruptedException, WakaTimeException {
+        public Commits commits(@NonNull Project project, int page) throws IOException, JSONException, ParseException, ExecutionException, InterruptedException, WakaTimeException {
             return new Commits(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current/projects/" + project.id + "/commits")
                     .addQueryParameter("page", String.valueOf(page)).build()));
         }
 
         @NonNull
-        public LeadersWithMe leaders(@Nullable String language, int page) throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+        public LeadersWithMe leaders(@Nullable String language, int page) throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
             HttpUrl.Builder builder = BASE_URL.newBuilder()
                     .addPathSegment("leaders")
                     .addQueryParameter("page", String.valueOf(page));
@@ -620,7 +620,7 @@ public class WakaTime {
         }
 
         @NonNull
-        public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
+        public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
             HttpUrl.Builder builder = BASE_URL.newBuilder()
                     .addPathSegments("users/current/leaderboards/" + id)
                     .addQueryParameter("page", String.valueOf(page));
@@ -632,19 +632,19 @@ public class WakaTime {
         }
 
         @NonNull
-        public Projects projects() throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+        public Projects projects() throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
             return new Projects(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current/projects").build()));
         }
 
         @NonNull
-        public User user() throws IOException, JSONException, ShouldGetAccessToken, ExecutionException, InterruptedException, WakaTimeException {
+        public User user() throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
             return new User(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current").build()).getJSONObject("data"));
         }
 
         @NonNull
-        public Leaderboards privateLeaderboards(int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException, ShouldGetAccessToken {
+        public Leaderboards privateLeaderboards(int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
             return new Leaderboards(doRequestSync(BASE_URL.newBuilder()
                     .addQueryParameter("page", String.valueOf(page))
                     .addPathSegments("users/current/leaderboards").build()));
