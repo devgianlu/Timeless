@@ -1,6 +1,6 @@
-### Fixed
-- Fixed not being able to save chart on Android 10+
-- Fixed durations not displaying anything
+### Added
+- Added lifetime stats
+- Added coding activity widgets
 
 ### Changed
-- Removed Timeless footer from chart images
+- Improved token management
