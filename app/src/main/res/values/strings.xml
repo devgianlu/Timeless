@@ -72,6 +72,13 @@
     <string name="done">Done</string>
     <string name="showCodingActivityFor">Show coding activity for</string>
     <string name="configureWidget">Configure widget</string>
+    <string name="lifetimeStats">Lifetime stats</string>
+    <string name="lifetimeStatsNotUpdated">Lifetime stats are not up to date, check back later.</string>
+    <string name="lifetimeStatsTotal">Your lifetime coding activity is <![CDATA[<b>%s</b>]]>.</string>
+    <string name="lifetimeStatsTotalWithDays">Your lifetime coding activity is <![CDATA[<b>%s</b>]]> (or <![CDATA[<b>%.2f days</b>]]>).</string>
+    <string name="lifetimeStatsProject">%s: <![CDATA[<b>%s</b>]]></string>
+    <string name="lifetimeStatsProjectWithDays">%s: <![CDATA[<b>%s</b>]]> (or <![CDATA[<b>%.2f days</b>]]>)</string>
+    <string name="lifetimeStatsProjectLoading">%s: loading…</string>
     <plurals name="members">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>

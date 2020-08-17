@@ -112,6 +112,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- Lifetime stats activity -->
+        <activity
+            android:name=".activities.LifetimeStatsActivity"
+            android:configChanges="uiMode"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!-- Configure coding activity widget activity -->
         <activity
             android:name=".widgets.ConfigureCodingActivityWidgetActivity"

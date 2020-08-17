@@ -19,6 +19,7 @@ import com.gianlu.timeless.activities.CommitsActivity;
 import com.gianlu.timeless.activities.CustomRangeStatsActivity;
 import com.gianlu.timeless.activities.DailyStatsActivity;
 import com.gianlu.timeless.activities.LeadersActivity;
+import com.gianlu.timeless.activities.LifetimeStatsActivity;
 import com.gianlu.timeless.activities.PrivateLeaderboardsActivity;
 import com.gianlu.timeless.activities.ProjectsActivity;
 import com.gianlu.timeless.api.WakaTime;
@@ -55,6 +56,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                     finish();
                 })
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.DAILY_STATS, R.drawable.baseline_view_day_24, getString(R.string.dailyStats)))
+                .addMenuItem(new BaseDrawerItem<>(DrawerItem.LIFETIME_STATS, R.drawable.baseline_poll_24, getString(R.string.lifetimeStats)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.CUSTOM_RANGE_STATS, R.drawable.baseline_date_range_24, getString(R.string.customRangeStats)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.PROJECTS, R.drawable.baseline_view_module_24, getString(R.string.projects)))
                 .addMenuItem(new BaseDrawerItem<>(DrawerItem.COMMITS, R.drawable.baseline_linear_scale_24, getString(R.string.commits)))
@@ -110,6 +112,9 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
         switch (item.id) {
             case DAILY_STATS:
                 startActivity(new Intent(this, DailyStatsActivity.class));
+                return false;
+            case LIFETIME_STATS:
+                startActivity(new Intent(this, LifetimeStatsActivity.class));
                 return false;
             case CUSTOM_RANGE_STATS:
                 startActivity(new Intent(this, CustomRangeStatsActivity.class));

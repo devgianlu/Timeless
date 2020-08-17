@@ -19,7 +19,7 @@ public class Durations extends ArrayList<Duration> {
     public final List<String> branches;
     private final boolean isToday;
 
-    public Durations(JSONObject obj, @Nullable Project project) throws JSONException {
+    public Durations(@NonNull JSONObject obj, @Nullable Project project) throws JSONException {
         JSONArray array = obj.getJSONArray("data");
         for (int i = 0; i < array.length(); i++) {
             Duration duration = new Duration(array.getJSONObject(i));

@@ -30,6 +30,7 @@ import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Leaderboards;
 import com.gianlu.timeless.api.models.Leaders;
 import com.gianlu.timeless.api.models.LeadersWithMe;
+import com.gianlu.timeless.api.models.LifetimeStats;
 import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Projects;
 import com.gianlu.timeless.api.models.Summaries;
@@ -212,7 +213,7 @@ public class WakaTime {
             @Override
             public void run() {
                 try {
-                    final User user = requester.user();
+                    User user = requester.user();
                     post(() -> listener.onResult(user));
                 } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
@@ -226,7 +227,7 @@ public class WakaTime {
             @Override
             public void run() {
                 try {
-                    final LeadersWithMe leaders = requester.leaders(language, page);
+                    LeadersWithMe leaders = requester.leaders(language, page);
                     post(() -> listener.onResult(leaders));
                 } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
@@ -240,7 +241,7 @@ public class WakaTime {
             @Override
             public void run() {
                 try {
-                    final Leaders leaders = requester.leaders(id, language, page);
+                    Leaders leaders = requester.leaders(id, language, page);
                     post(() -> listener.onResult(leaders));
                 } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
@@ -254,7 +255,7 @@ public class WakaTime {
             @Override
             public void run() {
                 try {
-                    final Projects projects = requester.projects();
+                    Projects projects = requester.projects();
                     post(() -> listener.onResult(projects));
                 } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
@@ -268,7 +269,7 @@ public class WakaTime {
             @Override
             public void run() {
                 try {
-                    final Commits commits = requester.commits(project, page);
+                    Commits commits = requester.commits(project, page);
                     post(() -> listener.onResult(commits));
                 } catch (IOException | JSONException | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
@@ -282,7 +283,7 @@ public class WakaTime {
             @Override
             public void run() {
                 try {
-                    final Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
+                    Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
                     post(() -> listener.onSummary(summaries));
                 } catch (IOException | JSONException | ParseException | InterruptedException | ExecutionException ex) {
                     post(() -> listener.onException(ex));
@@ -298,8 +299,22 @@ public class WakaTime {
             @Override
             public void run() {
                 try {
-                    final Leaderboards leaderboards = requester.privateLeaderboards(page);
+                    Leaderboards leaderboards = requester.privateLeaderboards(page);
                     post(() -> listener.onResult(leaderboards));
+                } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                    post(() -> listener.onException(ex));
+                }
+            }
+        });
+    }
+
+    public void getLifetimeStats(@Nullable String project, @Nullable Activity activity, @NonNull OnResult<LifetimeStats> listener) {
+        executorService.execute(new LifecycleAwareRunnable(handler, activity == null ? listener : activity) {
+            @Override
+            public void run() {
+                try {
+                    LifetimeStats lifetimeStats = requester.lifetimeTotal(project);
+                    post(() -> listener.onResult(lifetimeStats));
                 } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
                     post(() -> listener.onException(ex));
                 }
@@ -648,6 +663,17 @@ public class WakaTime {
             return new Leaderboards(doRequestSync(BASE_URL.newBuilder()
                     .addQueryParameter("page", String.valueOf(page))
                     .addPathSegments("users/current/leaderboards").build()));
+        }
+
+        @NonNull
+        public LifetimeStats lifetimeTotal(@Nullable String project) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
+            HttpUrl.Builder builder = BASE_URL.newBuilder()
+                    .addPathSegments("users/current/all_time_since_today");
+
+            if (project != null)
+                builder.addQueryParameter("project", project);
+
+            return new LifetimeStats(doRequestSync(builder.build()));
         }
     }
 }
