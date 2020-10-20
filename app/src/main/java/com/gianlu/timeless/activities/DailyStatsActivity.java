@@ -26,13 +26,12 @@ import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.listing.CardsAdapter;
-import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class DailyStatsActivity extends ActivityWithDialog implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff, HelperViewHolder.Listener {
+public class DailyStatsActivity extends ActivityWithDialog implements DatePickerDialog.OnDateSetListener, WakaTime.BatchStuff {
     private TextView currDay;
     private Date currentDate;
     private RecyclerMessageView rmv;

@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.dialogs.DialogUtils;
 import com.gianlu.commonutils.misc.SuperTextView;
 import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.R;
@@ -24,7 +25,7 @@ class BranchSelectorViewHolder extends HelperViewHolder {
     private final SuperTextView selected;
     private List<String> selectedBranches = null;
 
-    BranchSelectorViewHolder(Listener listener, LayoutInflater inflater, ViewGroup parent) {
+    BranchSelectorViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
         super(listener, inflater, parent, R.layout.item_branch_selector);
 
         select = itemView.findViewById(R.id.branchSelectorItem_select);

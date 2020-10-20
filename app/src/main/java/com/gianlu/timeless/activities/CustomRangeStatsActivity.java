@@ -27,7 +27,6 @@ import com.gianlu.timeless.api.WakaTime;
 import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.listing.CardsAdapter;
-import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
 import java.text.SimpleDateFormat;
@@ -35,7 +34,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class CustomRangeStatsActivity extends ActivityWithDialog implements WakaTime.OnSummary, DatePickerDialog.OnDateSetListener, HelperViewHolder.Listener {
+public class CustomRangeStatsActivity extends ActivityWithDialog implements WakaTime.OnSummary, DatePickerDialog.OnDateSetListener {
+    private static final String TAG = CustomRangeStatsActivity.class.getSimpleName();
     private Pair<Date, Date> currentRange;
     private Date tmpStart;
     private WakaTime wakaTime;
@@ -108,8 +108,6 @@ public class CustomRangeStatsActivity extends ActivityWithDialog implements Waka
         rmv.showError(ex.getMessage());
         dismissDialog();
     }
-
-    private static final String TAG = CustomRangeStatsActivity.class.getSimpleName();
 
     @Override
     public void onException(@NonNull Exception ex) {

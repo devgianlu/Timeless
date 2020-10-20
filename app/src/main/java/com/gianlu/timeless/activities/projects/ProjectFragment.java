@@ -25,13 +25,12 @@ import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.listing.CardsAdapter;
-import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
 import java.util.Date;
 import java.util.List;
 
-public class ProjectFragment extends FragmentWithDialog implements CardsAdapter.OnBranches, WakaTime.BatchStuff, HelperViewHolder.Listener {
+public class ProjectFragment extends FragmentWithDialog implements CardsAdapter.OnBranches, WakaTime.BatchStuff {
     private Date start;
     private Date end;
     private Project project;

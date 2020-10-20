@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gianlu.commonutils.dialogs.DialogUtils;
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.GlobalSummary;
 import com.gianlu.timeless.api.models.LoggedEntities;
@@ -33,10 +34,10 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final LayoutInflater inflater;
     @Nullable
     private final Project project;
-    private final HelperViewHolder.Listener listener;
+    private final DialogUtils.ShowStuffInterface listener;
     private final CardsList objs;
 
-    public CardsAdapter(@NonNull Context context, @NonNull CardsList objs, @Nullable Project project, @NonNull HelperViewHolder.Listener listener) {
+    public CardsAdapter(@NonNull Context context, @NonNull CardsList objs, @Nullable Project project, @NonNull DialogUtils.ShowStuffInterface listener) {
         this.objs = objs;
         this.inflater = LayoutInflater.from(context);
         this.project = project;

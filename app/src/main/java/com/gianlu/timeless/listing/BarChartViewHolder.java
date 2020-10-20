@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.dialogs.DialogUtils;
 import com.gianlu.commonutils.typography.MaterialColors;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.SaveChartUtils;
@@ -44,7 +45,7 @@ class BarChartViewHolder extends HelperViewHolder {
     private final BarChart chart;
     private final ImageButton save;
 
-    BarChartViewHolder(Listener listener, LayoutInflater inflater, ViewGroup parent) {
+    BarChartViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
         super(listener, inflater, parent, R.layout.item_chart_bar);
 
         title = itemView.findViewById(R.id.barChartCard_title);

@@ -15,6 +15,7 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
+import com.gianlu.commonutils.dialogs.DialogUtils;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.SaveChartUtils;
 import com.gianlu.timeless.Utils;
@@ -44,7 +45,7 @@ public class PieChartViewHolder extends HelperViewHolder {
     private final ImageButton save;
     private final PieChart chart;
 
-    PieChartViewHolder(Listener listener, LayoutInflater inflater, ViewGroup parent) {
+    PieChartViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
         super(listener, inflater, parent, R.layout.item_chart_pie);
 
         title = itemView.findViewById(R.id.pieChartCard_title);

@@ -23,13 +23,12 @@ import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.api.models.Summary;
 import com.gianlu.timeless.listing.CardsAdapter;
-import com.gianlu.timeless.listing.HelperViewHolder;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 import com.gianlu.timeless.widgets.CodingActivityWidgetProvider;
 
 import java.util.Date;
 
-public class MainFragment extends FragmentWithDialog implements WakaTime.BatchStuff, HelperViewHolder.Listener {
+public class MainFragment extends FragmentWithDialog implements WakaTime.BatchStuff {
     private WakaTime.Range range;
     private RecyclerMessageView layout;
     private WakaTime wakaTime;

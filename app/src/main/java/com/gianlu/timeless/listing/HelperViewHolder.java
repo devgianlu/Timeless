@@ -11,10 +11,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-public abstract class HelperViewHolder extends RecyclerView.ViewHolder {
-    private final Listener listener;
+import com.gianlu.commonutils.dialogs.DialogUtils;
 
-    HelperViewHolder(@NonNull Listener listener, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @LayoutRes int res) {
+public abstract class HelperViewHolder extends RecyclerView.ViewHolder {
+    private final DialogUtils.ShowStuffInterface listener;
+
+    HelperViewHolder(@NonNull DialogUtils.ShowStuffInterface listener, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, @LayoutRes int res) {
         super(inflater.inflate(res, parent, false));
         this.listener = listener;
     }
@@ -32,9 +34,4 @@ public abstract class HelperViewHolder extends RecyclerView.ViewHolder {
         listener.showDialog(builder);
     }
 
-    public interface Listener {
-        void showDialog(@NonNull AlertDialog.Builder builder);
-
-        void showDialog(@NonNull DialogFragment fragment, @Nullable String tag);
-    }
 }
