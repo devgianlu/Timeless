@@ -3,18 +3,18 @@ package com.gianlu.timeless.charts;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.CombinedChart;
 
-public class SquareBarChart extends BarChart {
-    public SquareBarChart(Context context) {
+public class SquareCombinedChart extends CombinedChart {
+    public SquareCombinedChart(Context context) {
         super(context);
     }
 
-    public SquareBarChart(Context context, AttributeSet attrs) {
+    public SquareCombinedChart(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareBarChart(Context context, AttributeSet attrs, int defStyle) {
+    public SquareCombinedChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

@@ -31,7 +31,7 @@
             android:src="@drawable/baseline_share_24" />
     </LinearLayout>
 
-    <com.gianlu.timeless.charts.SquareBarChart
+    <com.gianlu.timeless.charts.SquareCombinedChart
         android:id="@+id/barChartCard_chart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

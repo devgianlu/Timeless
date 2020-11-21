@@ -21,7 +21,7 @@ import com.gianlu.timeless.api.models.LoggedEntity;
 import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.api.models.Summary;
-import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
@@ -29,7 +29,13 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,7 +48,7 @@ import java.util.Map;
 
 class BarChartViewHolder extends HelperViewHolder {
     private final TextView title;
-    private final BarChart chart;
+    private final CombinedChart chart;
     private final ImageButton save;
 
     BarChartViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
@@ -51,6 +57,19 @@ class BarChartViewHolder extends HelperViewHolder {
         title = itemView.findViewById(R.id.barChartCard_title);
         chart = itemView.findViewById(R.id.barChartCard_chart);
         save = itemView.findViewById(R.id.barChartCard_save);
+    }
+
+    @NotNull
+    private LineData averageLineData(long average, int end, float spacing) {
+        List<Entry> entries = new ArrayList<>(2);
+        entries.add(new Entry(-spacing, average));
+        entries.add(new Entry(end + spacing, average));
+        LineDataSet set = new LineDataSet(entries, null);
+        set.enableDashedLine(20, 20, 0);
+        set.setDrawValues(false);
+        set.setDrawCircles(false);
+        set.setColor(CommonUtils.resolveAttrAsColor(getContext(), android.R.attr.textColorPrimary));
+        return new LineData(set);
     }
 
     void bind(@StringRes int title, @NonNull Summaries summaries, @Nullable Project project) {
@@ -131,8 +150,16 @@ class BarChartViewHolder extends HelperViewHolder {
         set.setDrawValues(false);
         if (!colors.isEmpty()) set.setColors(colors);
 
-        chart.setData(new BarData(set));
-        chart.setFitBars(true);
+        BarData barData = new BarData(set);
+
+        CombinedData data = new CombinedData();
+        data.setData(barData);
+        data.setData(averageLineData(summaries.globalSummary.total_seconds / summaries.globalSummary.days, summaries.size() - 1, barData.getBarWidth()));
+        chart.setData(data);
+
+        xAxis.calculate(barData.getXMin() - barData.getBarWidth(), barData.getXMax() + barData.getBarWidth());
+        xAxis.setAxisMaximum(xAxis.getAxisMaximum());
+        xAxis.setAxisMinimum(xAxis.getAxisMinimum());
 
         if (entries.isEmpty()) {
             save.setVisibility(View.INVISIBLE);
