@@ -1,7 +1,7 @@
 # Timeless
-[![Build Status](https://travis-ci.com/devgianlu/Timeless.svg?branch=master)](https://travis-ci.com/devgianlu/Timeless)
+![Android CI](https://github.com/devgianlu/Timeless/workflows/Android%20CI/badge.svg?branch=master)
 [![Crowdin](https://badges.crowdin.net/timeless/localized.svg)](https://crowdin.com/project/timeless)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8ad3843456fe4f22b30358b2c73d3fc3)](https://www.codacy.com/gh/devgianlu/Timeless/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=devgianlu/Timeless&amp;utm_campaign=Badge_Grade)[![time tracker](https://wakatime.com/badge/github/devgianlu/Aria2App.svg)](https://wakatime.com/badge/github/devgianlu/Aria2App)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8ad3843456fe4f22b30358b2c73d3fc3)](https://www.codacy.com/gh/devgianlu/Timeless/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=devgianlu/Timeless&amp;utm_campaign=Badge_Grade)
 [![time tracker](https://wakatime.com/badge/github/devgianlu/Timeless.svg)](https://wakatime.com/badge/github/devgianlu/Timeless)
 [![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://gianlu.xyz/donate/)
 
