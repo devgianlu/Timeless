@@ -1,6 +1,5 @@
 ### Added
-- Added lifetime stats
-- Added coding activity widgets
+- Added average line to graphs
 
-### Changed
-- Improved token management
+### Fixed
+- Minor bug fixes
