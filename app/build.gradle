@@ -79,7 +79,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.4.0-alpha02'
 
-    standardImplementation 'com.google.firebase:firebase-perf:19.1.0'
+    standardImplementation 'com.google.firebase:firebase-perf:19.1.1'
 }
 
 task printVersionName {
