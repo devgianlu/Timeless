@@ -47,6 +47,8 @@ public class GrantActivity extends ActivityWithDialog implements WakaTime.Initia
 
         Button grant = findViewById(R.id.grantActivity_grant);
         grant.setOnClickListener(v -> builder.startFlow());
+
+        builder.apiKey("API_KEY_HERE", this);
     }
 
     @Override

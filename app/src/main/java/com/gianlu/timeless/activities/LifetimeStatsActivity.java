@@ -49,7 +49,7 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(this);
             return;
         }

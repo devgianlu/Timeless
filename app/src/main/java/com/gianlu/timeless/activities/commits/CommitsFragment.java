@@ -82,7 +82,7 @@ public class CommitsFragment extends Fragment implements WakaTime.OnResult<Commi
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(getContext());
             return layout;
         }

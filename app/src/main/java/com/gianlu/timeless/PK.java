@@ -9,7 +9,4 @@ public final class PK extends CommonPK {
     public final static Prefs.Key TOKEN_CREATED_AT = new Prefs.Key("tokenCreatedAt");
     public final static Prefs.KeyWithDefault<Boolean> CACHE_ENABLED = new Prefs.KeyWithDefault<>("cacheEnabled", true);
     public final static Prefs.Key WIDGETS_CONFIG = new Prefs.Key("widgetsConfig");
-
-    @Deprecated
-    public final static Prefs.Key TOKEN = new Prefs.Key("token");
 }

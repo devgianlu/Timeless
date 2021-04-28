@@ -54,7 +54,7 @@ public class DailyStatsActivity extends ActivityWithDialog implements DatePicker
 
         try {
             WakaTime.get().batch(null, this, refresh);
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(this);
         }
     }

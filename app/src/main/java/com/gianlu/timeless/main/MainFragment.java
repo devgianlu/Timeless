@@ -58,7 +58,7 @@ public class MainFragment extends FragmentWithDialog implements WakaTime.BatchSt
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(getContext());
             return layout;
         }

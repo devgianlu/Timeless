@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 import android.util.LruCache;
 import android.util.Pair;
@@ -48,16 +49,15 @@ import com.github.scribejava.core.oauth2.clientauthentication.RequestBodyAuthent
 import com.github.scribejava.httpclient.okhttp.OkHttpHttpClient;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,8 +77,8 @@ public class WakaTime {
     private static WakaTime instance;
 
     static {
-        BASE_URL = HttpUrl.get("https://wakatime.com/api/v1/").newBuilder()
-                .addQueryParameter("timezone", TimeZone.getDefault().getID())
+        BASE_URL = HttpUrl.get("https://wakapi.dev/api/compat/wakatime/v1/").newBuilder()
+                // .addQueryParameter("timezone", TimeZone.getDefault().getID())
                 .build();
     }
 
@@ -88,13 +88,15 @@ public class WakaTime {
     private final Requester requester;
     private final ExecutorService executorService;
     private final OAuth20Service service;
+    private final String apiKey;
     private volatile boolean skipCache = false;
     private volatile boolean skipNextCache = false;
     private OAuth2AccessToken token;
     private long tokenCreateAt;
 
-    private WakaTime(@NonNull Builder builder) throws ShouldGetAccessToken {
-        if (builder.token == null) throw new ShouldGetAccessToken("Requested token is null!");
+    private WakaTime(@NonNull Builder builder) throws MissingCredentialsException {
+        if (builder.token == null && builder.apiKey == null)
+            throw new MissingCredentialsException("Missing token and API key!");
 
         this.client = builder.client;
         this.handler = new LifecycleAwareHandler(builder.handler);
@@ -102,12 +104,14 @@ public class WakaTime {
         this.token = builder.token;
         this.tokenCreateAt = builder.tokenCreateAt;
         this.service = builder.service;
+        this.apiKey = builder.apiKey;
         this.requester = new Requester();
     }
 
     @NonNull
-    public static WakaTime get() throws ShouldGetAccessToken {
-        if (instance == null) throw new ShouldGetAccessToken("Instance hasn't been initialized!");
+    public static WakaTime get() throws MissingCredentialsException {
+        if (instance == null)
+            throw new MissingCredentialsException("Instance hasn't been initialized!");
         return instance;
     }
 
@@ -162,24 +166,34 @@ public class WakaTime {
 
     @NonNull
     @WorkerThread
-    private synchronized JSONObject doRequestSync(HttpUrl url) throws IOException, ExecutionException, InterruptedException, JSONException, WakaTimeException {
+    private synchronized JSONObject doRequestSync(HttpUrl url) throws IOException, ExecutionException, InterruptedException, JSONException, WakaTimeException, MissingEndpointException {
         CachedResponse cachedResponse;
         if (cacheEnabled() && !skipCache && !skipNextCache) cachedResponse = getFromCache(url);
         else cachedResponse = null;
 
         if (cachedResponse == null || System.currentTimeMillis() - cachedResponse.timestamp > MAX_CACHE_AGE) {
-            if (tokenCreateAt + token.getExpiresIn() * 1000 <= System.currentTimeMillis()) {
-                token = service.refreshAccessToken(token.getRefreshToken());
-                tokenCreateAt = System.currentTimeMillis();
-                storeToken(token, tokenCreateAt);
+            Request.Builder request = new Request.Builder().get().url(url);
 
-                Log.d(TAG, "Refreshed token.");
+            if (apiKey != null) {
+                request.addHeader("Authorization", String.format("Basic %s", Base64.encodeToString(apiKey.getBytes(), Base64.NO_WRAP)));
+            } else {
+                if (tokenCreateAt + token.getExpiresIn() * 1000 <= System.currentTimeMillis()) {
+                    token = service.refreshAccessToken(token.getRefreshToken());
+                    tokenCreateAt = System.currentTimeMillis();
+                    storeToken(token, tokenCreateAt);
+
+                    Log.d(TAG, "Refreshed token.");
+                }
+
+                request.addHeader("Authorization", String.format("Bearer %s", token.getAccessToken()));
             }
 
-            Request.Builder request = new Request.Builder().get().url(url);
-            request.addHeader("Authorization", String.format("Bearer %s", token.getAccessToken()));
-
             try (Response resp = client.newCall(request.build()).execute()) {
+                Log.d(TAG, url.toString() + " -> " + resp.code());
+
+                if (resp.code() == 404)
+                    throw new MissingEndpointException();
+
                 ResponseBody body = resp.body();
                 if (body == null) throw new IOException("Body is empty!");
 
@@ -215,7 +229,7 @@ public class WakaTime {
                 try {
                     User user = requester.user();
                     post(() -> listener.onResult(user));
-                } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (Exception ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -229,7 +243,7 @@ public class WakaTime {
                 try {
                     LeadersWithMe leaders = requester.leaders(language, page);
                     post(() -> listener.onResult(leaders));
-                } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (Exception ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -243,7 +257,7 @@ public class WakaTime {
                 try {
                     Leaders leaders = requester.leaders(id, language, page);
                     post(() -> listener.onResult(leaders));
-                } catch (JSONException | IOException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (Exception ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -257,7 +271,7 @@ public class WakaTime {
                 try {
                     Projects projects = requester.projects();
                     post(() -> listener.onResult(projects));
-                } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (Exception ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -271,7 +285,7 @@ public class WakaTime {
                 try {
                     Commits commits = requester.commits(project, page);
                     post(() -> listener.onResult(commits));
-                } catch (IOException | JSONException | ParseException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (Exception ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -285,10 +299,10 @@ public class WakaTime {
                 try {
                     Summaries summaries = requester.summaries(startAndEnd.first, startAndEnd.second, null, null);
                     post(() -> listener.onSummary(summaries));
-                } catch (IOException | JSONException | ParseException | InterruptedException | ExecutionException ex) {
-                    post(() -> listener.onException(ex));
                 } catch (WakaTimeException ex) {
                     post(() -> listener.onWakaTimeError(ex));
+                } catch (Exception ex) {
+                    post(() -> listener.onException(ex));
                 }
             }
         });
@@ -301,7 +315,7 @@ public class WakaTime {
                 try {
                     Leaderboards leaderboards = requester.privateLeaderboards(page);
                     post(() -> listener.onResult(leaderboards));
-                } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (Exception ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -315,7 +329,7 @@ public class WakaTime {
                 try {
                     LifetimeStats lifetimeStats = requester.lifetimeTotal(project);
                     post(() -> listener.onResult(lifetimeStats));
-                } catch (IOException | JSONException | InterruptedException | ExecutionException | WakaTimeException ex) {
+                } catch (Exception ex) {
                     post(() -> listener.onException(ex));
                 }
             }
@@ -434,6 +448,7 @@ public class WakaTime {
         private final Handler handler;
         private long tokenCreateAt;
         private OAuth2AccessToken token;
+        private String apiKey;
 
         public Builder(Context context) {
             this.context = context;
@@ -451,6 +466,17 @@ public class WakaTime {
             this.service = builder.build(new WakatimeApi());
         }
 
+        public void apiKey(@NotNull String apiKey, @NonNull InitializationListener listener) {
+            this.apiKey = apiKey;
+
+            try {
+                WakaTime w = build();
+                handler.post(() -> listener.onWakatimeInitialized(w));
+            } catch (MissingCredentialsException ex) {
+                ex.resolve(context);
+            }
+        }
+
         public void startFlow() {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(service.getAuthorizationUrl())));
@@ -463,7 +489,7 @@ public class WakaTime {
                 try {
                     OAuth2Authorization auth = service.extractAuthorization(data);
                     if (auth.getCode() == null)
-                        throw new ShouldGetAccessToken("Failed getting authorization code!");
+                        throw new MissingCredentialsException("Failed getting authorization code!");
 
                     token = service.getAccessToken(auth.getCode());
                     tokenCreateAt = System.currentTimeMillis();
@@ -471,7 +497,7 @@ public class WakaTime {
 
                     WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
-                } catch (ShouldGetAccessToken ex) {
+                } catch (MissingCredentialsException ex) {
                     ex.resolve(context);
                 } catch (IOException | InterruptedException | ExecutionException | OAuthException ex) {
                     handler.post(() -> listener.onException(ex));
@@ -485,19 +511,13 @@ public class WakaTime {
                 return;
             }
 
-            long storedCreatedAt;
-            OAuth2AccessToken storedToken;
-            if (Prefs.has(PK.TOKEN)) {
-                storedCreatedAt = 0; // Definitely expired
-                storedToken = new OAuth2AccessToken("", null, 0, Prefs.getString(PK.TOKEN, null), null, null);
-                Log.d(TAG, "Used deprecated token.");
-            } else {
-                storedCreatedAt = Prefs.getLong(PK.TOKEN_CREATED_AT, 0);
-                storedToken = loadToken();
-                if (storedToken == null) {
-                    listener.onException(new ShouldGetAccessToken("Missing stored token."));
-                    return;
-                }
+            // TODO: Check for saved API key
+
+            long storedCreatedAt = Prefs.getLong(PK.TOKEN_CREATED_AT, 0);
+            OAuth2AccessToken storedToken = loadToken();
+            if (storedToken == null) {
+                listener.onException(new MissingCredentialsException("Missing stored token."));
+                return;
             }
 
             executorService.execute(() -> {
@@ -506,19 +526,17 @@ public class WakaTime {
                         token = service.refreshAccessToken(storedToken.getRefreshToken());
                         tokenCreateAt = System.currentTimeMillis();
                         storeToken(token, tokenCreateAt);
-
-                        Prefs.remove(PK.TOKEN);
                     } else {
                         token = storedToken;
                         tokenCreateAt = storedCreatedAt;
                     }
 
                     if (!token.getScope().contains("read_private_leaderboards"))
-                        throw new ShouldGetAccessToken("Missing `read_private_leaderboards` scope");
+                        throw new MissingCredentialsException("Missing `read_private_leaderboards` scope");
 
                     WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
-                } catch (ShouldGetAccessToken ex) {
+                } catch (MissingCredentialsException ex) {
                     ex.resolve(context);
                 } catch (IOException | ExecutionException | InterruptedException | OAuth2AccessTokenErrorResponse ex) {
                     handler.post(() -> listener.onException(ex));
@@ -527,15 +545,15 @@ public class WakaTime {
         }
 
         @NonNull
-        private WakaTime build() throws ShouldGetAccessToken {
+        private WakaTime build() throws MissingCredentialsException {
             WakaTime w = new WakaTime(this);
             WakaTime.instance = w;
             return w;
         }
     }
 
-    public static class ShouldGetAccessToken extends Exception {
-        ShouldGetAccessToken(String message) {
+    public static class MissingCredentialsException extends Exception {
+        MissingCredentialsException(String message) {
             super(message);
         }
 
@@ -544,6 +562,9 @@ public class WakaTime {
             context.startActivity(new Intent(context, GrantActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
+    }
+
+    public static class MissingEndpointException extends Exception {
     }
 
     private static class CachedResponse {
@@ -584,7 +605,7 @@ public class WakaTime {
     public class Requester {
 
         @NonNull
-        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
+        public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws Exception {
             HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/durations")
                     .addQueryParameter("date", getAPIFormatter().format(day));
 
@@ -595,12 +616,12 @@ public class WakaTime {
         }
 
         @NonNull
-        public Summaries summaries(@NonNull Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ParseException, ExecutionException, InterruptedException {
+        public Summaries summaries(@NonNull Pair<Date, Date> startAndEnd, @Nullable Project project, @Nullable List<String> branches) throws Exception {
             return summaries(startAndEnd.first, startAndEnd.second, project, branches);
         }
 
         @NonNull
-        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws IOException, JSONException, WakaTimeException, ParseException, ExecutionException, InterruptedException {
+        public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws Exception {
             SimpleDateFormat formatter = getAPIFormatter();
             HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/summaries")
                     .addQueryParameter("start", formatter.format(start))
@@ -616,14 +637,14 @@ public class WakaTime {
         }
 
         @NonNull
-        public Commits commits(@NonNull Project project, int page) throws IOException, JSONException, ParseException, ExecutionException, InterruptedException, WakaTimeException {
+        public Commits commits(@NonNull Project project, int page) throws Exception {
             return new Commits(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current/projects/" + project.id + "/commits")
                     .addQueryParameter("page", String.valueOf(page)).build()));
         }
 
         @NonNull
-        public LeadersWithMe leaders(@Nullable String language, int page) throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
+        public LeadersWithMe leaders(@Nullable String language, int page) throws Exception {
             HttpUrl.Builder builder = BASE_URL.newBuilder()
                     .addPathSegment("leaders")
                     .addQueryParameter("page", String.valueOf(page));
@@ -635,7 +656,7 @@ public class WakaTime {
         }
 
         @NonNull
-        public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
+        public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws Exception {
             HttpUrl.Builder builder = BASE_URL.newBuilder()
                     .addPathSegments("users/current/leaderboards/" + id)
                     .addQueryParameter("page", String.valueOf(page));
@@ -647,26 +668,26 @@ public class WakaTime {
         }
 
         @NonNull
-        public Projects projects() throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
+        public Projects projects() throws Exception {
             return new Projects(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current/projects").build()));
         }
 
         @NonNull
-        public User user() throws IOException, JSONException, ExecutionException, InterruptedException, WakaTimeException {
+        public User user() throws Exception {
             return new User(doRequestSync(BASE_URL.newBuilder()
                     .addPathSegments("users/current").build()).getJSONObject("data"));
         }
 
         @NonNull
-        public Leaderboards privateLeaderboards(int page) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
+        public Leaderboards privateLeaderboards(int page) throws Exception {
             return new Leaderboards(doRequestSync(BASE_URL.newBuilder()
                     .addQueryParameter("page", String.valueOf(page))
                     .addPathSegments("users/current/leaderboards").build()));
         }
 
         @NonNull
-        public LifetimeStats lifetimeTotal(@Nullable String project) throws InterruptedException, ExecutionException, IOException, JSONException, WakaTimeException {
+        public LifetimeStats lifetimeTotal(@Nullable String project) throws Exception {
             HttpUrl.Builder builder = BASE_URL.newBuilder()
                     .addPathSegments("users/current/all_time_since_today");
 

@@ -105,7 +105,7 @@ public class ProjectsActivity extends ActivityWithDialog implements DatePickerDi
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(this);
             return;
         }

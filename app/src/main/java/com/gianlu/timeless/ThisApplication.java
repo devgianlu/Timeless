@@ -37,7 +37,7 @@ public class ThisApplication extends AnalyticsApplication {
             if (key.equals(PK.CACHE_ENABLED.key())) {
                 try {
                     WakaTime.get().cacheEnabledChanged();
-                } catch (WakaTime.ShouldGetAccessToken ex) {
+                } catch (WakaTime.MissingCredentialsException ex) {
                     ex.resolve(ThisApplication.this);
                 }
             }
@@ -46,8 +46,8 @@ public class ThisApplication extends AnalyticsApplication {
 
     @Override
     protected boolean uncaughtNotDebug(Thread thread, Throwable throwable) {
-        if (throwable instanceof WakaTime.ShouldGetAccessToken) {
-            ((WakaTime.ShouldGetAccessToken) throwable).resolve(this);
+        if (throwable instanceof WakaTime.MissingCredentialsException) {
+            ((WakaTime.MissingCredentialsException) throwable).resolve(this);
             return false;
         }
 
