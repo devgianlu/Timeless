@@ -48,6 +48,7 @@ public class GrantActivity extends ActivityWithDialog implements WakaTime.Initia
         Button grant = findViewById(R.id.grantActivity_grant);
         grant.setOnClickListener(v -> builder.startFlow());
 
+        builder.apiUrl("https://wakapi.dev/api/compat/wakatime/v1/");
         builder.apiKey("API_KEY_HERE", this);
     }
 

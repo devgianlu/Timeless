@@ -58,6 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,18 +71,10 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class WakaTime {
-    private static final HttpUrl BASE_URL;
     private static final long MAX_CACHE_AGE = TimeUnit.MINUTES.toMillis(10);
     private static final int MAX_CACHE_SIZE = 20;
     private static final String TAG = WakaTime.class.getSimpleName();
     private static WakaTime instance;
-
-    static {
-        BASE_URL = HttpUrl.get("https://wakapi.dev/api/compat/wakatime/v1/").newBuilder()
-                // .addQueryParameter("timezone", TimeZone.getDefault().getID())
-                .build();
-    }
-
     private final OkHttpClient client;
     private final LifecycleAwareHandler handler;
     private final LruCache<HttpUrl, CachedResponse> memoryCache = new LruCache<>(MAX_CACHE_SIZE);
@@ -105,7 +98,7 @@ public class WakaTime {
         this.tokenCreateAt = builder.tokenCreateAt;
         this.service = builder.service;
         this.apiKey = builder.apiKey;
-        this.requester = new Requester();
+        this.requester = new Requester(builder.apiUrl);
     }
 
     @NonNull
@@ -441,14 +434,16 @@ public class WakaTime {
     }
 
     public static class Builder {
-        private final OAuth20Service service;
+        private static final String DEFAULT_WAKATIME_API_URL = "https://wakatime.com/api/v1/";
         private final OkHttpClient client;
         private final Context context;
-        private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+        private final ExecutorService executorService = Executors.newCachedThreadPool();
         private final Handler handler;
+        private OAuth20Service service;
         private long tokenCreateAt;
         private OAuth2AccessToken token;
         private String apiKey;
+        private String apiUrl = DEFAULT_WAKATIME_API_URL;
 
         public Builder(Context context) {
             this.context = context;
@@ -456,14 +451,11 @@ public class WakaTime {
             this.client = new OkHttpClient.Builder()
                     .addInterceptor(new UserAgentInterceptor())
                     .build();
+            this.service = null;
+        }
 
-            ServiceBuilder builder = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s");
-            builder.withScope("email,read_stats,read_logged_time,read_private_leaderboards");
-            builder.apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
-                    .callback("timeless://grantActivity/")
-                    .userAgent(ThisApplication.USER_AGENT)
-                    .httpClient(new OkHttpHttpClient(client));
-            this.service = builder.build(new WakatimeApi());
+        public void apiUrl(@NotNull String apiUrl) {
+            this.apiUrl = apiUrl;
         }
 
         public void apiKey(@NotNull String apiKey, @NonNull InitializationListener listener) {
@@ -477,7 +469,26 @@ public class WakaTime {
             }
         }
 
+        private void makeOauth2Service() {
+            if (service != null)
+                return;
+
+            if (!DEFAULT_WAKATIME_API_URL.equals(apiUrl))
+                throw new IllegalStateException("Cannot create Oauth2 service for non-official API.");
+
+            ServiceBuilder builder = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s");
+            builder.withScope("email,read_stats,read_logged_time,read_private_leaderboards")
+                    .apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
+                    .callback("timeless://grantActivity/")
+                    .userAgent(ThisApplication.USER_AGENT)
+                    .httpClient(new OkHttpHttpClient(client));
+
+            this.service = builder.build(new WakatimeApi());
+        }
+
         public void startFlow() {
+            makeOauth2Service();
+
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(service.getAuthorizationUrl())));
             } catch (ActivityNotFoundException ignored) {
@@ -519,6 +530,8 @@ public class WakaTime {
                 listener.onException(new MissingCredentialsException("Missing stored token."));
                 return;
             }
+
+            makeOauth2Service();
 
             executorService.execute(() -> {
                 try {
@@ -565,6 +578,9 @@ public class WakaTime {
     }
 
     public static class MissingEndpointException extends Exception {
+        MissingEndpointException() {
+            super("The request data is not available with the current backend.");
+        }
     }
 
     private static class CachedResponse {
@@ -603,10 +619,17 @@ public class WakaTime {
 
     @WorkerThread
     public class Requester {
+        private final HttpUrl baseUrl;
+
+        public Requester(@NotNull String apiUrl) {
+            this.baseUrl = HttpUrl.get(apiUrl).newBuilder()
+                    .addQueryParameter("timezone", TimeZone.getDefault().getID())
+                    .build();
+        }
 
         @NonNull
         public Durations durations(Date day, @Nullable Project project, @Nullable List<String> branches) throws Exception {
-            HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/durations")
+            HttpUrl.Builder builder = baseUrl.newBuilder().addPathSegments("users/current/durations")
                     .addQueryParameter("date", getAPIFormatter().format(day));
 
             if (branches != null)
@@ -623,7 +646,7 @@ public class WakaTime {
         @NonNull
         public Summaries summaries(Date start, Date end, @Nullable Project project, @Nullable List<String> branches) throws Exception {
             SimpleDateFormat formatter = getAPIFormatter();
-            HttpUrl.Builder builder = BASE_URL.newBuilder().addPathSegments("users/current/summaries")
+            HttpUrl.Builder builder = baseUrl.newBuilder().addPathSegments("users/current/summaries")
                     .addQueryParameter("start", formatter.format(start))
                     .addQueryParameter("end", formatter.format(end));
 
@@ -638,14 +661,14 @@ public class WakaTime {
 
         @NonNull
         public Commits commits(@NonNull Project project, int page) throws Exception {
-            return new Commits(doRequestSync(BASE_URL.newBuilder()
+            return new Commits(doRequestSync(baseUrl.newBuilder()
                     .addPathSegments("users/current/projects/" + project.id + "/commits")
                     .addQueryParameter("page", String.valueOf(page)).build()));
         }
 
         @NonNull
         public LeadersWithMe leaders(@Nullable String language, int page) throws Exception {
-            HttpUrl.Builder builder = BASE_URL.newBuilder()
+            HttpUrl.Builder builder = baseUrl.newBuilder()
                     .addPathSegment("leaders")
                     .addQueryParameter("page", String.valueOf(page));
 
@@ -657,7 +680,7 @@ public class WakaTime {
 
         @NonNull
         public Leaders leaders(@NonNull String id, @Nullable String language, int page) throws Exception {
-            HttpUrl.Builder builder = BASE_URL.newBuilder()
+            HttpUrl.Builder builder = baseUrl.newBuilder()
                     .addPathSegments("users/current/leaderboards/" + id)
                     .addQueryParameter("page", String.valueOf(page));
 
@@ -669,26 +692,26 @@ public class WakaTime {
 
         @NonNull
         public Projects projects() throws Exception {
-            return new Projects(doRequestSync(BASE_URL.newBuilder()
+            return new Projects(doRequestSync(baseUrl.newBuilder()
                     .addPathSegments("users/current/projects").build()));
         }
 
         @NonNull
         public User user() throws Exception {
-            return new User(doRequestSync(BASE_URL.newBuilder()
+            return new User(doRequestSync(baseUrl.newBuilder()
                     .addPathSegments("users/current").build()).getJSONObject("data"));
         }
 
         @NonNull
         public Leaderboards privateLeaderboards(int page) throws Exception {
-            return new Leaderboards(doRequestSync(BASE_URL.newBuilder()
+            return new Leaderboards(doRequestSync(baseUrl.newBuilder()
                     .addQueryParameter("page", String.valueOf(page))
                     .addPathSegments("users/current/leaderboards").build()));
         }
 
         @NonNull
         public LifetimeStats lifetimeTotal(@Nullable String project) throws Exception {
-            HttpUrl.Builder builder = BASE_URL.newBuilder()
+            HttpUrl.Builder builder = baseUrl.newBuilder()
                     .addPathSegments("users/current/all_time_since_today");
 
             if (project != null)
