@@ -79,6 +79,14 @@
     <string name="lifetimeStatsProject">%s: <![CDATA[<b>%s</b>]]></string>
     <string name="lifetimeStatsProjectWithDays">%s: <![CDATA[<b>%s</b>]]> (or <![CDATA[<b>%.2f days</b>]]>)</string>
     <string name="lifetimeStatsProjectLoading">%s: loading…</string>
+    <string name="or">Or</string>
+    <string name="grant_advanced_help">Connect your Wakapi account (an open-source alternative of WakaTime) with your API key.</string>
+    <string name="connect">Connect</string>
+    <string name="apiKey">API key</string>
+    <string name="apiBaseUrl">API base URL</string>
+    <string name="missingApiKey">The API key is missing!</string>
+    <string name="missingApiUrl">The API base URL is missing!</string>
+    <string name="invalidApiUrl">The API base URL is invalid!</string>
     <plurals name="members">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>

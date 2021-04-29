@@ -3,7 +3,6 @@ package com.gianlu.timeless;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +13,7 @@ import com.gianlu.commonutils.dialogs.ActivityWithDialog;
 import com.gianlu.commonutils.drawer.BaseDrawerItem;
 import com.gianlu.commonutils.drawer.DrawerManager;
 import com.gianlu.commonutils.logs.LogsHelper;
+import com.gianlu.commonutils.preferences.Prefs;
 import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.activities.CommitsActivity;
 import com.gianlu.timeless.activities.CustomRangeStatsActivity;
@@ -51,7 +51,10 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
 
         drawerManager = new DrawerManager.Config<User, DrawerItem>(this)
                 .singleProfile(user, () -> {
-                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("firstRun", true).apply();
+                    Prefs.putBoolean(PK.FIRST_RUN, true);
+                    Prefs.remove(PK.API_KEY);
+                    Prefs.remove(PK.TOKEN_RAW);
+
                     startActivity(new Intent(MainActivity.this, GrantActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     finish();
                 })

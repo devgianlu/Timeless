@@ -119,6 +119,13 @@ public class WakaTime {
     private static void storeToken(@NonNull OAuth2AccessToken token, long createdAt) {
         Prefs.putString(PK.TOKEN_RAW, token.getRawResponse());
         Prefs.putLong(PK.TOKEN_CREATED_AT, createdAt);
+        Prefs.remove(PK.API_KEY);
+    }
+
+    private static void storeApiKey(@NotNull String apiKey) {
+        Prefs.putString(PK.API_KEY, apiKey);
+        Prefs.remove(PK.TOKEN_RAW);
+        Prefs.remove(PK.TOKEN_CREATED_AT);
     }
 
     @Nullable
@@ -462,6 +469,10 @@ public class WakaTime {
             this.apiKey = apiKey;
 
             try {
+                storeApiKey(apiKey);
+
+                Prefs.putString(PK.API_URL, apiUrl);
+
                 WakaTime w = build();
                 handler.post(() -> listener.onWakatimeInitialized(w));
             } catch (MissingCredentialsException ex) {
@@ -506,6 +517,8 @@ public class WakaTime {
                     tokenCreateAt = System.currentTimeMillis();
                     storeToken(token, tokenCreateAt);
 
+                    Prefs.putString(PK.API_URL, apiUrl);
+
                     WakaTime w = build();
                     handler.post(() -> listener.onWakatimeInitialized(w));
                 } catch (MissingCredentialsException ex) {
@@ -522,7 +535,13 @@ public class WakaTime {
                 return;
             }
 
-            // TODO: Check for saved API key
+            if (Prefs.has(PK.API_URL))
+                apiUrl = Prefs.getString(PK.API_URL, DEFAULT_WAKATIME_API_URL);
+
+            if (Prefs.has(PK.API_KEY)) {
+                apiKey(Prefs.getString(PK.API_KEY, null), listener);
+                return;
+            }
 
             long storedCreatedAt = Prefs.getLong(PK.TOKEN_CREATED_AT, 0);
             OAuth2AccessToken storedToken = loadToken();
