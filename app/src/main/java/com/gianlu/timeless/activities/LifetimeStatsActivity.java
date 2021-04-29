@@ -76,7 +76,7 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
             @Override
             public void onException(@NonNull Exception ex) {
                 Log.e(TAG, "Failed loading lifetime stats.", ex);
-                Toaster.with(LifetimeStatsActivity.this).message(R.string.failedLoading).show();
+                Toaster.with(LifetimeStatsActivity.this).message(R.string.failedLoading_reason, ex.getMessage()).show();
                 dismissDialog();
                 onBackPressed();
             }

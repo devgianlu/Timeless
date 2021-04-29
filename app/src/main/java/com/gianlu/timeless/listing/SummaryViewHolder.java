@@ -68,7 +68,7 @@ class SummaryViewHolder extends RecyclerView.ViewHolder {
                 case MAIN:
                     return returnMain(days);
                 case DAILY_STATS:
-                    if (days != 1) throw new IllegalStateException();
+                    if (days > 1) throw new IllegalStateException();
                     return DATE_ONLY;
                 case CUSTOM_RANGE:
                 case PROJECTS:

@@ -474,7 +474,7 @@ public class WakaTime {
                 return;
 
             if (!DEFAULT_WAKATIME_API_URL.equals(apiUrl))
-                throw new IllegalStateException("Cannot create Oauth2 service for non-official API.");
+                throw new IllegalStateException("Cannot create OAuth2 service for non-official API.");
 
             ServiceBuilder builder = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s");
             builder.withScope("email,read_stats,read_logged_time,read_private_leaderboards")
