@@ -61,7 +61,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
         });
     }
 
-    private void start(@NonNull Class goTo, @Nullable User user) {
+    private void start(@NonNull Class<?> goTo, @Nullable User user) {
         Intent intent = new Intent(LoadingActivity.this, goTo).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         if (user != null) intent.putExtra("user", user);
         startActivity(intent);
@@ -77,11 +77,16 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
             @Override
             public void onException(@NonNull Exception ex) {
-                Log.e(TAG, "Failed getting user info.", ex);
-                view.endFakeAnimation(() -> {
-                    Toaster.with(LoadingActivity.this).message(R.string.failedLoading).show();
-                    finish();
-                }, false);
+                if (ex instanceof WakaTime.MissingEndpointException) {
+                    Log.w(TAG, "Missing user endpoint, using dummy user.");
+                    start(MainActivity.class, User.dummyUser());
+                } else {
+                    Log.e(TAG, "Failed getting user info.", ex);
+                    view.endFakeAnimation(() -> {
+                        Toaster.with(LoadingActivity.this).message(R.string.failedLoading).show();
+                        finish();
+                    }, false);
+                }
             }
         });
     }
@@ -93,7 +98,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
             Toaster.with(this).message(R.string.failedRefreshingToken).show();
             if (ex instanceof IOException) {
                 OfflineActivity.startActivity(this, LoadingActivity.class);
-            } else if (!(ex instanceof WakaTime.ShouldGetAccessToken)) {
+            } else if (ex instanceof WakaTime.MissingCredentialsException) {
                 start(GrantActivity.class, null);
             }
         }, false);

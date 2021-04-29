@@ -80,7 +80,7 @@ public class LeadersActivity extends ActivityWithDialog implements LeadersAdapte
         try {
             wakaTime = WakaTime.get();
             gatherAndUpdate(currLang);
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(this);
         }
     }

@@ -7,13 +7,15 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <ImageView
+    <Space
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginTop="48dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:layout_marginBottom="24dp"
-        android:layout_weight="0.5"
-        android:maxWidth="200dp"
         android:src="@drawable/ic_wakatime"
         app:tint="?colorOnSurface" />
 
@@ -31,16 +33,74 @@
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceCaption" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/grantActivity_grant"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="@string/grantAccess"
-        android:textSize="24sp" />
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="@string/or"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textAppearance="?attr/textAppearanceHeadline6" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/grant_advanced_help"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceCaption" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/grantActivity_wakapiApiKey"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/apiKey">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword"
+            android:lines="1"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/grantActivity_wakapiApiUrl"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/apiBaseUrl">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri"
+            android:lines="1"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/grantActivity_wakapiConnect"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/connect"
+        android:textSize="20sp" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 </LinearLayout>

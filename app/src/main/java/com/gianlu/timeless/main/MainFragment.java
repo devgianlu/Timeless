@@ -58,7 +58,7 @@ public class MainFragment extends FragmentWithDialog implements WakaTime.BatchSt
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(getContext());
             return layout;
         }
@@ -94,16 +94,21 @@ public class MainFragment extends FragmentWithDialog implements WakaTime.BatchSt
                 .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems);
 
         if (range == WakaTime.Range.TODAY) {
-            Summaries weekBefore = requester.summaries(range.getWeekBefore(), null, null);
-            Durations durations = requester.durations(new Date(), null, null);
+            try {
+                Durations durations = requester.durations(new Date(), null, null);
+                cards.addDurations(1, durations);
+            } catch (WakaTime.MissingEndpointException ignored) {
+            }
 
-            cards.addDurations(1, durations);
+            Summaries weekBefore = requester.summaries(range.getWeekBefore(), null, null);
             cards.addImprovement(1, summaries.globalSummary.total_seconds, Summary.doTotalSecondsAverage(weekBefore));
         } else {
             cards.addProjectsBarChart(1, R.string.periodActivity, summaries);
         }
 
-        if (getContext() == null) return;
+        if (getContext() == null)
+            return;
+
         final CardsAdapter adapter = new CardsAdapter(getContext(), cards, null, this);
         ui.post(this, () -> layout.loadListData(adapter));
     }

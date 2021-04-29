@@ -89,7 +89,7 @@ public class ProjectFragment extends FragmentWithDialog implements CardsAdapter.
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(getContext());
             return rmv;
         }

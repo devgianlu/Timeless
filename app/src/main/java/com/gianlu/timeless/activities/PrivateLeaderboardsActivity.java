@@ -35,7 +35,7 @@ public class PrivateLeaderboardsActivity extends ActivityWithDialog implements W
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(this);
             return;
         }

@@ -54,7 +54,7 @@ public class DailyStatsActivity extends ActivityWithDialog implements DatePicker
 
         try {
             WakaTime.get().batch(null, this, refresh);
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(this);
         }
     }
@@ -138,11 +138,17 @@ public class DailyStatsActivity extends ActivityWithDialog implements DatePicker
     @Override
     public void request(@NonNull WakaTime.Requester requester, @NonNull LifecycleAwareHandler ui) throws Exception {
         Summaries summaries = requester.summaries(currentDate, currentDate, null, null);
-        Durations durations = requester.durations(currentDate, null, null);
 
-        final CardsAdapter adapter = new CardsAdapter(this, new CardsAdapter.CardsList()
-                .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.DAILY_STATS)
-                .addDurations(durations)
+        CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
+                .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.DAILY_STATS);
+
+        try {
+            Durations durations = requester.durations(currentDate, null, null);
+            cards.addDurations(durations);
+        } catch (WakaTime.MissingEndpointException ignored) {
+        }
+
+        final CardsAdapter adapter = new CardsAdapter(this, cards
                 .addPieChart(R.string.projects, ChartContext.PROJECTS, summaries.globalSummary.interval(), summaries.globalSummary.projects)
                 .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
                 .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors)

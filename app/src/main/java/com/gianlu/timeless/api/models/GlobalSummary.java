@@ -33,8 +33,13 @@ public class GlobalSummary extends Summary {
         Collections.sort(entities, new LoggedEntity.TotalSecondsComparator());
 
         this.total_seconds = total;
-        this.start = summaries.get(0).date;
-        this.end = summaries.get(summaries.size() - 1).date;
+
+        if (summaries.isEmpty()) {
+            this.start = this.end = 0;
+        } else {
+            this.start = summaries.get(0).date;
+            this.end = summaries.get(summaries.size() - 1).date;
+        }
     }
 
     @NonNull

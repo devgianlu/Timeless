@@ -79,7 +79,7 @@ public class CustomRangeStatsActivity extends ActivityWithDialog implements Waka
 
         try {
             wakaTime = WakaTime.get();
-        } catch (WakaTime.ShouldGetAccessToken ex) {
+        } catch (WakaTime.MissingCredentialsException ex) {
             ex.resolve(this);
             return;
         }
