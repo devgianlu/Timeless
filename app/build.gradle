@@ -3,12 +3,8 @@ plugins {
 }
 
 apply plugin: 'com.android.application'
-
-if (getGradle().getStartParameter().getTaskRequests()
-        .toString().contains("Standard")) {
-    apply plugin: 'com.google.firebase.crashlytics'
-    apply plugin: 'com.google.firebase.firebase-perf'
-}
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 def isCi = System.getenv("CI") == "true"
 android {
@@ -19,8 +15,8 @@ android {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 63
-        versionName "2.4.1"
+        versionCode 62
+        versionName "2.4.0"
     }
 
     if (isCi) {
@@ -55,29 +51,11 @@ android {
                 }
             }
         }
-
-        foss {
-            dimension 'main'
-
-            buildTypes {
-                release {
-                    minifyEnabled false
-                    shrinkResources false
-                }
-            }
-        }
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    playConfigs {
-        foss {
-            commit.set(false)
-            enabled.set(false)
-        }
     }
 }
 
@@ -102,12 +80,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0-alpha02'
 
     standardImplementation 'com.google.firebase:firebase-perf:19.1.1'
-}
-
-task printVersionName {
-    doLast {
-        println android.defaultConfig.versionName
-    }
 }
 
 apply plugin: 'com.google.gms.google-services'
