@@ -8,15 +8,15 @@ apply plugin: 'com.google.firebase.firebase-perf'
 
 def isTravis = System.getenv("CI") == "true"
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 61
-        versionName "2.3.1"
+        targetSdkVersion 30
+        versionCode 62
+        versionName "2.4.0"
     }
 
     if (isTravis) {

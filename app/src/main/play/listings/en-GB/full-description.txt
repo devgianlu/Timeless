@@ -1,8 +1,9 @@
-Timeless is a functional application which lets you analyze your coding activity tracked by WakaTime.
+Timeless is a functional application which lets you analyze your coding activity tracked by WakaTime or wakapi.
 
 Here's some of its functionalities:
 - View statistics between different time ranges
 - View daily statistics
+- View all time statistics
 - View your projects and their specific statistics
 - View your commits for each project
 - Challange other programmers in the leaderboard
@@ -12,3 +13,4 @@ Report any problem or suggestion to altomanigianluca@gmail.com.
 
 ----------------------------
 WakaTime is being developed by Alan Hamlett (https://wakatime.com/).
+wakapi is being developed by Ferdinand Mütsch (https://wakapi.dev/).
