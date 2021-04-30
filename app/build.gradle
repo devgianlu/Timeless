@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'com.github.scribejava:scribejava-core:8.3.0'
-    implementation 'com.github.scribejava:scribejava-httpclient-okhttp:7.1.1'
+    implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.3.0'
 
     implementation 'com.google.android.material:material:1.4.0-alpha02'
 
