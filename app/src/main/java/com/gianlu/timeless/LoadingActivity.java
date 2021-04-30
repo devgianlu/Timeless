@@ -77,16 +77,11 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
             @Override
             public void onException(@NonNull Exception ex) {
-                if (ex instanceof WakaTime.MissingEndpointException) {
-                    Log.w(TAG, "Missing user endpoint, using dummy user.");
-                    start(MainActivity.class, User.dummyUser());
-                } else {
-                    Log.e(TAG, "Failed getting user info.", ex);
-                    view.endFakeAnimation(() -> {
-                        Toaster.with(LoadingActivity.this).message(R.string.failedLoading).show();
-                        finish();
-                    }, false);
-                }
+                Log.e(TAG, "Failed getting user info.", ex);
+                view.endFakeAnimation(() -> {
+                    Toaster.with(LoadingActivity.this).message(R.string.failedLoading).show();
+                    finish();
+                }, false);
             }
         });
     }
