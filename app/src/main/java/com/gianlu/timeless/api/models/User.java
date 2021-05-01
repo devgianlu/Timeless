@@ -8,14 +8,12 @@ import androidx.annotation.Nullable;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.drawer.BaseDrawerProfile;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 
 public class User implements Serializable, BaseDrawerProfile {
-    private static final User dummyUser = new User("", "", "", "", "");
     public final String email;
     public final String username;
     public final String id;
@@ -30,23 +28,6 @@ public class User implements Serializable, BaseDrawerProfile {
 
         if (!obj.has("website")) website = null;
         else website = obj.getString("website");
-    }
-
-    private User(String email, String username, String id, String website, String full_name) {
-        this.email = email;
-        this.username = username;
-        this.id = id;
-        this.website = website;
-        this.full_name = full_name;
-    }
-
-    @NotNull
-    public static User dummyUser() {
-        return dummyUser;
-    }
-
-    public boolean isDummyUser() {
-        return this == dummyUser();
     }
 
     @Nullable

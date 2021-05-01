@@ -5,7 +5,7 @@
 [![time tracker](https://wakatime.com/badge/github/devgianlu/Timeless.svg)](https://wakatime.com/badge/github/devgianlu/Timeless)
 [![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://gianlu.xyz/donate/)
 
-Timeless is a simple and functional client for [WakaTime](https://wakatime.com/)!
+Timeless is a very powerful client for [WakaTime](https://wakatime.com/) and [wakapi](https://wakapi.dev/)!
 
 <a href='https://play.google.com/store/apps/details?id=com.gianlu.timeless&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='25%' /></a>
 

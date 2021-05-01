@@ -6,20 +6,20 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
-def isTravis = System.getenv("CI") == "true"
+def isCi = System.getenv("CI") == "true"
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 61
-        versionName "2.3.1"
+        targetSdkVersion 30
+        versionCode 62
+        versionName "2.4.0"
     }
 
-    if (isTravis) {
+    if (isCi) {
         signingConfigs {
             release {
                 storeFile file("../.github/keystore.jks")
@@ -35,7 +35,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if (isTravis) signingConfig signingConfigs.release
+            if (isCi) signingConfig signingConfigs.release
         }
     }
 
@@ -61,7 +61,7 @@ android {
 
 play {
     defaultToAppBundles.set(true)
-    enabled.set(isTravis)
+    enabled.set(isCi)
     serviceAccountCredentials.set(file("../.github/secrets.json"))
     track.set("production")
     releaseStatus.set(com.github.triplet.gradle.androidpublisher.ReleaseStatus.DRAFT)
@@ -74,18 +74,12 @@ dependencies {
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
-    implementation 'com.github.scribejava:scribejava-core:7.1.1'
-    implementation 'com.github.scribejava:scribejava-httpclient-okhttp:7.1.1'
+    implementation 'com.github.scribejava:scribejava-core:8.3.0'
+    implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.3.0'
 
     implementation 'com.google.android.material:material:1.4.0-alpha02'
 
     standardImplementation 'com.google.firebase:firebase-perf:19.1.1'
-}
-
-task printVersionName {
-    doLast {
-        println android.defaultConfig.versionName
-    }
 }
 
 apply plugin: 'com.google.gms.google-services'

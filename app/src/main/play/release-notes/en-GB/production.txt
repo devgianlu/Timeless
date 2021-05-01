@@ -1,5 +1,2 @@
 ### Added
-- Added average line to graphs
-
-### Fixed
-- Minor bug fixes
+- Added wakapi support

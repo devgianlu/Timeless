@@ -1,1 +1,1 @@
-Timeless is a simple and functional client for WakaTime!
+Timeless is a very powerful client for WakaTime and wakapi!
