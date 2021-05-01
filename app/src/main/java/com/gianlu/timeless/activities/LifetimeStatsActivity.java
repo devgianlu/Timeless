@@ -23,6 +23,7 @@ import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Projects;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class LifetimeStatsActivity extends ActivityWithDialog {
@@ -155,7 +156,7 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
             Object obj = payloads.get(0);
             if (obj instanceof LifetimeStats) {
                 LifetimeStats update = (LifetimeStats) payloads.get(0);
-                if (!update.project.equals(projects.get(position).name))
+                if (!Objects.equals(update.project, projects.get(position).name))
                     return;
 
                 float days = (float) update.totalSeconds / TimeUnit.DAYS.toSeconds(1);

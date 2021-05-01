@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnResult<Projects> {
+    private static final String TAG = CommitsActivity.class.getSimpleName();
     private final List<CommitsFragment> fragments = new ArrayList<>();
     private ViewPager pager;
 
@@ -79,6 +80,12 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
     @Override
     public void onResult(@NonNull Projects projects) {
         projects.filterNoRepository();
+        if (projects.isEmpty()) {
+            Toaster.with(this).message(R.string.noProjectsWithRepo).show();
+            onBackPressed();
+            return;
+        }
+
         for (Project project : projects)
             fragments.add(CommitsFragment.getInstance(project));
 
@@ -114,8 +121,6 @@ public class CommitsActivity extends ActivityWithDialog implements WakaTime.OnRe
         CommitsFragment fragment = fragments.get(pager.getCurrentItem());
         if (fragment.onBackPressed()) super.onBackPressed();
     }
-
-    private static final String TAG = CommitsActivity.class.getSimpleName();
 
     @Override
     public void onException(@NonNull Exception ex) {
