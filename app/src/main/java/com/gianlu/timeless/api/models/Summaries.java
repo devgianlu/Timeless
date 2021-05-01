@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Summaries extends ArrayList<SingleSummary> {
@@ -25,11 +26,11 @@ public class Summaries extends ArrayList<SingleSummary> {
         if (obj.has("available_branches"))
             availableBranches = CommonUtils.toStringsList(obj.getJSONArray("available_branches"), true);
         else
-            availableBranches = null;
+            availableBranches = Collections.emptyList();
 
         if (obj.has("branches"))
             selectedBranches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
         else
-            selectedBranches = null;
+            selectedBranches = Collections.emptyList();
     }
 }

@@ -12,7 +12,10 @@ public class Projects extends ArrayList<Project> {
 
     public Projects(JSONObject obj) throws JSONException {
         JSONArray array = obj.getJSONArray("data");
-        for (int i = 0; i < array.length(); i++) add(new Project(array.getJSONObject(i)));
+        for (int i = 0; i < array.length(); i++) {
+            Project p = new Project(array.getJSONObject(i));
+            if (!p.id.isEmpty()) add(p);
+        }
     }
 
     public void filterNoRepository() {
