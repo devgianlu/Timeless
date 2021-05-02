@@ -88,6 +88,7 @@
     <string name="missingApiUrl">The API base URL is missing!</string>
     <string name="invalidApiUrl">The API base URL is invalid!</string>
     <string name="noProjectsWithRepo">There are no projects with repositories!</string>
+    <string name="cannotDisplayProjectsLifetimeStats">Cannot display your projects lifetime stats!</string>
     <plurals name="members">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>

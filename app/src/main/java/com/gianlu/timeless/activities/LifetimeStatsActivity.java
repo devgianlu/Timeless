@@ -86,7 +86,7 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
         wakaTime.getProjects(null, new WakaTime.OnResult<Projects>() {
             @Override
             public void onResult(@NonNull Projects result) {
-                projects.loadListData(new ProjectsLifetimeStatsAdapter(LifetimeStatsActivity.this, result));
+                projects.loadListData(new ProjectsLifetimeStatsAdapter(LifetimeStatsActivity.this, result), false);
             }
 
             @Override
@@ -97,6 +97,11 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
         });
     }
 
+    private void projectsCountUpdated(int count) {
+        if (count == 0) projects.showInfo(R.string.cannotDisplayProjectsLifetimeStats);
+        else projects.showList();
+    }
+
     private class ProjectsLifetimeStatsAdapter extends RecyclerView.Adapter<ProjectsLifetimeStatsAdapter.ViewHolder> {
         private final List<Project> projects;
         private final LayoutInflater inflater;
@@ -104,6 +109,7 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
         ProjectsLifetimeStatsAdapter(@NonNull Context context, @NonNull List<Project> projects) {
             this.inflater = LayoutInflater.from(context);
             this.projects = projects;
+            projectsCountUpdated(getItemCount());
         }
 
         @NonNull
@@ -130,7 +136,13 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
                         return;
                     }
 
-                    notifyItemChanged(holder.getAdapterPosition(), result);
+                    if (result.project == null || result.project.isEmpty()) {
+                        projects.remove(holder.getAdapterPosition());
+                        notifyItemRemoved(holder.getAdapterPosition());
+                        projectsCountUpdated(getItemCount());
+                    } else {
+                        notifyItemChanged(holder.getAdapterPosition(), result);
+                    }
                 }
 
                 @Override
