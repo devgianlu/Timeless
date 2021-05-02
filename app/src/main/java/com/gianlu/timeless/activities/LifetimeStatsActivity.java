@@ -17,6 +17,7 @@ import com.gianlu.commonutils.misc.SuperTextView;
 import com.gianlu.commonutils.ui.Toaster;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.Utils;
+import com.gianlu.timeless.api.StatusCodeException;
 import com.gianlu.timeless.api.WakaTime;
 import com.gianlu.timeless.api.models.LifetimeStats;
 import com.gianlu.timeless.api.models.Project;
@@ -77,7 +78,12 @@ public class LifetimeStatsActivity extends ActivityWithDialog {
             @Override
             public void onException(@NonNull Exception ex) {
                 Log.e(TAG, "Failed loading lifetime stats.", ex);
-                Toaster.with(LifetimeStatsActivity.this).message(R.string.failedLoading_reason, ex.getMessage()).show();
+
+                if (ex instanceof StatusCodeException && ((StatusCodeException) ex).code == 202)
+                    Toaster.with(LifetimeStatsActivity.this).message(R.string.lifetimeStatsLoading, ex.getMessage()).show();
+                else
+                    Toaster.with(LifetimeStatsActivity.this).message(R.string.failedLoading_reason, ex.getMessage()).show();
+
                 dismissDialog();
                 onBackPressed();
             }

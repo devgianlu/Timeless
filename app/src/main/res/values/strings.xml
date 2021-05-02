@@ -89,6 +89,7 @@
     <string name="invalidApiUrl">The API base URL is invalid!</string>
     <string name="noProjectsWithRepo">There are no projects with repositories!</string>
     <string name="cannotDisplayProjectsLifetimeStats">Cannot display your projects lifetime stats!</string>
+    <string name="lifetimeStatsLoading">Lifetime stats are being computed… Please check back in a few minutes.</string>
     <plurals name="members">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>
