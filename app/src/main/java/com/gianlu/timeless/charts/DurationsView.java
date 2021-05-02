@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
 
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.typography.FontsManager;
@@ -74,9 +73,7 @@ public class DurationsView extends LinearLayout {
         } else {
             for (int i = 0; i < projects.size(); i++) {
                 String p = projects.get(i);
-                addView(new ChartView(getContext(), p, durations.filter(p),
-                        ContextCompat.getColor(getContext(), colors.getColor(p)),
-                        projects.size() <= 1, durations.isToday()));
+                addView(new ChartView(getContext(), p, durations.filter(p), colors.getColor(getContext(), p), projects.size() <= 1, durations.isToday()));
             }
         }
     }

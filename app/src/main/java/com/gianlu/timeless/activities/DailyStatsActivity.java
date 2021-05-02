@@ -25,6 +25,8 @@ import com.gianlu.timeless.api.WakaTime;
 import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Summaries;
+import com.gianlu.timeless.colors.LookupColorMapper;
+import com.gianlu.timeless.colors.PersistentColorMapper;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
@@ -144,16 +146,17 @@ public class DailyStatsActivity extends ActivityWithDialog implements DatePicker
 
         try {
             Durations durations = requester.durations(currentDate, null, null);
-            cards.addDurations(durations);
+            cards.addDurations(durations, PersistentColorMapper.get(PersistentColorMapper.Type.PROJECTS));
         } catch (WakaTime.MissingEndpointException ignored) {
         }
 
         final CardsAdapter adapter = new CardsAdapter(this, cards
-                .addPieChart(R.string.projects, ChartContext.PROJECTS, summaries.globalSummary.interval(), summaries.globalSummary.projects)
-                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
-                .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors)
-                .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines)
-                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems), null, this);
+                .addPieChart(R.string.projects, ChartContext.PROJECTS, summaries.globalSummary.interval(), summaries.globalSummary.projects, PersistentColorMapper.get(PersistentColorMapper.Type.PROJECTS))
+                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages, LookupColorMapper.get(this, LookupColorMapper.Type.LANGUAGES))
+                .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors, LookupColorMapper.get(this, LookupColorMapper.Type.EDITORS))
+                .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines, PersistentColorMapper.get(PersistentColorMapper.Type.MACHINES))
+                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems, LookupColorMapper.get(this, LookupColorMapper.Type.OPERATING_SYSTEMS)),
+                null, this);
 
         ui.post(this, () -> rmv.loadListData(adapter));
     }

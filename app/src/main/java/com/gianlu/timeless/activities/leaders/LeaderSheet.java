@@ -21,7 +21,7 @@ import com.gianlu.timeless.Utils;
 import com.gianlu.timeless.api.models.Leader;
 import com.gianlu.timeless.charts.PieChartColorHelper;
 import com.gianlu.timeless.charts.SquarePieChart;
-import com.gianlu.timeless.colors.ProjectsColorMapper;
+import com.gianlu.timeless.colors.LookupColorMapper;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -87,7 +87,7 @@ public class LeaderSheet extends ThemedModalBottomSheet<Leader, Void> {
             }
         });
 
-        PieChartColorHelper helper = new PieChartColorHelper(chart, ProjectsColorMapper.get());
+        PieChartColorHelper helper = new PieChartColorHelper(chart, LookupColorMapper.get(requireContext(), LookupColorMapper.Type.LANGUAGES));
         helper.setData(new PieData(set));
 
         isLoading(false);

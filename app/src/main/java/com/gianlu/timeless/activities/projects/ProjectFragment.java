@@ -24,6 +24,8 @@ import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
+import com.gianlu.timeless.colors.LookupColorMapper;
+import com.gianlu.timeless.colors.PersistentColorMapper;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 
@@ -116,13 +118,13 @@ public class ProjectFragment extends FragmentWithDialog implements CardsAdapter.
             cards.addBranchSelector(summaries.availableBranches, summaries.selectedBranches, this);
 
         cards.addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.PROJECTS)
-                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
-                .addPieChart(R.string.branches, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.branches)
+                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages, LookupColorMapper.get(requireContext(), LookupColorMapper.Type.LANGUAGES))
+                .addPieChart(R.string.branches, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.branches, PersistentColorMapper.get(PersistentColorMapper.Type.BRANCHES))
                 .addFileList(R.string.files, summaries.globalSummary.entities);
 
         if (start.getTime() == end.getTime()) {
             Durations durations = requester.durations(start, project, summaries.availableBranches);
-            cards.addDurations(cards.hasBranchSelector() ? 2 : 1, durations);
+            cards.addDurations(cards.hasBranchSelector() ? 2 : 1, durations, PersistentColorMapper.get(PersistentColorMapper.Type.PROJECTS));
         } else {
             cards.addLineChart(cards.hasBranchSelector() ? 2 : 1, R.string.periodActivity, summaries);
         }

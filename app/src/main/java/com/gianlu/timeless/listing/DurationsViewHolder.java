@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gianlu.timeless.R;
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.charts.DurationsView;
-import com.gianlu.timeless.colors.ProjectsColorMapper;
+import com.gianlu.timeless.colors.ColorsMapper;
 
 class DurationsViewHolder extends RecyclerView.ViewHolder {
     public final DurationsView view;
@@ -19,7 +19,7 @@ class DurationsViewHolder extends RecyclerView.ViewHolder {
         view = (DurationsView) itemView;
     }
 
-    void bind(@NonNull Durations durations) {
-        view.setDurations(durations, ProjectsColorMapper.get());
+    void bind(@NonNull Durations durations, ColorsMapper colorsMapper) {
+        view.setDurations(durations, colorsMapper);
     }
 }

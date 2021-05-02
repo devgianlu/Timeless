@@ -22,6 +22,8 @@ import com.gianlu.timeless.api.WakaTimeException;
 import com.gianlu.timeless.api.models.Durations;
 import com.gianlu.timeless.api.models.Summaries;
 import com.gianlu.timeless.api.models.Summary;
+import com.gianlu.timeless.colors.LookupColorMapper;
+import com.gianlu.timeless.colors.PersistentColorMapper;
 import com.gianlu.timeless.listing.CardsAdapter;
 import com.gianlu.timeless.listing.PieChartViewHolder.ChartContext;
 import com.gianlu.timeless.widgets.CodingActivityWidgetProvider;
@@ -87,16 +89,16 @@ public class MainFragment extends FragmentWithDialog implements WakaTime.BatchSt
 
         CardsAdapter.CardsList cards = new CardsAdapter.CardsList()
                 .addGlobalSummary(summaries.globalSummary, CardsAdapter.SummaryContext.MAIN)
-                .addPieChart(R.string.projects, ChartContext.PROJECTS, summaries.globalSummary.interval(), summaries.globalSummary.projects)
-                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages)
-                .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors)
-                .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines)
-                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems);
+                .addPieChart(R.string.projects, ChartContext.PROJECTS, summaries.globalSummary.interval(), summaries.globalSummary.projects, PersistentColorMapper.get(PersistentColorMapper.Type.PROJECTS))
+                .addPieChart(R.string.languages, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.languages, LookupColorMapper.get(requireContext(), LookupColorMapper.Type.LANGUAGES))
+                .addPieChart(R.string.editors, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.editors, LookupColorMapper.get(requireContext(), LookupColorMapper.Type.EDITORS))
+                .addPieChart(R.string.machines, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.machines, PersistentColorMapper.get(PersistentColorMapper.Type.MACHINES))
+                .addPieChart(R.string.operatingSystems, ChartContext.IRRELEVANT, summaries.globalSummary.interval(), summaries.globalSummary.operating_systems, LookupColorMapper.get(requireContext(), LookupColorMapper.Type.OPERATING_SYSTEMS));
 
         if (range == WakaTime.Range.TODAY) {
             try {
                 Durations durations = requester.durations(new Date(), null, null);
-                cards.addDurations(1, durations);
+                cards.addDurations(1, durations, PersistentColorMapper.get(PersistentColorMapper.Type.PROJECTS));
             } catch (WakaTime.MissingEndpointException ignored) {
             }
 

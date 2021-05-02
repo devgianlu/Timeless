@@ -24,7 +24,7 @@ import com.gianlu.timeless.api.models.LoggedEntities;
 import com.gianlu.timeless.api.models.LoggedEntity;
 import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.charts.PieChartColorHelper;
-import com.gianlu.timeless.colors.ProjectsColorMapper;
+import com.gianlu.timeless.colors.ColorsMapper;
 import com.gianlu.timeless.dialogs.LoggedEntityDialog;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -53,7 +53,7 @@ public class PieChartViewHolder extends HelperViewHolder {
         chart = itemView.findViewById(R.id.pieChartCard_chart);
     }
 
-    void bind(@StringRes int title, @NonNull LoggedEntities entities, @NonNull ChartContext chartContext, @NonNull Pair<Date, Date> interval, @Nullable Project project) {
+    void bind(@StringRes int title, @NonNull LoggedEntities entities, @NonNull ChartContext chartContext, @NonNull Pair<Date, Date> interval, @NonNull ColorsMapper colorsMapper, @Nullable Project project) {
         this.title.setText(title);
 
         chart.setDescription(null);
@@ -86,7 +86,7 @@ public class PieChartViewHolder extends HelperViewHolder {
             }
         });
 
-        PieChartColorHelper helper = new PieChartColorHelper(chart, ProjectsColorMapper.get());
+        PieChartColorHelper helper = new PieChartColorHelper(chart, colorsMapper);
         helper.setData(new PieData(set));
 
         helper.setOnChartValueSelectedListener(new PieChartColorHelper.OnValueSelectedListener() {

@@ -16,6 +16,7 @@ import com.gianlu.timeless.api.models.GlobalSummary;
 import com.gianlu.timeless.api.models.LoggedEntities;
 import com.gianlu.timeless.api.models.Project;
 import com.gianlu.timeless.api.models.Summaries;
+import com.gianlu.timeless.colors.ColorsMapper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -85,11 +86,12 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((BarChartViewHolder) holder).bind(objs.titles.get(position), (Summaries) objs.payloads.get(position), project);
         } else if (holder instanceof PieChartViewHolder) {
             CardsList.PieItem p = (CardsList.PieItem) objs.payloads.get(position);
-            ((PieChartViewHolder) holder).bind(objs.titles.get(position), p.entities, p.ctx, p.interval, project);
+            ((PieChartViewHolder) holder).bind(objs.titles.get(position), p.entities, p.ctx, p.interval, p.colorsMapper, project);
         } else if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).bind(objs.titles.get(position), (LoggedEntities) objs.payloads.get(position));
         } else if (holder instanceof DurationsViewHolder) {
-            ((DurationsViewHolder) holder).bind((Durations) objs.payloads.get(position));
+            CardsList.DurationsItem d = (CardsList.DurationsItem) objs.payloads.get(position);
+            ((DurationsViewHolder) holder).bind(d.durations, d.colorsMapper);
         } else if (holder instanceof WeeklyImprovementViewHolder) {
             ((WeeklyImprovementViewHolder) holder).bind((Float) objs.payloads.get(position));
         } else if (holder instanceof BranchSelectorViewHolder) {
@@ -199,27 +201,25 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return this;
         }
 
-        public CardsList addPieChart(@StringRes int title, PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities) {
-            return addPieChart(types.size(), title, ctx, interval, entities);
+        public CardsList addPieChart(@StringRes int title, PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities, ColorsMapper colorsMapper) {
+            return addPieChart(types.size(), title, ctx, interval, entities, colorsMapper);
         }
 
-        public CardsList addPieChart(int index, @StringRes int title, PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities) {
+        public CardsList addPieChart(int index, @StringRes int title, PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities, ColorsMapper colorsMapper) {
             titles.add(index, title);
             types.add(index, TYPE_PIE);
-            payloads.add(index, new PieItem(ctx, interval, entities));
-
+            payloads.add(index, new PieItem(ctx, interval, entities, colorsMapper));
             return this;
         }
 
-        public CardsList addDurations(Durations durations) {
-            return addDurations(types.size(), durations);
+        public CardsList addDurations(Durations durations, ColorsMapper colorsMapper) {
+            return addDurations(types.size(), durations, colorsMapper);
         }
 
-        public CardsList addDurations(int index, Durations durations) {
+        public CardsList addDurations(int index, Durations durations, ColorsMapper colorsMapper) {
             titles.add(index, null);
             types.add(index, TYPE_DURATIONS);
-            payloads.add(index, durations);
-
+            payloads.add(index, new DurationsItem(durations, colorsMapper));
             return this;
         }
 
@@ -231,7 +231,6 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             titles.add(index, title);
             types.add(index, TYPE_LINE);
             payloads.add(index, summaries);
-
             return this;
         }
 
@@ -239,11 +238,23 @@ public class CardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             private final PieChartViewHolder.ChartContext ctx;
             private final Pair<Date, Date> interval;
             private final LoggedEntities entities;
+            private final ColorsMapper colorsMapper;
 
-            PieItem(PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities) {
+            PieItem(PieChartViewHolder.ChartContext ctx, Pair<Date, Date> interval, LoggedEntities entities, ColorsMapper colorsMapper) {
                 this.ctx = ctx;
                 this.interval = interval;
                 this.entities = entities;
+                this.colorsMapper = colorsMapper;
+            }
+        }
+
+        private static class DurationsItem {
+            final ColorsMapper colorsMapper;
+            final Durations durations;
+
+            DurationsItem(Durations durations, ColorsMapper colorsMapper) {
+                this.durations = durations;
+                this.colorsMapper = colorsMapper;
             }
         }
 

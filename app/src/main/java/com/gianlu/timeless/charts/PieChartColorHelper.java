@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 import com.gianlu.timeless.colors.ColorsMapper;
 import com.github.mikephil.charting.charts.PieChart;
@@ -40,7 +39,7 @@ public final class PieChartColorHelper {
             PieEntry e = set.getEntryForIndex(i);
             if (e.getData() != null) throw new IllegalArgumentException();
 
-            int color = ContextCompat.getColor(context, colors.getColor(e.getLabel()));
+            int color = colors.getColor(context, e.getLabel());
             setColors[i] = color;
             e.setData(new EntryColorMeta(color));
         }
