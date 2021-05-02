@@ -1,2 +1,7 @@
-### Added
-- Added wakapi support
+### Changed
+- Improved use of colors in UI
+- Minor error messages improvements
+
+### Fixed
+- Fixed multiple wakapi related crashes
+- Fixed navigation buttons hidden in login page
