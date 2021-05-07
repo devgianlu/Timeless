@@ -1,8 +1,8 @@
-Timeless is a functional application which lets you analyze your coding activity tracked by WakaTime or wakapi.
+Timeless ermöglicht es dir, deine mit WakaTime oder Wakapi aufgezeichnete Coding Aktivität zu analysieren.
 
-Here's some of its functionalities:
-- View statistics between different time ranges
-- View daily statistics
+Hier sind einige Features:
+- Statistiken innerhalb verschiedener Zeiträume einsehen
+- Tägliche Statistiken einsehen
 - View all time statistics
 - View your projects and their specific statistics
 - View your commits for each project
