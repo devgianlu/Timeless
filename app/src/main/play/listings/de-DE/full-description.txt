@@ -1,0 +1,16 @@
+Timeless ermöglicht es dir, deine mit WakaTime oder Wakapi aufgezeichnete Coding Aktivität zu analysieren.
+
+Hier sind einige Features:
+- Sehe Statistiken innerhalb verschiedener Zeiträume an
+- Sehe deine täglichen Statistiken an
+- Sehe die Statistiken über den gesamten Zeitraum an
+- Überblicke deine Projekte und deren Statistiken
+- Lass deine Commit für jedes Projekt anzeigen
+- Fordere andere Programmierer in der Rangliste heraus
+Und noch vieles Weitere!
+
+Probleme, Fehler und Verbesserungsvorschläge bitte melden an altomanigianluca@gmail.com.
+
+----------------------------
+WakaTime wird entwickelt von Alan Hamlett (https://wakatime.com/).
+Wakapi wird entwickelt von Ferdinand Mütsch (https://wakapi.dev/).
