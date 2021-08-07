@@ -1,7 +1,5 @@
-### Changed
-- Improved use of colors in UI
-- Minor error messages improvements
-
 ### Fixed
-- Fixed multiple wakapi related crashes
-- Fixed navigation buttons hidden in login page
+- Minor bug fixes
+
+### Changed
+- Updated third party libraries
