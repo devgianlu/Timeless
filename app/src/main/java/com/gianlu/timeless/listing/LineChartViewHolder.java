@@ -40,6 +40,7 @@ class LineChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final LineChart chart;
     private final ImageButton save;
+    private static final MaterialColors materialColors = MaterialColors.getShuffledInstance();;
 
     LineChartViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
         super(listener, inflater, parent, R.layout.item_chart_line);
@@ -83,7 +84,6 @@ class LineChartViewHolder extends HelperViewHolder {
             }
         });
 
-        MaterialColors colors = MaterialColors.getShuffledInstance();
         Map<String, ILineDataSet> branchToSets = new HashMap<>(summaries.availableBranches.size());
         int maxEntries = 0;
         int i = 0;
@@ -91,7 +91,7 @@ class LineChartViewHolder extends HelperViewHolder {
             for (LoggedEntity branch : summary.branches) {
                 LineDataSet set = (LineDataSet) branchToSets.get(branch.name);
                 if (set == null) {
-                    int color = ContextCompat.getColor(getContext(), colors.getColor(i));
+                    int color = ContextCompat.getColor(getContext(), materialColors.getColor(i));
                     i++;
 
                     set = new LineDataSet(new ArrayList<>(), branch.name);

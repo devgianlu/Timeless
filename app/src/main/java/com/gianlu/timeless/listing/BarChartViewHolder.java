@@ -1,5 +1,6 @@
 package com.gianlu.timeless.listing;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ class BarChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final CombinedChart chart;
     private final ImageButton save;
-    private final MaterialColors materialColors;
+    private static final MaterialColors materialColors = MaterialColors.getShuffledInstance();;
 
     BarChartViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
         super(listener, inflater, parent, R.layout.item_chart_bar);
@@ -58,7 +59,6 @@ class BarChartViewHolder extends HelperViewHolder {
         title = itemView.findViewById(R.id.barChartCard_title);
         chart = itemView.findViewById(R.id.barChartCard_chart);
         save = itemView.findViewById(R.id.barChartCard_save);
-        materialColors = MaterialColors.getShuffledInstance();
     }
 
     @NotNull
