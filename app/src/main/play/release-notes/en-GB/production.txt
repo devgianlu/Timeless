@@ -1,5 +1,5 @@
 ### Fixed
-- Minor bug fixes
+- Fixed lifetime statistics bug with Wakapi
 
 ### Changed
 - Updated third party libraries
