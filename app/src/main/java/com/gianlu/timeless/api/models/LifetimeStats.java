@@ -12,11 +12,12 @@ public class LifetimeStats {
     public final String project;
     public final Long totalSeconds;
 
-    public LifetimeStats(@NonNull JSONObject obj) throws JSONException {
+    public LifetimeStats(@NonNull JSONObject obj, String projectName) throws JSONException {
         obj = obj.getJSONObject("data");
 
         upToDate = obj.getBoolean("is_up_to_date");
-        project = CommonUtils.optString(obj, "project");
+        String jsonProjectName = CommonUtils.optString(obj, "project");
+        project = jsonProjectName != null ? jsonProjectName : projectName;
         totalSeconds = CommonUtils.optLong(obj, "total_seconds");
     }
 }

@@ -736,7 +736,7 @@ public class WakaTime {
             if (project != null)
                 builder.addQueryParameter("project", project);
 
-            return new LifetimeStats(doRequestSync(builder.build()));
+            return new LifetimeStats(doRequestSync(builder.build()), project);
         }
     }
 }

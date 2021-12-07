@@ -50,6 +50,7 @@ class BarChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final CombinedChart chart;
     private final ImageButton save;
+    private final MaterialColors materialColors;
 
     BarChartViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
         super(listener, inflater, parent, R.layout.item_chart_bar);
@@ -57,6 +58,7 @@ class BarChartViewHolder extends HelperViewHolder {
         title = itemView.findViewById(R.id.barChartCard_title);
         chart = itemView.findViewById(R.id.barChartCard_chart);
         save = itemView.findViewById(R.id.barChartCard_save);
+        materialColors = MaterialColors.getShuffledInstance();
     }
 
     @NotNull
@@ -116,7 +118,6 @@ class BarChartViewHolder extends HelperViewHolder {
         List<Integer> colors = new ArrayList<>();
         List<LegendEntry> legendEntries = new ArrayList<>();
         int colorCount = 0;
-        MaterialColors materialColors = MaterialColors.getShuffledInstance();
         for (int i = 0; i < summaries.size(); i++) {
             Summary summary = summaries.get(i);
             float[] array = new float[summary.projects.size()];
