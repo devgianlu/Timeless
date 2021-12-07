@@ -1,5 +1,6 @@
 package com.gianlu.timeless.listing;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ class BarChartViewHolder extends HelperViewHolder {
     private final TextView title;
     private final CombinedChart chart;
     private final ImageButton save;
+    private static final MaterialColors materialColors = MaterialColors.getShuffledInstance();;
 
     BarChartViewHolder(DialogUtils.ShowStuffInterface listener, LayoutInflater inflater, ViewGroup parent) {
         super(listener, inflater, parent, R.layout.item_chart_bar);
@@ -116,7 +118,6 @@ class BarChartViewHolder extends HelperViewHolder {
         List<Integer> colors = new ArrayList<>();
         List<LegendEntry> legendEntries = new ArrayList<>();
         int colorCount = 0;
-        MaterialColors materialColors = MaterialColors.getShuffledInstance();
         for (int i = 0; i < summaries.size(); i++) {
             Summary summary = summaries.get(i);
             float[] array = new float[summary.projects.size()];
