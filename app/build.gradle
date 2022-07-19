@@ -13,8 +13,8 @@ android {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 68
-        versionName "2.4.5"
+        versionCode 69
+        versionName "2.4.6"
     }
 
     if (isCi) {

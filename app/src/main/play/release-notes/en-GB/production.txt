@@ -1,2 +1,2 @@
-### Fixed
-- Fixed leaderboards not working
+### Changed
+- Updated libraries
