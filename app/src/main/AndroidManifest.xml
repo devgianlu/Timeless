@@ -19,6 +19,7 @@
         <activity
             android:name=".LoadingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
@@ -47,6 +48,7 @@
         <activity
             android:name=".GrantActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
@@ -125,6 +127,7 @@
         <activity
             android:name=".widgets.ConfigureCodingActivityWidgetActivity"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:label="@string/configureWidget"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -133,7 +136,9 @@
         </activity>
 
         <!-- Coding activity widget receiver -->
-        <receiver android:name=".widgets.CodingActivityWidgetProvider">
+        <receiver
+            android:name=".widgets.CodingActivityWidgetProvider"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

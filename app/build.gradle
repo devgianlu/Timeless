@@ -6,13 +6,13 @@ apply plugin: 'com.android.application'
 
 def isCi = System.getenv("CI") == "true"
 android {
-    compileSdkVersion 30
-    buildToolsVersion "31.0.0"
+    compileSdkVersion 32
+    buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 68
         versionName "2.4.5"
     }
@@ -56,7 +56,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    lintOptions {
+    lint {
         warning 'MissingTranslation', 'Instantiatable'
     }
 }
@@ -79,7 +79,7 @@ dependencies {
     implementation 'com.github.scribejava:scribejava-core:8.3.1'
     implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.3.1'
 
-    implementation 'com.google.android.material:material:1.5.0-alpha01'
+    implementation 'com.google.android.material:material:1.6.1'
 
     standardImplementation 'com.google.firebase:firebase-perf:20.1.0'
 }
