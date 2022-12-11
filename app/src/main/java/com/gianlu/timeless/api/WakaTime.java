@@ -487,12 +487,19 @@ public class WakaTime {
             if (!DEFAULT_WAKATIME_API_URL.equals(apiUrl))
                 throw new IllegalStateException("Cannot create OAuth2 service for non-official API.");
 
+            OkHttpClient.Builder client = this.client.newBuilder();
+            client.addInterceptor(chain -> {
+                Request.Builder req = chain.request().newBuilder();
+                req.header("Accept", "application/json");
+                return chain.proceed(req.build());
+            });
+
             ServiceBuilder builder = new ServiceBuilder("TLCbAeUZV03mu854dptQPE0s");
             builder.withScope("email,read_stats,read_logged_time,read_private_leaderboards")
                     .apiSecret("sec_yFZ1S6VZgZcjkUGPjN8VThQMbZGxjpzZUzjpA2uNJ6VY6LFKhunHfDV0RyUEqhXTWdYiEwJJAVr2ZLgs")
                     .callback("timeless://grantActivity/")
                     .userAgent(ThisApplication.USER_AGENT)
-                    .httpClient(new OkHttpHttpClient(client));
+                    .httpClient(new OkHttpHttpClient(client.build()));
 
             this.service = builder.build(new WakatimeApi());
         }

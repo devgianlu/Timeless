@@ -1,2 +1,2 @@
-### Changed
-- Updated libraries
+### Fixed
+- Authentication issue due to changes on WakaTime
