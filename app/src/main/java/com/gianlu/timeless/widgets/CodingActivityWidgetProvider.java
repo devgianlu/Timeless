@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -29,7 +30,9 @@ public class CodingActivityWidgetProvider extends AppWidgetProvider {
 
     @NonNull
     private static PendingIntent startAppPendingIntent(@NonNull Context context) {
-        return PendingIntent.getActivity(context, 0, new Intent(context, LoadingActivity.class), 0);
+        int flags = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) flags = PendingIntent.FLAG_IMMUTABLE;
+        return PendingIntent.getActivity(context, 0, new Intent(context, LoadingActivity.class), flags);
     }
 
     @NonNull
