@@ -1,2 +1,2 @@
 ### Fixed
-- Authentication issue due to changes on WakaTime
+- Crash on some devices with widgets enabled
