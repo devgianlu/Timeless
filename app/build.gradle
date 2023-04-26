@@ -1,18 +1,18 @@
 plugins {
-    id 'com.github.triplet.play' version '3.7.0'
+    id 'com.github.triplet.play' version '3.8.1'
 }
 
 apply plugin: 'com.android.application'
 
 def isCi = System.getenv("CI") == "true"
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 71
         versionName "2.4.8"
     }
@@ -59,6 +59,8 @@ android {
     lint {
         warning 'MissingTranslation', 'Instantiatable'
     }
+
+    namespace 'com.gianlu.timeless'
 }
 
 play {
@@ -79,9 +81,9 @@ dependencies {
     implementation 'com.github.scribejava:scribejava-core:8.3.1'
     implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.3.1'
 
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
 
-    standardImplementation 'com.google.firebase:firebase-perf:20.1.0'
+    standardImplementation 'com.google.firebase:firebase-perf:20.3.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
