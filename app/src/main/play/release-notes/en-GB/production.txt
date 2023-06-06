@@ -1,2 +1,2 @@
-### Fixed
-- Crash on some devices with widgets enabled
+### Changed
+- Updated libraries
