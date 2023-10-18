@@ -3,6 +3,7 @@ package com.gianlu.timeless;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.gianlu.commonutils.analytics.AnalyticsApplication;
 import com.gianlu.commonutils.network.ConnectivityChecker;
@@ -57,5 +58,11 @@ public class ThisApplication extends AnalyticsApplication {
     @Override
     protected boolean isDebug() {
         return BuildConfig.DEBUG;
+    }
+
+    @Nullable
+    @Override
+    protected String getGithubProjectName() {
+        return "Timeless";
     }
 }

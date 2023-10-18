@@ -56,7 +56,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
 
             @Override
             public void offline() {
-                view.endFakeAnimation(() -> OfflineActivity.startActivity(LoadingActivity.this, LoadingActivity.class), false);
+                view.endFakeAnimation(() -> OfflineActivity.startActivity(LoadingActivity.this, "Timeless", LoadingActivity.class), false);
             }
         });
     }
@@ -92,7 +92,7 @@ public class LoadingActivity extends ActivityWithDialog implements WakaTime.Init
         view.endFakeAnimation(() -> {
             Toaster.with(this).message(R.string.failedRefreshingToken).show();
             if (ex instanceof IOException) {
-                OfflineActivity.startActivity(this, LoadingActivity.class);
+                OfflineActivity.startActivity(this, "Timeless", LoadingActivity.class);
             } else if (ex instanceof WakaTime.MissingCredentialsException) {
                 start(GrantActivity.class, null);
             }

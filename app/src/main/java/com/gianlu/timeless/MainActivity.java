@@ -138,7 +138,7 @@ public class MainActivity extends ActivityWithDialog implements DrawerManager.Me
                 startActivity(new Intent(this, PreferenceActivity.class));
                 return false;
             case SUPPORT:
-                LogsHelper.sendEmail(this, null);
+                LogsHelper.openGithubIssue(this,"Timeless", null);
                 return true;
             default:
                 return true;
