@@ -1,2 +1,5 @@
+### Fixed
+- Fixed load error due to API change
+
 ### Changed
 - Updated libraries
