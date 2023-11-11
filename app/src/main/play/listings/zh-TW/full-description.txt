@@ -1,0 +1,16 @@
+Timeless 是一個實用的應用程式，可以讓您分析由 WakaTime 或 wakapi 追蹤的程式設計活動。
+
+這裡是一些功能：
+- 檢視不同時間範圍的統計資料
+- 檢視每日統計資料
+- 檢視所有時間的統計資料
+- 檢視您的專案和其他指定統計資料
+- 檢視您每個專案的認可
+- 在排行榜中挑戰其他程式設計師
+更多功能即將到來！
+
+向我回報錯誤或提供建議：altomanigianluca@gmail.com
+
+----------------------------
+WakaTime 由 Alan Hamlett (https://wakatime.com/) 開發。
+wakapi 由 Ferdinand Mütsch (https://wakapi.dev/) 開發。
