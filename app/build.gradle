@@ -83,7 +83,7 @@ dependencies {
     implementation 'com.github.scribejava:scribejava-core:8.3.3'
     implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.3.3'
 
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
 
     standardImplementation 'com.google.firebase:firebase-perf:20.4.1'
 }
