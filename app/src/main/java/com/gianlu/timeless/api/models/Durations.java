@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class Durations extends ArrayList<Duration> {
-    public final List<String> branches;
     private final boolean isToday;
 
     public Durations(@NonNull JSONObject obj, @Nullable Project project) throws JSONException {
@@ -25,8 +24,6 @@ public class Durations extends ArrayList<Duration> {
             Duration duration = new Duration(array.getJSONObject(i));
             if (project == null || Objects.equals(duration.project, project.name)) add(duration);
         }
-
-        branches = CommonUtils.toStringsList(obj.getJSONArray("branches"), true);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
