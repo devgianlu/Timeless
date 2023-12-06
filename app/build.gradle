@@ -8,6 +8,8 @@ apply plugin: 'com.android.application'
 
 def isCi = System.getenv("CI") == "true"
 android {
+    namespace 'com.gianlu.timeless'
+
     defaultConfig {
         compileSdk 34
 
@@ -61,8 +63,6 @@ android {
     lint {
         warning 'MissingTranslation', 'Instantiatable'
     }
-
-    namespace 'com.gianlu.timeless'
 }
 
 play {
