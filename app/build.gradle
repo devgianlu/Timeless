@@ -85,7 +85,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.10.0'
 
-    standardImplementation 'com.google.firebase:firebase-perf:20.5.1'
+    standardImplementation 'com.google.firebase:firebase-perf:20.5.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
