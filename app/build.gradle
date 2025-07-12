@@ -11,11 +11,11 @@ android {
     namespace 'com.gianlu.timeless'
 
     defaultConfig {
-        compileSdk 34
+        compileSdk 36
 
         applicationId "com.gianlu.timeless"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 36
 
         versionCode 73
         versionName "2.4.10"
